@@ -1,16 +1,37 @@
 package de.skyrising.aoc2020
 
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.net.URL
-import java.nio.charset.StandardCharsets
+import java.nio.ByteBuffer
 
-fun getInput(day: Int): List<String> {
+val inputs: Int2ObjectMap<List<ByteBuffer>> = Int2ObjectOpenHashMap<List<ByteBuffer>>()
+
+fun getInput(day: Int) = inputs.computeIfAbsent(day, ::getInput0)
+
+private fun getInput0(day: Int): List<ByteBuffer> {
     val connection = URL("https://adventofcode.com/2020/day/$day/input").openConnection()
     connection.addRequestProperty("Cookie", System.getenv("AOC_COOKIE"))
-    return BufferedReader(InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)).useLines {
-        it.toList()
+    val buf = ByteBuffer.wrap(connection.getInputStream().readBytes())
+    var lineStart = 0
+    var r = false
+    val lines = mutableListOf<ByteBuffer>()
+    for (i in 0 until buf.limit()) {
+        val b = buf[i]
+        if (b == '\n'.toByte()) {
+            buf.position(lineStart)
+            buf.limit(i - if (r) 1 else 0)
+            lines.add(buf.slice())
+            buf.clear()
+            lineStart = i + 1
+        }
+        r = b == '\r'.toByte()
     }
+    if (lineStart < buf.limit()) {
+        buf.position(lineStart)
+        lines.add(buf.slice())
+    }
+    return lines
 }
 
 // Poor man's JMH

@@ -1,6 +1,8 @@
 package de.skyrising.aoc2020
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
+import java.nio.ByteBuffer
+import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.sqrt
@@ -10,8 +12,8 @@ interface Puzzle<T> {
     fun getName(): String
     fun getDay(): Int
     fun getRealInput() = getInput(getDay())
-    fun generateInput(rand: Random): Pair<List<String>, T>?
-    fun runPuzzle(input: List<String>): T
+    fun generateInput(rand: Random): Pair<List<ByteBuffer>, T>?
+    fun runPuzzle(input: List<ByteBuffer>): T
 }
 
 val dailyPuzzles = TreeMap<Int, MutableList<Puzzle<*>>>()
@@ -24,24 +26,39 @@ fun register(puzzle: Puzzle<*>) {
 abstract class AbstractPuzzle<T>(private val day: Int, private val name: String) : Puzzle<T> {
     override fun getName() = name
     override fun getDay() = day
-    override fun generateInput(rand: Random): Pair<List<String>, T>? = null
+    override fun generateInput(rand: Random): Pair<List<ByteBuffer>, T>? = null
 }
 
-inline fun <T> puzzle(day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> {
+inline fun <T> puzzleB(day: Int, name: String, crossinline run: (List<ByteBuffer>) -> T): Puzzle<T> {
     val p = object : AbstractPuzzle<T>(day, name) {
-        override fun runPuzzle(input: List<String>) = run(input)
+        override fun runPuzzle(input: List<ByteBuffer>) = run(input)
+    }
+    register(p)
+    return p
+}
+
+var lastInput: Pair<List<ByteBuffer>, List<String>>? = null
+inline fun <T> puzzleS(day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> {
+    val p = object : AbstractPuzzle<T>(day, name) {
+        override fun runPuzzle(input: List<ByteBuffer>): T {
+            if (lastInput == null || lastInput!!.first !== input) {
+                lastInput = Pair(input, input.map { StandardCharsets.US_ASCII.decode(it.slice()).toString() })
+                println("Decoding ${System.identityHashCode(input)}")
+            }
+            return run(lastInput!!.second)
+        }
     }
     register(p)
     return p
 }
 
 fun registerAll() {
-    puzzle(1, "Report Repair v1") {
+    puzzleS(1, "Report Repair v1") {
         val numbers = IntOpenHashSet()
         for (line in it) {
             val num = line.toInt()
             val other = 2020 - num
-            if (numbers.contains(other)) return@puzzle num * other
+            if (numbers.contains(other)) return@puzzleS num * other
             numbers.add(num)
         }
         0
@@ -60,29 +77,29 @@ fun registerAll() {
         val idx = i shr 6
         longs[idx] = longs[idx] or (1L shl (i and 0x3f))
     }
-    puzzle(1, "Report Repair v2") {
+    puzzleS(1, "Report Repair v2") {
         val numbers = LongArray(2048 shr 6)
         for (line in it) {
             val num = parseInt4(line)
             val other = 2020 - num
-            if (isBitSet(numbers, other)) return@puzzle num * other
+            if (isBitSet(numbers, other)) return@puzzleS num * other
             setBit(numbers, num)
         }
         0
     }
-    puzzle(1, "Part Two v1") {
+    puzzleS(1, "Part Two v1") {
         val numbers = IntOpenHashSet()
         for (line in it) {
             val a = line.toInt()
             for (b in numbers.iterator()) {
                 val c = 2020 - a - b
-                if (numbers.contains(c)) return@puzzle a * b * c
+                if (numbers.contains(c)) return@puzzleS a * b * c
             }
             numbers.add(a)
         }
         0
     }
-    puzzle(1, "Part Two v2") {
+    puzzleS(1, "Part Two v2") {
         val numbers = LongArray(2048 shr 6)
         for (line in it) {
             val a = parseInt4(line)
@@ -90,13 +107,13 @@ fun registerAll() {
                 if (!isBitSet(numbers, b)) continue
                 val c = 2020 - a - b
                 if (c < 0) break
-                if (isBitSet(numbers, c)) return@puzzle a * b * c
+                if (isBitSet(numbers, c)) return@puzzleS a * b * c
             }
             setBit(numbers, a)
         }
         0
     }
-    puzzle(2, "Password Philosophy v1") {
+    puzzleS(2, "Password Philosophy v1") {
         val pattern = Pattern.compile("^(?<min>\\d+)-(?<max>\\d+) (?<char>.): (?<password>.*)$")
         var valid = 0
         outer@ for (line in it) {
@@ -120,13 +137,13 @@ fun registerAll() {
         }
         valid
     }
-    puzzle(2, "Password Philosophy v2") {
+    puzzleB(2, "Password Philosophy v2") {
         var valid = 0
         for (line in it) {
-            valid += day2(line) { min, max, c, chars, start, end ->
+            valid += day2(line) { min, max, c, start, end ->
                 var count = 0
                 for (i in start until end) {
-                    if (chars[i] == c) {
+                    if (line[i] == c) {
                         count++
                         if (count > max) return@day2 false
                     }
@@ -136,7 +153,7 @@ fun registerAll() {
         }
         valid
     }
-    puzzle(2, "Part Two v1") {
+    puzzleS(2, "Part Two v1") {
         val pattern = Pattern.compile("^(?<first>\\d+)-(?<second>\\d+) (?<char>.): (?<password>.*)$")
         var valid = 0
         for (line in it) {
@@ -155,11 +172,11 @@ fun registerAll() {
         }
         valid
     }
-    puzzle(2, "Part Two v2") {
+    puzzleB(2, "Part Two v2") {
         var valid = 0
         for (line in it) {
-            valid += day2(line) { first, second, c, chars, start, _ ->
-                (chars[start + first - 1] == c) xor (chars[start + second - 1] == c)
+            valid += day2(line) { first, second, c, start, _ ->
+                (line[start + first - 1] == c) xor (line[start + second - 1] == c)
             }
         }
         valid
@@ -167,26 +184,25 @@ fun registerAll() {
 }
 
 
-inline fun day2(line: String, predicate: (n1: Int, n2: Int, c: Char, chars: CharArray, start: Int, end: Int) -> Boolean): Int {
-    val chars = line.toCharArray()
-    val len = chars.size
+inline fun day2(line: ByteBuffer, predicate: (n1: Int, n2: Int, c: Byte, start: Int, end: Int) -> Boolean): Int {
+    val len = line.remaining()
     var num1 = 0
     var num2 = 0
     var i = 0
     while (i < len) {
-        val c = chars[i++]
-        if (c == '-') break
+        val c = line[i++]
+        if (c == '-'.toByte()) break
         num1 *= 10
-        num1 += c - '0'
+        num1 += c - '0'.toByte()
     }
     while (i < len) {
-        val c = chars[i++]
-        if (c == ' ') break
+        val c = line[i++]
+        if (c == ' '.toByte()) break
         num2 *= 10
-        num2 += c - '0'
+        num2 += c - '0'.toByte()
     }
-    val c = chars[i]
-    return if (predicate.invoke(num1, num2, c, chars, i + 3, len)) 1 else 0
+    val c = line[i]
+    return if (predicate.invoke(num1, num2, c, i + 3, len)) 1 else 0
 }
 
 const val RUNS = 1000
