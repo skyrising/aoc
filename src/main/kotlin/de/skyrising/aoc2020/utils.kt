@@ -4,7 +4,6 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.URL
 import java.nio.charset.StandardCharsets
-import kotlin.math.sqrt
 
 fun getInput(day: Int): List<String> {
     val connection = URL("https://adventofcode.com/2020/day/$day/input").openConnection()
