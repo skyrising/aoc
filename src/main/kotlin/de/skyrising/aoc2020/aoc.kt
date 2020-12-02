@@ -226,7 +226,7 @@ fun main() {
                     measure(RUNS) { puzzle.runPuzzle(input) }
                 }
                 val avg = times.average()
-                val stddev = sqrt(times.map { (it - avg) * (it - avg) }.sum())
+                val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
                 println(String.format(Locale.ROOT, "%-22s: %-10s, %8.3f ± %6.3fµs",
                     puzzle.getName(),
                     puzzle.runPuzzle(input),
