@@ -28,7 +28,3 @@ abstract class BenchmarkDay(day: Int) {
     @Benchmark
     fun part2v2() = p2v2.runPuzzle(input)
 }
-
-class BenchmarkDay1 : BenchmarkDay(1)
-class BenchmarkDay2 : BenchmarkDay(2)
-class BenchmarkDay3 : BenchmarkDay(3)
