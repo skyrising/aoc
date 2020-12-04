@@ -43,7 +43,7 @@ inline fun <T> puzzleS(day: Int, name: String, crossinline run: (List<String>) -
         override fun runPuzzle(input: List<ByteBuffer>): T {
             if (lastInput == null || lastInput!!.first !== input) {
                 lastInput = Pair(input, input.map { StandardCharsets.US_ASCII.decode(it.slice()).toString() })
-                println("Decoding ${System.identityHashCode(input)}")
+                // println("Decoding ${System.identityHashCode(input)}")
             }
             return run(lastInput!!.second)
         }
@@ -52,7 +52,10 @@ inline fun <T> puzzleS(day: Int, name: String, crossinline run: (List<String>) -
     return p
 }
 
+private var registeredAll = false
 fun registerAll() {
+    if (registeredAll) return
+    registeredAll = true
     puzzleS(1, "Report Repair v1") {
         val numbers = IntOpenHashSet()
         for (line in it) {
@@ -63,11 +66,11 @@ fun registerAll() {
         }
         0
     }
-    fun parseInt4(s: String) = when (s.length) {
-        1 -> s[0] - '0'
-        2 -> (s[1] - '0') + 10 * (s[0] - '0')
-        3 -> (s[2] - '0') + 10 * ((s[1] - '0') + 10 * (s[0] - '0'))
-        4 -> (s[3] - '0') + 10 * ((s[2] - '0') + 10 * ((s[1] - '0') + 10 * (s[0] - '0')))
+    fun parseInt4(s: ByteBuffer) = when (s.remaining()) {
+        1 -> s[0] - '0'.toByte()
+        2 -> (s[1] - '0'.toByte()) + 10 * (s[0] - '0'.toByte())
+        3 -> (s[2] - '0'.toByte()) + 10 * ((s[1] - '0'.toByte()) + 10 * (s[0] - '0'.toByte()))
+        4 -> (s[3] - '0'.toByte()) + 10 * ((s[2] - '0'.toByte()) + 10 * ((s[1] - '0'.toByte()) + 10 * (s[0] - '0'.toByte())))
         else -> throw IllegalArgumentException()
     }
     fun isBitSet(longs: LongArray, i: Int): Boolean {
@@ -77,12 +80,12 @@ fun registerAll() {
         val idx = i shr 6
         longs[idx] = longs[idx] or (1L shl (i and 0x3f))
     }
-    puzzleS(1, "Report Repair v2") {
+    puzzleB(1, "Report Repair v2") {
         val numbers = LongArray(2048 shr 6)
         for (line in it) {
             val num = parseInt4(line)
             val other = 2020 - num
-            if (isBitSet(numbers, other)) return@puzzleS num * other
+            if (isBitSet(numbers, other)) return@puzzleB num * other
             setBit(numbers, num)
         }
         0
@@ -99,7 +102,7 @@ fun registerAll() {
         }
         0
     }
-    puzzleS(1, "Part Two v2") {
+    puzzleB(1, "Part Two v2") {
         val numbers = LongArray(2048 shr 6)
         for (line in it) {
             val a = parseInt4(line)
@@ -107,7 +110,7 @@ fun registerAll() {
                 if (!isBitSet(numbers, b)) continue
                 val c = 2020 - a - b
                 if (c < 0) break
-                if (isBitSet(numbers, c)) return@puzzleS a * b * c
+                if (isBitSet(numbers, c)) return@puzzleB a * b * c
             }
             setBit(numbers, a)
         }
@@ -181,6 +184,77 @@ fun registerAll() {
         }
         valid
     }
+    puzzleS(3, "Toboggan Trajectory v1") {
+        var trees = 0
+        var x = 0
+        for (line in it) {
+            val tree = line[x % line.length] == '#'
+            if (tree )trees++
+            x += 3
+        }
+        trees
+    }
+    puzzleB(3, "Toboggan Trajectory v2") {
+        var trees = 0
+        var x = 0
+        val len = it[0].remaining()
+        for (line in it) {
+            val tree = line[x] == '#'.toByte()
+            if (tree) trees++
+            x = wrap(x + 3, len)
+        }
+        trees
+    }
+    puzzleS(3, "Part Two v1") {
+        val slopes = intArrayOf(1, 3, 5, 7, 1)
+        val step = intArrayOf(1, 1, 1, 1, 2)
+        val trees = LongArray(5)
+        val x = intArrayOf(0, 0, 0, 0, 0)
+        for ((lineCount, line) in it.withIndex()) {
+            for (i in 0..4) {
+                if (lineCount % step[i] == 0) {
+                    val tree = line[x[i] % line.length] == '#'
+                    if (tree) trees[i]++
+                    x[i] += slopes[i]
+                }
+            }
+        }
+        //trees.contentToString()
+        trees.reduce {a, b -> a * b}
+    }
+    puzzleB(3, "Part Two v2") {
+        var t0 = 0
+        var t1 = 0
+        var t2 = 0
+        var t3 = 0
+        var t4 = 0
+        var x0 = 0
+        var x1 = 0
+        var x2 = 0
+        var x3 = 0
+        var x4 = 0
+        val len = it[0].remaining()
+        for ((lineCount, line) in it.withIndex()) {
+            t0 += if (line[x0] == '#'.toByte()) 1 else 0
+            x0 = wrap(x0 + 1, len)
+            if (x0 >= len) x0 -= len
+            t1 += if (line[x1] == '#'.toByte()) 1 else 0
+            x1 = wrap(x1 + 3, len)
+            if (x1 >= len) x1 -= len
+            t2 += if (line[x2] == '#'.toByte()) 1 else 0
+            x2 = wrap(x2 + 5, len)
+            if (x2 >= len) x2 -= len
+            t3 += if (line[x3] == '#'.toByte()) 1 else 0
+            x3 = wrap(x3 + 7, len)
+            if (x3 >= len) x3 -= len
+            if (lineCount % 2 == 0) {
+                t4 += if (line[x4] == '#'.toByte()) 1 else 0
+                x4 = wrap(x4 + 1, len)
+                if (x4 >= len) x4 -= len
+            }
+        }
+        t0.toLong() * t1 * t2 * t3 * t4
+    }
 }
 
 
@@ -205,6 +279,8 @@ inline fun day2(line: ByteBuffer, predicate: (n1: Int, n2: Int, c: Byte, start: 
     return if (predicate.invoke(num1, num2, c, i + 3, len)) 1 else 0
 }
 
+inline fun wrap(x: Int, len: Int) = x - if (x >= len) len else 0
+
 const val RUNS = 1000
 const val WARMUP = 14
 const val MEASURE_ITERS = 10
@@ -213,10 +289,10 @@ const val BENCHMARK = true
 fun main() {
     registerAll()
     for ((day, puzzles) in dailyPuzzles) {
-        // if (day != 2) continue
+        if (day != 3) continue
         println("Day $day:")
         for (puzzle in puzzles) {
-            // if (!puzzle.getName().endsWith("v2")) continue
+            if (!puzzle.getName().endsWith("v2")) continue
             val input = puzzle.getRealInput()
             if (BENCHMARK) {
                 repeat(WARMUP) {
