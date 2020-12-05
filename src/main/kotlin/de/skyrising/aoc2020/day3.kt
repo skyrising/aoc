@@ -3,7 +3,7 @@ package de.skyrising.aoc2020
 class BenchmarkDay3 : BenchmarkDay(3)
 
 fun registerDay3() {
-    puzzleS(3, "Toboggan Trajectory v1") {
+    puzzleLS(3, "Toboggan Trajectory v1") {
         var trees = 0
         var x = 0
         for (line in it) {
@@ -13,7 +13,7 @@ fun registerDay3() {
         }
         trees
     }
-    puzzleB(3, "Toboggan Trajectory v2") {
+    puzzleLB(3, "Toboggan Trajectory v2") {
         var trees = 0
         var x = 0
         val len = it[0].remaining()
@@ -24,7 +24,7 @@ fun registerDay3() {
         }
         trees
     }
-    puzzleS(3, "Part Two v1") {
+    puzzleLS(3, "Part Two v1") {
         val slopes = intArrayOf(1, 3, 5, 7, 1)
         val step = intArrayOf(1, 1, 1, 1, 2)
         val trees = LongArray(5)
@@ -41,7 +41,7 @@ fun registerDay3() {
         //trees.contentToString()
         trees.reduce {a, b -> a * b}
     }
-    puzzleB(3, "Part Two v2") {
+    puzzleLB(3, "Part Two v2") {
         var t0 = 0
         var t1 = 0
         var t2 = 0

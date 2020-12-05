@@ -10,8 +10,8 @@ interface Puzzle<T> {
     fun getName(): String
     fun getDay(): Int
     fun getRealInput() = getInput(getDay())
-    fun generateInput(rand: Random): Pair<List<ByteBuffer>, T>?
-    fun runPuzzle(input: List<ByteBuffer>): T
+    fun generateInput(rand: Random): Pair<ByteBuffer, T>?
+    fun runPuzzle(input: ByteBuffer): T
 }
 
 val dailyPuzzles = TreeMap<Int, MutableList<Puzzle<*>>>()
@@ -24,23 +24,31 @@ fun register(puzzle: Puzzle<*>) {
 abstract class AbstractPuzzle<T>(private val day: Int, private val name: String) : Puzzle<T> {
     override fun getName() = name
     override fun getDay() = day
-    override fun generateInput(rand: Random): Pair<List<ByteBuffer>, T>? = null
+    override fun generateInput(rand: Random): Pair<ByteBuffer, T>? = null
 }
 
-inline fun <T> puzzleB(day: Int, name: String, crossinline run: (List<ByteBuffer>) -> T): Puzzle<T> {
+inline fun <T> puzzleB(day: Int, name: String, crossinline run: (ByteBuffer) -> T): Puzzle<T> {
     val p = object : AbstractPuzzle<T>(day, name) {
-        override fun runPuzzle(input: List<ByteBuffer>) = run(input)
+        override fun runPuzzle(input: ByteBuffer) = run(input)
     }
     register(p)
     return p
 }
 
-var lastInput: Pair<List<ByteBuffer>, List<String>>? = null
-inline fun <T> puzzleS(day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> {
+inline fun <T> puzzleLB(day: Int, name: String, crossinline run: (List<ByteBuffer>) -> T): Puzzle<T> {
     val p = object : AbstractPuzzle<T>(day, name) {
-        override fun runPuzzle(input: List<ByteBuffer>): T {
+        override fun runPuzzle(input: ByteBuffer) = run(lineList(input))
+    }
+    register(p)
+    return p
+}
+
+var lastInput: Pair<ByteBuffer, List<String>>? = null
+inline fun <T> puzzleLS(day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> {
+    val p = object : AbstractPuzzle<T>(day, name) {
+        override fun runPuzzle(input: ByteBuffer): T {
             if (lastInput == null || lastInput!!.first !== input) {
-                lastInput = Pair(input, input.map { StandardCharsets.US_ASCII.decode(it.slice()).toString() })
+                lastInput = Pair(input, lineList(input).map { StandardCharsets.US_ASCII.decode(it.slice()).toString() })
                 // println("Decoding ${System.identityHashCode(input)}")
             }
             return run(lastInput!!.second)

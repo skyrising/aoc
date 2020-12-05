@@ -5,14 +5,17 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.net.URL
 import java.nio.ByteBuffer
 
-val inputs: Int2ObjectMap<List<ByteBuffer>> = Int2ObjectOpenHashMap<List<ByteBuffer>>()
+val inputs: Int2ObjectMap<ByteBuffer> = Int2ObjectOpenHashMap<ByteBuffer>()
 
 fun getInput(day: Int) = inputs.computeIfAbsent(day, ::getInput0)
 
-private fun getInput0(day: Int): List<ByteBuffer> {
+private fun getInput0(day: Int): ByteBuffer {
     val connection = URL("https://adventofcode.com/2020/day/$day/input").openConnection()
     connection.addRequestProperty("Cookie", System.getenv("AOC_COOKIE"))
-    val buf = ByteBuffer.wrap(connection.getInputStream().readBytes())
+    return ByteBuffer.wrap(connection.getInputStream().readBytes())
+}
+
+fun lineList(buf: ByteBuffer): List<ByteBuffer> {
     var lineStart = 0
     var r = false
     val lines = mutableListOf<ByteBuffer>()

@@ -6,7 +6,7 @@ import java.util.regex.Pattern
 class BenchmarkDay2 : BenchmarkDay(2)
 
 fun registerDay2() {
-    puzzleS(2, "Password Philosophy v1") {
+    puzzleLS(2, "Password Philosophy v1") {
         val pattern = Pattern.compile("^(?<min>\\d+)-(?<max>\\d+) (?<char>.): (?<password>.*)$")
         var valid = 0
         outer@ for (line in it) {
@@ -30,7 +30,7 @@ fun registerDay2() {
         }
         valid
     }
-    puzzleB(2, "Password Philosophy v2") {
+    puzzleLB(2, "Password Philosophy v2") {
         var valid = 0
         for (line in it) {
             valid += day2(line) { min, max, c, start, end ->
@@ -46,7 +46,7 @@ fun registerDay2() {
         }
         valid
     }
-    puzzleS(2, "Part Two v1") {
+    puzzleLS(2, "Part Two v1") {
         val pattern = Pattern.compile("^(?<first>\\d+)-(?<second>\\d+) (?<char>.): (?<password>.*)$")
         var valid = 0
         for (line in it) {
@@ -65,7 +65,7 @@ fun registerDay2() {
         }
         valid
     }
-    puzzleB(2, "Part Two v2") {
+    puzzleLB(2, "Part Two v2") {
         var valid = 0
         for (line in it) {
             valid += day2(line) { first, second, c, start, _ ->
