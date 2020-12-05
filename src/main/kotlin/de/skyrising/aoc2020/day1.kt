@@ -13,15 +13,6 @@ fun parseInt4(s: ByteBuffer) = when (s.remaining()) {
     else -> throw IllegalArgumentException()
 }
 
-fun isBitSet(longs: LongArray, i: Int): Boolean {
-    return (longs[i shr 6] shr (i and 0x3f)) and 1 != 0L
-}
-
-fun setBit(longs: LongArray, i: Int) {
-    val idx = i shr 6
-    longs[idx] = longs[idx] or (1L shl (i and 0x3f))
-}
-
 fun registerDay1() {
     puzzleS(1, "Report Repair v1") {
         val numbers = IntOpenHashSet()

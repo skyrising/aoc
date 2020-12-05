@@ -75,3 +75,5 @@ fun registerDay3() {
         t0.toLong() * t1 * t2 * t3 * t4
     }
 }
+
+inline fun wrap(x: Int, len: Int) = x - if (x >= len) len else 0

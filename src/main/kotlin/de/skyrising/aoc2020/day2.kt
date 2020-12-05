@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import java.nio.ByteBuffer
 import java.util.regex.Pattern
 
 class BenchmarkDay2 : BenchmarkDay(2)
@@ -73,4 +74,25 @@ fun registerDay2() {
         }
         valid
     }
+}
+
+inline fun day2(line: ByteBuffer, predicate: (n1: Int, n2: Int, c: Byte, start: Int, end: Int) -> Boolean): Int {
+    val len = line.remaining()
+    var num1 = 0
+    var num2 = 0
+    var i = 0
+    while (i < len) {
+        val c = line[i++]
+        if (c == '-'.toByte()) break
+        num1 *= 10
+        num1 += c - '0'.toByte()
+    }
+    while (i < len) {
+        val c = line[i++]
+        if (c == ' '.toByte()) break
+        num2 *= 10
+        num2 += c - '0'.toByte()
+    }
+    val c = line[i]
+    return if (predicate.invoke(num1, num2, c, i + 3, len)) 1 else 0
 }

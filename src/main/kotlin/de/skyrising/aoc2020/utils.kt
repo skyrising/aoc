@@ -48,3 +48,12 @@ fun <T> measure(runs: Int, fn: () -> T?): Double {
     }
     return (System.nanoTime() - start) / (1000.0 * runs)
 }
+
+fun isBitSet(longs: LongArray, i: Int): Boolean {
+    return (longs[i shr 6] shr (i and 0x3f)) and 1 != 0L
+}
+
+fun setBit(longs: LongArray, i: Int) {
+    val idx = i shr 6
+    longs[idx] = longs[idx] or (1L shl (i and 0x3f))
+}

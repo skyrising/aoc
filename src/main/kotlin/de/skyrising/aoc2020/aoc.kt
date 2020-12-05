@@ -58,31 +58,8 @@ fun registerAll() {
     registerDay2()
     registerDay3()
     registerDay4()
+    registerDay5()
 }
-
-
-inline fun day2(line: ByteBuffer, predicate: (n1: Int, n2: Int, c: Byte, start: Int, end: Int) -> Boolean): Int {
-    val len = line.remaining()
-    var num1 = 0
-    var num2 = 0
-    var i = 0
-    while (i < len) {
-        val c = line[i++]
-        if (c == '-'.toByte()) break
-        num1 *= 10
-        num1 += c - '0'.toByte()
-    }
-    while (i < len) {
-        val c = line[i++]
-        if (c == ' '.toByte()) break
-        num2 *= 10
-        num2 += c - '0'.toByte()
-    }
-    val c = line[i]
-    return if (predicate.invoke(num1, num2, c, i + 3, len)) 1 else 0
-}
-
-inline fun wrap(x: Int, len: Int) = x - if (x >= len) len else 0
 
 const val RUNS = 1000
 const val WARMUP = 14
@@ -92,7 +69,7 @@ const val BENCHMARK = true
 fun main() {
     registerAll()
     for ((day, puzzles) in dailyPuzzles) {
-        // if (day != 4) continue
+        if (day != 5) continue
         println("Day $day:")
         for (puzzle in puzzles) {
             // if (!puzzle.getName().endsWith("v2")) continue
