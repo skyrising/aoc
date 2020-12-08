@@ -19,8 +19,7 @@ private fun readMap(lines: List<String>): Map<String, Set<Pair<String, Int>>> {
     return map
 }
 
-private fun readGraph(lines: List<String>): Graph<String, Int> {
-    val graph = Graph<String, Int>()
+private fun readGraph(lines: List<String>) = Graph.build<String, Nothing?> {
     for (line in lines) {
         val (bags, contain) = line.split(" bags contain ")
         if (contain.startsWith("no other")) continue
@@ -29,10 +28,9 @@ private fun readGraph(lines: List<String>): Graph<String, Int> {
             val space = containItem.indexOf(' ')
             val num = containItem.substring(0, space)
             val type = containItem.substring(space + 1, containItem.indexOf(" bag"))
-            graph.addEdge(bags, type, num.toInt())
+            edge(bags, type, num.toInt(), null)
         }
     }
-    return graph
 }
 
 fun registerDay7() {
@@ -67,7 +65,7 @@ fun registerDay7() {
             count = set.size
             val newSet = mutableSetOf<String>()
             for (v in set) {
-                for ((from, _, _) in graph.getIncoming(v)) {
+                for ((from, _, weight, _) in graph.getIncoming(v)) {
                     newSet.add(from.value)
                 }
             }
@@ -91,7 +89,7 @@ fun registerDay7() {
         val graph = readGraph(it)
         fun getContained(type: Vertex<String>): Int {
             var sum = 1
-            for ((_, contained, num) in graph.getOutgoing(type)) {
+            for ((_, contained, num, _) in graph.getOutgoing(type)) {
                 sum += num * getContained(contained)
             }
             return sum
