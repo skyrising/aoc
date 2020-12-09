@@ -8,6 +8,8 @@ class Graph<V, E> {
     private val outgoing = mutableMapOf<Vertex<V>, MutableSet<Edge<V, E?>>>()
     private val incoming = mutableMapOf<Vertex<V>, MutableSet<Edge<V, E?>>>()
 
+    val size: Int get() = vertexes.size
+
     fun vertex(value: V) = vertex(Vertex(value))
     fun vertex(v: Vertex<V>): Vertex<V> {
         vertexes[v.value] = v
@@ -42,7 +44,9 @@ class Graph<V, E> {
         val inc = mutableMapOf<Vertex<V>, Edge<V, E?>>()
         val dist = mutableMapOf<Vertex<V>, Int>()
         dist[from] = 0
+        var steps = 0
         while (unvisited.isNotEmpty()) {
+            steps++
             val current = lowest(unvisited, dist)!!
             if (current == to || current !in unvisited) break
             val curDist = dist[current]!!
@@ -57,6 +61,7 @@ class Graph<V, E> {
                 }
             }
         }
+        // println("$steps steps")
         return buildPath(from, to, inc)
     }
 

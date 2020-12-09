@@ -28,3 +28,21 @@ abstract class BenchmarkDay(day: Int) {
     @Benchmark
     fun part2v2() = p2v2.runPuzzle(input)
 }
+
+@State(Scope.Thread)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+abstract class BenchmarkDayV1(day: Int) {
+    init {
+        registerAll()
+    }
+    private val input = getInput(day)
+    private val p1v1 = dailyPuzzles[day]!![0]
+    private val p2v1 = dailyPuzzles[day]!![1]
+
+    @Benchmark
+    fun part1v1() = p1v1.runPuzzle(input)
+
+    @Benchmark
+    fun part2v1() = p2v1.runPuzzle(input)
+}
