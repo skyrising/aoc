@@ -65,6 +65,23 @@ class Graph<V, E> {
         return buildPath(from, to, inc)
     }
 
+    fun countPaths(from: Vertex<V>, to: Vertex<V>) = countPaths(from, to, mutableMapOf())
+
+    private fun countPaths(from: Vertex<V>, to: Vertex<V>, cache: MutableMap<Vertex<V>, Long>): Long {
+        if (from == to) return 1
+        val known = cache[to]
+        if (known != null) return known
+        var count = 0L
+        for ((n, _, _, _) in getIncoming(to)) {
+            val x = countPaths(from, n, cache)
+            count += x
+            // println("${from.value} to ${to.value} via ${n.value}: $x")
+        }
+        cache[to] = count
+        // println("${from.value} to ${to.value}: $count")
+        return count
+    }
+
     override fun toString(): String {
         val sb = StringBuilder()
         for (v in vertexes.values) {

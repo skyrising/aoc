@@ -3,7 +3,7 @@ package de.skyrising.aoc2020
 import it.unimi.dsi.fastutil.HashCommon
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 
-class BenchmarkDay9 : BenchmarkDayV1(9)
+class BenchmarkDay9 : BenchmarkDay(9)
 
 fun registerDay9() {
     val test = """
