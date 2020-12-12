@@ -73,6 +73,7 @@ fun registerAll() {
     registerDay9()
     registerDay10()
     registerDay11()
+    registerDay12()
 }
 
 const val RUNS = 1000
@@ -83,7 +84,7 @@ const val BENCHMARK = true
 fun main() {
     registerAll()
     for ((day, puzzles) in dailyPuzzles) {
-        if (day != 11) continue
+        if (day != 12) continue
         println("Day $day:")
         for (puzzle in puzzles) {
             // if (!puzzle.getName().endsWith("v2")) continue
