@@ -1,6 +1,7 @@
 package de.skyrising.aoc2020
 
 import java.nio.ByteBuffer
+import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
 import java.util.*
 import kotlin.math.sqrt
@@ -35,24 +36,40 @@ inline fun <T> puzzleB(day: Int, name: String, crossinline run: (ByteBuffer) -> 
     return p
 }
 
+inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer, T>?>, noinline fn: (ByteBuffer) -> T): T {
+    val value = lastInput.value
+    if (value == null || value.first !== input) {
+        val result = fn(input)
+        lastInput.value = Pair(input, result)
+        return result
+    }
+    return value.second
+}
+
+var lastInputLB = MutableBox<Pair<ByteBuffer, List<ByteBuffer>>?>(null)
 inline fun <T> puzzleLB(day: Int, name: String, crossinline run: (List<ByteBuffer>) -> T): Puzzle<T> {
     val p = object : AbstractPuzzle<T>(day, name) {
-        override fun runPuzzle(input: ByteBuffer) = run(lineList(input))
+        override fun runPuzzle(input: ByteBuffer) = run(getInput(input, lastInputLB, ::lineList))
     }
     register(p)
     return p
 }
 
-var lastInput: Pair<ByteBuffer, List<String>>? = null
+var lastInputS = MutableBox<Pair<ByteBuffer, CharBuffer>?>(null)
+fun calcInputS(input: ByteBuffer): CharBuffer = StandardCharsets.US_ASCII.decode(input.slice())
+inline fun <T> puzzleS(day: Int, name: String, crossinline run: (CharBuffer) -> T): Puzzle<T> {
+    val p = object : AbstractPuzzle<T>(day, name) {
+        override fun runPuzzle(input: ByteBuffer) = run(getInput(input, lastInputS, ::calcInputS).slice())
+    }
+    register(p)
+    return p
+}
+
+var lastInputLS = MutableBox<Pair<ByteBuffer, List<String>>?>(null)
+fun calcInputLS(input: ByteBuffer) = lineList(input).map { StandardCharsets.US_ASCII.decode(it.slice()).toString() }
 inline fun <T> puzzleLS(day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> {
     val p = object : AbstractPuzzle<T>(day, name) {
-        override fun runPuzzle(input: ByteBuffer): T {
-            if (lastInput == null || lastInput!!.first !== input) {
-                lastInput = Pair(input, lineList(input).map { StandardCharsets.US_ASCII.decode(it.slice()).toString() })
-                // println("Decoding ${System.identityHashCode(input)}")
-            }
-            return run(lastInput!!.second)
-        }
+        override fun runPuzzle(input: ByteBuffer) = run(getInput(input, lastInputLS, ::calcInputLS))
     }
     register(p)
     return p
@@ -74,17 +91,18 @@ fun registerAll() {
     registerDay10()
     registerDay11()
     registerDay12()
+    registerDay13()
 }
 
 const val RUNS = 1000
 const val WARMUP = 14
 const val MEASURE_ITERS = 10
-const val BENCHMARK = true
+const val BENCHMARK = false
 
 fun main() {
     registerAll()
     for ((day, puzzles) in dailyPuzzles) {
-        if (day != 12) continue
+        if (day != 13) continue
         println("Day $day:")
         for (puzzle in puzzles) {
             // if (!puzzle.getName().endsWith("v2")) continue
