@@ -93,6 +93,7 @@ fun registerAll() {
     registerDay12()
     registerDay13()
     registerDay14()
+    registerDay15()
 }
 
 const val RUNS = 1000
@@ -103,10 +104,11 @@ const val BENCHMARK = true
 fun main() {
     registerAll()
     for ((day, puzzles) in dailyPuzzles) {
-        if (day != 14) continue
+        if (day != 15) continue
         println("Day $day:")
         for (puzzle in puzzles) {
-            if (!puzzle.getName().endsWith("v2")) continue
+            // if (!puzzle.getName().endsWith("v2")) continue
+            // if (puzzle.getName().startsWith("Part 2")) continue
             val input = puzzle.getRealInput()
             if (BENCHMARK) {
                 repeat(WARMUP) {
@@ -117,16 +119,20 @@ fun main() {
                 }
                 val avg = times.average()
                 val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
-                println(String.format(Locale.ROOT, "%-22s: %15s, %8.3f ± %6.3fµs",
+                println(String.format(Locale.ROOT, "%-26s: %15s, %11.3f ± %6.3fµs",
                     puzzle.getName(),
                     puzzle.runPuzzle(input),
                     avg,
                     stddev
                 ))
             } else {
-                println(String.format(Locale.ROOT, "%-22s: %s",
+                val start = System.nanoTime()
+                val result = puzzle.runPuzzle(input)
+                val time = (System.nanoTime() - start) / 1000.0
+                println(String.format(Locale.ROOT, "%-26s: %15s, %11.3f ± ???µs",
                     puzzle.getName(),
-                    puzzle.runPuzzle(input)
+                    result,
+                    time
                 ))
             }
         }
