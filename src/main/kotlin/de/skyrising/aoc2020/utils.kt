@@ -101,4 +101,24 @@ fun CharBuffer.until(delimiter: Char): Boolean {
     return false
 }
 
+fun ByteBuffer.positionAfter(delimiter: Byte): Boolean {
+    for (i in position() until limit()) {
+        if (this.get(i) == delimiter) {
+            this.position(i + 1)
+            return true
+        }
+    }
+    return false
+}
+
+fun ByteBuffer.until(delimiter: Byte): Boolean {
+    for (i in position() until limit()) {
+        if (this.get(i) == delimiter) {
+            this.limit(i)
+            return true
+        }
+    }
+    return false
+}
+
 class MutableBox<T>(var value: T)

@@ -92,20 +92,21 @@ fun registerAll() {
     registerDay11()
     registerDay12()
     registerDay13()
+    registerDay14()
 }
 
 const val RUNS = 1000
 const val WARMUP = 14
 const val MEASURE_ITERS = 10
-const val BENCHMARK = false
+const val BENCHMARK = true
 
 fun main() {
     registerAll()
     for ((day, puzzles) in dailyPuzzles) {
-        if (day != 13) continue
+        if (day != 14) continue
         println("Day $day:")
         for (puzzle in puzzles) {
-            // if (!puzzle.getName().endsWith("v2")) continue
+            if (!puzzle.getName().endsWith("v2")) continue
             val input = puzzle.getRealInput()
             if (BENCHMARK) {
                 repeat(WARMUP) {
