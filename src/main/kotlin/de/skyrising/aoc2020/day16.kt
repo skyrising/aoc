@@ -3,13 +3,12 @@ package de.skyrising.aoc2020
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.ObjectArraySet
-import java.nio.ByteBuffer
 import java.util.*
 import kotlin.collections.HashSet
 
 class BenchmarkDay16 : BenchmarkDay(16)
 
-fun parseInput(input: List<String>, v2: Boolean = false): Triple<Map<String, Set<IntRange>>, IntList, MutableList<IntList>> {
+private fun parseInput(input: List<String>, v2: Boolean = false): Triple<Map<String, Set<IntRange>>, IntList, MutableList<IntList>> {
     val classes = mutableMapOf<String, Set<IntRange>>()
     var state = 0
     val yourTicket = IntArrayList()
@@ -46,7 +45,8 @@ fun parseInput(input: List<String>, v2: Boolean = false): Triple<Map<String, Set
     return Triple(classes, yourTicket, nearby)
 }
 
-fun parseInputV2(input: List<ByteBuffer>): Triple<Map<String, Set<IntRange>>, IntList, List<IntList>> {
+/*
+private fun parseInputV2(input: List<ByteBuffer>): Triple<Map<String, Set<IntRange>>, IntList, List<IntList>> {
     val classes = mutableMapOf<String, Set<IntRange>>()
     var state = 0
     val yourTicket = IntArrayList()
@@ -93,6 +93,7 @@ fun parseInputV2(input: List<ByteBuffer>): Triple<Map<String, Set<IntRange>>, In
     }
     return Triple(classes, yourTicket, nearby)
 }
+*/
 
 fun mergeRanges(ranges: Collection<IntRange>): Set<IntRange> {
     val arr: Array<IntRange?> = ranges.toTypedArray()

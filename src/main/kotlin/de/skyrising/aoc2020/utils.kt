@@ -64,6 +64,16 @@ fun setBit(longs: LongArray, i: Int) {
     longs[idx] = longs[idx] or (1L shl (i and 0x3f))
 }
 
+fun setBit(longs: LongArray, i: Int, value: Boolean) {
+    val idx = i shr 6
+    val bits = (1L shl (i and 0x3f))
+    if (value) {
+        longs[idx] = longs[idx] or bits
+    } else {
+        longs[idx] = longs[idx] and bits.inv()
+    }
+}
+
 inline fun splitToRanges(s: CharBuffer, delimiter: Char, consumer: CharBuffer.(from: Int, to: Int) -> Unit) {
     val len = s.length
     var offset = 0
