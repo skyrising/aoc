@@ -3,8 +3,10 @@ package de.skyrising.aoc2020
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.net.URL
+import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
+import java.nio.charset.Charset
 
 val inputs: Int2ObjectMap<ByteBuffer> = Int2ObjectOpenHashMap<ByteBuffer>()
 
@@ -120,5 +122,18 @@ fun ByteBuffer.until(delimiter: Byte): Boolean {
     }
     return false
 }
+
+fun <T : Buffer> T.unflip(): T {
+    position(limit())
+    limit(capacity())
+    return this
+}
+
+fun <T : Buffer> T.inc(amount: Int = 1): T {
+    position(position() + amount)
+    return this
+}
+
+fun ByteBuffer.toString(charset: Charset) = charset.decode(slice()).toString()
 
 class MutableBox<T>(var value: T)

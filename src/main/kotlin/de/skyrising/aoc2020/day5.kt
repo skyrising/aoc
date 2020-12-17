@@ -1,9 +1,6 @@
 package de.skyrising.aoc2020
 
-import jdk.incubator.vector.ByteVector
-import jdk.incubator.vector.VectorShuffle
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 class BenchmarkDay5 : BenchmarkDay(5)
 
@@ -27,6 +24,7 @@ fun seatId(b: ByteBuffer, offset: Int): Int {
     return ((firstBits shl 2).toInt() or secondBits) xor 7
 }
 
+/*
 fun seatIdVector(b: ByteBuffer, offset: Int): Int {
     val vecFFFFFFFRRR = ByteVector.fromArray(ByteVector.SPECIES_128, byteArrayOf(
         0, 0, 0, 0,
@@ -45,6 +43,7 @@ fun seatIdVector(b: ByteBuffer, offset: Int): Int {
     //println(vec.toArray()!!.contentToString())
     return ((vec.rearrange(vecShuffle).lt(vecFFFFFFFRRR).toLong() shr 6).toInt() xor 7) and 0x3ff
 }
+*/
 
 fun registerDay5() {
     //println(seatId(ByteBuffer.wrap("BFFFBBFRRR".toByteArray()), 0))
@@ -62,6 +61,7 @@ fun registerDay5() {
         }
         highest
     }
+    /*
     puzzleB(5, "Binary Boarding v3") {
         var highest = 0
         for (i in 0 until it.remaining() step 11) {
@@ -69,6 +69,7 @@ fun registerDay5() {
         }
         highest
     }
+    */
     puzzleLS(5, "Part Two v1") {
         var highest = 0
         var lowest = 1 shl 10
@@ -99,6 +100,7 @@ fun registerDay5() {
         }
         -1
     }
+    /*
     puzzleB(5, "Part Two v3") {
         var highest = 0
         var lowest = 1 shl 10
@@ -114,4 +116,5 @@ fun registerDay5() {
         }
         -1
     }
+    */
 }
