@@ -5,7 +5,7 @@ import kotlin.collections.ArrayList
 
 class BenchmarkDay22 : BenchmarkDayV1(22)
 
-fun readInput(input: List<String>): Map<Int, LinkedList<Int>> {
+private fun readInput(input: List<String>): Map<Int, LinkedList<Int>> {
     val map = mutableMapOf<Int, LinkedList<Int>>()
     var current = LinkedList<Int>()
     var id = -1
@@ -28,7 +28,7 @@ fun readInput(input: List<String>): Map<Int, LinkedList<Int>> {
     return map
 }
 
-fun round(a: LinkedList<Int>, b: LinkedList<Int>): Boolean {
+private fun round(a: LinkedList<Int>, b: LinkedList<Int>): Boolean {
     if (a.isEmpty() || b.isEmpty()) return true
     val a0 = a.poll()
     val b0 = b.poll()
@@ -49,7 +49,7 @@ fun round(a: LinkedList<Int>, b: LinkedList<Int>): Boolean {
     return a.isEmpty() || b.isEmpty()
 }
 
-fun gameRecursive(p1: LinkedList<Int>, p2: LinkedList<Int>): Int {
+private fun gameRecursive(p1: LinkedList<Int>, p2: LinkedList<Int>): Int {
     val previous = mutableSetOf<Pair<List<Int>, List<Int>>>()
     while (true) {
         val result = roundRecursive(p1, p2, previous)
@@ -57,7 +57,7 @@ fun gameRecursive(p1: LinkedList<Int>, p2: LinkedList<Int>): Int {
     }
 }
 
-fun roundRecursive(p1: LinkedList<Int>, p2: LinkedList<Int>, previous: MutableSet<Pair<List<Int>, List<Int>>>): Int {
+private fun roundRecursive(p1: LinkedList<Int>, p2: LinkedList<Int>, previous: MutableSet<Pair<List<Int>, List<Int>>>): Int {
     if (previous.contains(Pair(p1, p2))) return 1
     previous.add(Pair(ArrayList(p1), ArrayList(p2)))
     val a = p1.poll()
