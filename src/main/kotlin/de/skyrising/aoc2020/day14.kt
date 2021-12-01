@@ -1,5 +1,7 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.positionAfter
+import de.skyrising.aoc.until
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
 import java.nio.ByteBuffer

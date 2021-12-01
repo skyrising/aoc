@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.Graph
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 
 class BenchmarkDay10 : BenchmarkDayV1(10)

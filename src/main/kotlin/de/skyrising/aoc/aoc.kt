@@ -1,5 +1,7 @@
-package de.skyrising.aoc2020
+package de.skyrising.aoc
 
+import de.skyrising.aoc2020.register2020
+import de.skyrising.aoc2021.register2021
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
@@ -9,8 +11,9 @@ import kotlin.random.Random
 
 interface Puzzle<T> {
     fun getName(): String
+    fun getYear(): Int
     fun getDay(): Int
-    fun getRealInput() = getInput(getDay())
+    fun getRealInput() = getInput(getYear(), getDay())
     fun generateInput(rand: Random): Pair<ByteBuffer, T>?
     fun runPuzzle(input: ByteBuffer): T
 }
@@ -22,14 +25,15 @@ fun register(puzzle: Puzzle<*>) {
 }
 
 @Suppress("LeakingThis")
-abstract class AbstractPuzzle<T>(private val day: Int, private val name: String) : Puzzle<T> {
+abstract class AbstractPuzzle<T>(private val year: Int, private val day: Int, private val name: String) : Puzzle<T> {
     override fun getName() = name
+    override fun getYear() = year
     override fun getDay() = day
     override fun generateInput(rand: Random): Pair<ByteBuffer, T>? = null
 }
 
-inline fun <T> puzzleB(day: Int, name: String, crossinline run: (ByteBuffer) -> T): Puzzle<T> {
-    val p = object : AbstractPuzzle<T>(day, name) {
+inline fun <T> puzzleB(year: Int, day: Int, name: String, crossinline run: (ByteBuffer) -> T): Puzzle<T> {
+    val p = object : AbstractPuzzle<T>(year, day, name) {
         override fun runPuzzle(input: ByteBuffer) = run(input)
     }
     register(p)
@@ -47,8 +51,8 @@ inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer
 }
 
 var lastInputLB = MutableBox<Pair<ByteBuffer, List<ByteBuffer>>?>(null)
-inline fun <T> puzzleLB(day: Int, name: String, crossinline run: (List<ByteBuffer>) -> T): Puzzle<T> {
-    val p = object : AbstractPuzzle<T>(day, name) {
+inline fun <T> puzzleLB(year: Int, day: Int, name: String, crossinline run: (List<ByteBuffer>) -> T): Puzzle<T> {
+    val p = object : AbstractPuzzle<T>(year, day, name) {
         override fun runPuzzle(input: ByteBuffer) = run(getInput(input, lastInputLB, ::lineList))
     }
     register(p)
@@ -57,8 +61,8 @@ inline fun <T> puzzleLB(day: Int, name: String, crossinline run: (List<ByteBuffe
 
 var lastInputS = MutableBox<Pair<ByteBuffer, CharBuffer>?>(null)
 fun calcInputS(input: ByteBuffer): CharBuffer = StandardCharsets.US_ASCII.decode(input.slice())
-inline fun <T> puzzleS(day: Int, name: String, crossinline run: (CharBuffer) -> T): Puzzle<T> {
-    val p = object : AbstractPuzzle<T>(day, name) {
+inline fun <T> puzzleS(year: Int, day: Int, name: String, crossinline run: (CharBuffer) -> T): Puzzle<T> {
+    val p = object : AbstractPuzzle<T>(year, day, name) {
         override fun runPuzzle(input: ByteBuffer) = run(getInput(input, lastInputS, ::calcInputS).slice())
     }
     register(p)
@@ -67,8 +71,8 @@ inline fun <T> puzzleS(day: Int, name: String, crossinline run: (CharBuffer) -> 
 
 var lastInputLS = MutableBox<Pair<ByteBuffer, List<String>>?>(null)
 fun calcInputLS(input: ByteBuffer) = lineList(input).map { StandardCharsets.US_ASCII.decode(it.slice()).toString() }
-inline fun <T> puzzleLS(day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> {
-    val p = object : AbstractPuzzle<T>(day, name) {
+inline fun <T> puzzleLS(year: Int, day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> {
+    val p = object : AbstractPuzzle<T>(year, day, name) {
         override fun runPuzzle(input: ByteBuffer) = run(getInput(input, lastInputLS, ::calcInputLS))
     }
     register(p)
@@ -76,34 +80,14 @@ inline fun <T> puzzleLS(day: Int, name: String, crossinline run: (List<String>) 
 }
 
 private var registeredAll = false
-fun registerAll() {
+fun registerAll(year: Int = 2021) {
     if (registeredAll) return
     registeredAll = true
-    registerDay1()
-    registerDay2()
-    registerDay3()
-    registerDay4()
-    registerDay5()
-    registerDay6()
-    registerDay7()
-    registerDay8()
-    registerDay9()
-    registerDay10()
-    registerDay11()
-    registerDay12()
-    registerDay13()
-    registerDay14()
-    registerDay15()
-    registerDay16()
-    registerDay17()
-    registerDay18()
-    registerDay19()
-    registerDay20()
-    registerDay21()
-    registerDay22()
-    registerDay23()
-    registerDay24()
-    registerDay25()
+    when (year) {
+        2020 -> register2020()
+        2021 -> register2021()
+        else -> throw IllegalArgumentException()
+    }
 }
 
 const val RUNS = 100
@@ -111,10 +95,13 @@ const val WARMUP = 14
 const val MEASURE_ITERS = 10
 const val BENCHMARK = false
 
-fun main() {
-    registerAll()
+fun main(args: Array<String>) {
+    if (args.isNotEmpty()) {
+        registerAll(args[0].toInt())
+    } else {
+        registerAll(2021)
+    }
     for ((day, puzzles) in dailyPuzzles) {
-        if (day != 14) continue
         println("Day $day:")
         for (puzzle in puzzles) {
             // if (!puzzle.getName().endsWith("v2")) continue

@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.Graph
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 
 class BenchmarkDay8 : BenchmarkDayV1(8)

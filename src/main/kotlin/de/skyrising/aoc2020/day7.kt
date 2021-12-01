@@ -1,5 +1,8 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.Graph
+import de.skyrising.aoc.Vertex
+
 class BenchmarkDay7 : BenchmarkDay(7)
 
 private fun readMap(lines: List<String>): Map<String, Set<Pair<String, Int>>> {

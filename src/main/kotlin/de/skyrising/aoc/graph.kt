@@ -1,7 +1,6 @@
-package de.skyrising.aoc2020
+package de.skyrising.aoc
 
 import java.util.*
-import kotlin.collections.HashSet
 
 class Graph<V, E> {
     private val vertexes = mutableMapOf<V, Vertex<V>>()

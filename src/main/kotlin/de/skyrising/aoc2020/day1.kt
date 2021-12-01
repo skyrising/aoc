@@ -1,5 +1,7 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.isBitSet
+import de.skyrising.aoc.setBit
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import java.nio.ByteBuffer
 

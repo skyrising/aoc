@@ -1,5 +1,6 @@
-package de.skyrising.aoc2020
+package de.skyrising.aoc
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.net.URL
@@ -8,9 +9,13 @@ import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.Charset
 
-val inputs: Int2ObjectMap<ByteBuffer> = Int2ObjectOpenHashMap<ByteBuffer>()
+val inputs: Int2ObjectMap<Int2ObjectMap<ByteBuffer>> = Int2ObjectOpenHashMap()
 
-fun getInput(day: Int) = inputs.computeIfAbsent(day, ::getInput0)
+fun getInput(year: Int, day: Int): ByteBuffer = inputs.computeIfAbsent(year, Int2ObjectFunction {
+    Int2ObjectOpenHashMap()
+}).computeIfAbsent(day, Int2ObjectFunction {
+    getInput0(it)
+})
 
 private fun getInput0(day: Int): ByteBuffer {
     val connection = URL("https://adventofcode.com/2020/day/$day/input").openConnection()
