@@ -14,11 +14,11 @@ val inputs: Int2ObjectMap<Int2ObjectMap<ByteBuffer>> = Int2ObjectOpenHashMap()
 fun getInput(year: Int, day: Int): ByteBuffer = inputs.computeIfAbsent(year, Int2ObjectFunction {
     Int2ObjectOpenHashMap()
 }).computeIfAbsent(day, Int2ObjectFunction {
-    getInput0(it)
+    getInput0(year, it)
 })
 
-private fun getInput0(day: Int): ByteBuffer {
-    val connection = URL("https://adventofcode.com/2020/day/$day/input").openConnection()
+private fun getInput0(year: Int, day: Int): ByteBuffer {
+    val connection = URL("https://adventofcode.com/${year}/day/$day/input").openConnection()
     connection.addRequestProperty("Cookie", System.getenv("AOC_COOKIE"))
     return ByteBuffer.wrap(connection.getInputStream().readBytes()).asReadOnlyBuffer()
 }

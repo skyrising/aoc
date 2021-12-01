@@ -101,7 +101,12 @@ fun main(args: Array<String>) {
     } else {
         registerAll(2021)
     }
-    for ((day, puzzles) in dailyPuzzles) {
+    val puzzlesToRun = if (args.size > 1) {
+        mapOf(args[1].toInt() to dailyPuzzles[args[1].toInt()]!!)
+    } else {
+        dailyPuzzles
+    }
+    for ((day, puzzles) in puzzlesToRun) {
         println("Day $day:")
         for (puzzle in puzzles) {
             // if (!puzzle.getName().endsWith("v2")) continue
