@@ -93,7 +93,7 @@ fun registerAll(year: Int = 2021) {
 const val RUNS = 100
 const val WARMUP = 14
 const val MEASURE_ITERS = 10
-const val BENCHMARK = false
+const val BENCHMARK = true
 
 fun main(args: Array<String>) {
     if (args.isNotEmpty()) {

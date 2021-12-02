@@ -10,5 +10,5 @@ inline fun <T> puzzleS(day: Int, name: String, crossinline run: (CharBuffer) -> 
 inline fun <T> puzzleLS(day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> = de.skyrising.aoc.puzzleLS(2021, day, name, run)
 
 fun register2021() {
-
+    registerDay1()
 }
