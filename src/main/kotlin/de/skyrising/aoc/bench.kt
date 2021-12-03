@@ -8,13 +8,13 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 abstract class BenchmarkDay(year: Int, day: Int) {
     init {
-        registerAll(year)
+        registerAll()
     }
     private val input = getInput(year, day)
-    private val p1v1 = dailyPuzzles[day]!![0]
-    private val p1v2 = dailyPuzzles[day]!![1]
-    private val p2v1 = dailyPuzzles[day]!![2]
-    private val p2v2 = dailyPuzzles[day]!![3]
+    private val p1v1 = allPuzzles[year]!![day]!![0]
+    private val p1v2 = allPuzzles[year]!![day]!![1]
+    private val p2v1 = allPuzzles[year]!![day]!![2]
+    private val p2v2 = allPuzzles[year]!![day]!![3]
 
     @Benchmark
     fun part1v1() = p1v1.runPuzzle(input)
@@ -34,11 +34,11 @@ abstract class BenchmarkDay(year: Int, day: Int) {
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 abstract class BenchmarkDayV1(year: Int, day: Int) {
     init {
-        registerAll(year)
+        registerAll()
     }
     private val input = getInput(year, day)
-    private val p1v1 = dailyPuzzles[day]!![0]
-    private val p2v1 = dailyPuzzles[day]!![1]
+    private val p1v1 = allPuzzles[year]!![day]!![0]
+    private val p2v1 = allPuzzles[year]!![day]!![1]
 
     @Benchmark
     fun part1v1() = p1v1.runPuzzle(input)
