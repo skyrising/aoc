@@ -24,7 +24,7 @@ interface Puzzle<T> : Comparable<Puzzle<T>> {
         val dayCmp = getDay().compareTo(other.getDay())
         if (dayCmp != 0) return dayCmp
         val part = if (getName() == "Part Two") 2 else 1
-        val otherPart = if (getName() == "Part Two") 2 else 1
+        val otherPart = if (other.getName() == "Part Two") 2 else 1
         if (part != otherPart) return part - otherPart
         return getName().compareTo(other.getName())
     }
@@ -42,6 +42,7 @@ abstract class AbstractPuzzle<T>(private val year: Int, private val day: Int, pr
     override fun getYear() = year
     override fun getDay() = day
     override fun generateInput(rand: Random): Pair<ByteBuffer, T>? = null
+    override fun toString() = "Puzzle(year=$year,day=$day,name=$name})"
 }
 
 inline fun <T> puzzleB(year: Int, day: Int, name: String, crossinline run: (ByteBuffer) -> T): Puzzle<T> {
@@ -128,6 +129,7 @@ fun main(args: Array<String>) {
             }
         }
     }
+    println(puzzlesToRun)
     var year: Int? = null
     var day: Int? = null
     for (puzzle in puzzlesToRun) {
