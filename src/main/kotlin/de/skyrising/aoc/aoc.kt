@@ -101,8 +101,8 @@ fun registerAll() {
     register2021()
 }
 
-const val RUNS = 100
-const val WARMUP = 14
+const val RUNS = 10
+const val WARMUP = 5
 const val MEASURE_ITERS = 10
 const val BENCHMARK = false
 
@@ -129,7 +129,6 @@ fun main(args: Array<String>) {
             }
         }
     }
-    println(puzzlesToRun)
     var year: Int? = null
     var day: Int? = null
     for (puzzle in puzzlesToRun) {

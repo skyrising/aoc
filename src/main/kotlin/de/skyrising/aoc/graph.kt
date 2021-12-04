@@ -9,6 +9,8 @@ class Graph<V, E> {
 
     val size: Int get() = vertexes.size
 
+    fun getVertexes(): Set<Vertex<V>> = LinkedHashSet(vertexes.values)
+
     fun vertex(value: V) = vertex(Vertex(value))
     fun vertex(v: Vertex<V>): Vertex<V> {
         vertexes[v.value] = v
@@ -54,7 +56,7 @@ class Graph<V, E> {
                 val v = e.to
                 if (!unvisited.contains(v)) continue
                 val alt = curDist + e.weight
-                if (alt < dist[v] ?: Integer.MAX_VALUE) {
+                if (alt < (dist[v] ?: Integer.MAX_VALUE)) {
                     dist[v] = alt
                     inc[v] = e
                 }
@@ -62,6 +64,33 @@ class Graph<V, E> {
         }
         // println("$steps steps")
         return buildPath(from, to, inc)
+    }
+
+    fun tsp(): List<Edge<V, E?>>? {
+        val vertexList = vertexes.values.toList()
+        return tspBruteForce(vertexList[0], setOf(vertexList[0]), vertexList[0])?.first
+    }
+
+    private fun tspBruteForce(from: Vertex<V>, invalid: Set<Vertex<V>>, first: Vertex<V>): Pair<List<Edge<V, E?>>, Int>? {
+        if (invalid.size == vertexes.size) {
+            val e = outgoing[from]?.find { it.to == first }
+            return e?.let { listOf(it) to it.weight }
+        }
+        var length: Int? = null
+        var path: List<Edge<V, E?>>? = null
+        for (edge in outgoing[from] ?: listOf()) {
+            if (edge.to in invalid) continue
+            val newInvalid = HashSet(invalid)
+            newInvalid.add(edge.to)
+            val (newPath, newLength) = tspBruteForce(edge.to, newInvalid, first) ?: continue
+            if (length == null || newLength + edge.weight < length) {
+                length = newLength + edge.weight
+                path = mutableListOf()
+                path.add(edge)
+                path.addAll(newPath)
+            }
+        }
+        return if (length != null) path!! to length else null
     }
 
     fun countPaths(from: Vertex<V>, to: Vertex<V>) = countPaths(from, to, mutableMapOf())
@@ -108,7 +137,7 @@ class Graph<V, E> {
 private fun <V> lowest(unvisited: Collection<Vertex<V>>, map: Map<Vertex<V>, Int>): Vertex<V>? {
     var lowest: Vertex<V>? = null
     for (v in unvisited) {
-        if (lowest == null || map[v] ?: Integer.MAX_VALUE < map[lowest] ?: Integer.MAX_VALUE) {
+        if (lowest == null || (map[v] ?: Integer.MAX_VALUE) < (map[lowest] ?: Integer.MAX_VALUE)) {
             lowest = v
         }
     }
