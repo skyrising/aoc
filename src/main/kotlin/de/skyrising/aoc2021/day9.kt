@@ -6,50 +6,50 @@ class BenchmarkDay9 : BenchmarkDayV1(9)
 
 fun registerDay9() {
     val test = listOf("2199943210",
-            "3987894921",
-            "9856789892",
-            "8767896789",
-            "9899965678")
+        "3987894921",
+        "9856789892",
+        "8767896789",
+        "9899965678")
     puzzleLS(9, "Smoke Basin") {
-        val input = it
-        val points = Array<IntArray>(input.size) { line -> input[line].chars().map { n -> n - '0'.code }.toArray() }
-        val height = points.size
-        val width = points[0].size
+        val (points, width, height) = parseInput(it)
         var risk = 0
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                val v = points[y][x]
-                if (x > 0 && points[y][x - 1] <= v) continue
-                if (x < width - 1 && points[y][x + 1] <= v) continue
-                if (y > 0 && points[y - 1][x] <= v) continue
-                if (y < height - 1 && points[y + 1][x] <= v) continue
-                //println("$x,$y $v")
-                risk += v + 1
-            }
+        forEachLowPoint(points, width, height) { _, _, value ->
+            //println("$x,$y $value")
+            risk += value + 1
         }
         risk
     }
     puzzleLS(9, "Part Two") {
-        val input = it
-        val points = Array<IntArray>(input.size) { line -> input[line].chars().map { n -> n - '0'.code }.toArray() }
-        val height = points.size
-        val width = points[0].size
+        val (points, width, height) = parseInput(it)
         val basins = IntArrayList()
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                val v = points[y][x]
-                if (x > 0 && points[y][x - 1] <= v) continue
-                if (x < width - 1 && points[y][x + 1] <= v) continue
-                if (y > 0 && points[y - 1][x] <= v) continue
-                if (y < height - 1 && points[y + 1][x] <= v) continue
-                val basin = mutableSetOf<Pair<Int, Int>>()
-                searchBasin(points, width, height, basin, x, y)
-                basins.add(basin.size)
-                //println("$x,$y $v ${basin.size} $basin")
-            }
+        forEachLowPoint(points, width, height) { x, y, _ ->
+            val basin = mutableSetOf<Pair<Int, Int>>()
+            searchBasin(points, width, height, basin, x, y)
+            basins.add(basin.size)
+            //println("$x,$y $v ${basin.size} $basin")
         }
         basins.sort()
         basins.getInt(basins.lastIndex) * basins.getInt(basins.lastIndex - 1) * basins.getInt(basins.lastIndex - 2)
+    }
+}
+
+fun parseInput(input: List<String>): Triple<Array<IntArray>, Int, Int> {
+    val points = Array<IntArray>(input.size) { line -> input[line].chars().map { n -> n - '0'.code }.toArray() }
+    val width = points[0].size
+    val height = points.size
+    return Triple(points, width, height)
+}
+
+inline fun forEachLowPoint(map: Array<IntArray>, width: Int, height: Int, fn: (Int, Int, Int) -> Unit) {
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            val v = map[y][x]
+            if (x > 0 && map[y][x - 1] <= v) continue
+            if (x < width - 1 && map[y][x + 1] <= v) continue
+            if (y > 0 && map[y - 1][x] <= v) continue
+            if (y < height - 1 && map[y + 1][x] <= v) continue
+            fn(x, y, v)
+        }
     }
 }
 
