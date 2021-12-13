@@ -110,6 +110,39 @@ class Graph<V, E> {
         return count
     }
 
+    fun getPathsV1(from: Vertex<V>, to: Vertex<V>, predicate: (Path<V, E>) -> Boolean) = getPathsV1(from, to, predicate, Path(emptyList()))
+
+    private fun getPathsV1(from: Vertex<V>, to: Vertex<V>, predicate: (Path<V, E>) -> Boolean, via: Path<V, E>): Set<Path<V, E>> {
+        if (from == to) return setOf(via)
+        val paths = mutableSetOf<Path<V, E>>()
+        for (e in getOutgoing(from)) {
+            val newVia = via + e
+            if (!predicate(newVia)) continue
+            paths.addAll(getPathsV1(e.to, to, predicate, newVia))
+        }
+        return paths
+    }
+
+    inline fun getPaths(from: Vertex<V>, to: Vertex<V>, predicate: (Path<V, E>) -> Boolean): Set<Path<V, E>> {
+        val paths = mutableSetOf<Path<V, E>>()
+        val todo = ArrayDeque<Path<V, E>>()
+        todo.add(Path(emptyList()))
+        while (todo.isNotEmpty()) {
+            val via = todo.poll()
+            val v = if (via.isEmpty()) from else via.last().to
+            for (e in getOutgoing(v)) {
+                val newVia = via + e
+                if (!predicate(newVia)) continue
+                if (e.to == to) {
+                    paths.add(newVia)
+                } else {
+                    todo.add(newVia)
+                }
+            }
+        }
+        return paths
+    }
+
     override fun toString(): String {
         val sb = StringBuilder()
         for (v in vertexes.values) {
@@ -161,6 +194,40 @@ private fun <V, E> buildPath(from: Vertex<V>, to: Vertex<V>, inc: Map<Vertex<V>,
 data class Vertex<V>(val value: V)
 data class Edge<V, E>(val from: Vertex<V>, val to: Vertex<V>, val weight: Int, val value: E) {
     override fun toString() = "${from.value} ==${if (value != null) "$value/" else ""}$weight=> ${to.value}"
+}
+data class Path<V, E>(private val edges: List<Edge<V, E?>>) : List<Edge<V, E?>> by edges {
+    fun getVertexes(): List<Vertex<V>> {
+        if (edges.isEmpty()) return emptyList()
+        val vertexes = mutableListOf(edges[0].from)
+        for (e in edges) vertexes.add(e.to)
+        return vertexes
+    }
+
+    inline fun forEachVertex(callback: (Vertex<V>) -> Unit) {
+        if (this.isEmpty()) return
+        callback(this[0].from)
+        for (e in this) callback(e.to)
+    }
+
+    override fun toString() = getVertexes().joinToString(separator = ",") { it.value.toString() }
+}
+
+operator fun <V, E> Edge<V, E?>.plus(path: Path<V, E>): Path<V, E> {
+    if (path.isEmpty()) return Path(listOf(this))
+    if (path[0].from != this.to) throw IllegalArgumentException("Cannot connect $this to ${path[0].from}")
+    val newEdges = ArrayList<Edge<V, E?>>(path.size + 1)
+    newEdges.add(this)
+    newEdges.addAll(path)
+    return Path(newEdges)
+}
+
+operator fun <V, E> Path<V, E>.plus(edge: Edge<V, E?>): Path<V, E> {
+    if (this.isEmpty()) return Path(listOf(edge))
+    if (this.last().to != edge.from) throw IllegalArgumentException("Cannot connect ${this.last().to} to $edge")
+    val newEdges = ArrayList<Edge<V, E?>>(this.size + 1)
+    newEdges.addAll(this)
+    newEdges.add(edge)
+    return Path(newEdges)
 }
 
 fun main() {

@@ -23,8 +23,8 @@ interface Puzzle<T> : Comparable<Puzzle<T>> {
         if (yearCmp != 0) return yearCmp
         val dayCmp = getDay().compareTo(other.getDay())
         if (dayCmp != 0) return dayCmp
-        val part = if (getName() == "Part Two") 2 else 1
-        val otherPart = if (other.getName() == "Part Two") 2 else 1
+        val part = if (getName().startsWith("Part Two")) 2 else 1
+        val otherPart = if (other.getName().startsWith("Part Two")) 2 else 1
         if (part != otherPart) return part - otherPart
         return getName().compareTo(other.getName())
     }
