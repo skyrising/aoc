@@ -25,4 +25,5 @@ fun register2021() {
     registerDay13()
     registerDay14()
     registerDay15()
+    registerDay16()
 }
