@@ -1,8 +1,7 @@
 package de.skyrising.aoc2021
 
-import it.unimi.dsi.fastutil.ints.*
-import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
-import it.unimi.dsi.fastutil.objects.Object2IntMap
+import it.unimi.dsi.fastutil.ints.IntArrayList
+import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
 class BenchmarkDay23 : BenchmarkDayV1(23)
@@ -32,7 +31,7 @@ fun registerDay23() {
 private fun solve(layout: AmphipodLayout, solved: AmphipodLayout): Int {
     val reached = Object2IntOpenHashMap<AmphipodLayout>()
     var minSolve = Int.MAX_VALUE
-    reached.defaultReturnValue(-1)
+    reached.defaultReturnValue(Int.MAX_VALUE)
     reached[layout] = 0
     val path = mutableMapOf<AmphipodLayout, AmphipodLayout>()
     val untraversed = ArrayDeque<AmphipodLayout>()
@@ -67,23 +66,17 @@ private fun solveStep(
 ): Int {
     val current = untraversed.removeFirst()
     val cost = reached.getInt(current)
-    val next = current.getPossibleMoves()
     var minSolve1 = minSolve
-    for (n in next.object2IntEntrySet()) {
-        val nextLayout = n.key
-        val pathCost = n.intValue
+    current.forPossibleMoves { nextLayout, pathCost ->
         val newCost = cost + pathCost
-        if (newCost >= minSolve1) continue
-        val existing = reached.getInt(nextLayout)
-        if (existing < 0 || existing > newCost) {
-            if (nextLayout == solved) {
-                minSolve1 = newCost
-            } else {
-                untraversed.add(nextLayout)
-            }
-            reached[nextLayout] = newCost
-            if (DUMP_PATH) path[nextLayout] = current
+        if (newCost >= minSolve1 || newCost >= reached.getInt(nextLayout)) return@forPossibleMoves
+        if (nextLayout == solved) {
+            minSolve1 = newCost
+        } else {
+            untraversed.add(nextLayout)
         }
+        reached[nextLayout] = newCost
+        if (DUMP_PATH) path[nextLayout] = current
     }
     return minSolve1
 }
@@ -123,49 +116,61 @@ data class AmphipodLayout(val data: CharArray) {
         return AmphipodLayout(newData)
     }
 
-    fun getPossibleMoves(): Object2IntMap<AmphipodLayout> {
-        val possible = Object2IntLinkedOpenHashMap<AmphipodLayout>()
-        outer@for (i in data.indices) {
-            val c = data[i]
-            if (c == '.') continue
-            val targetRoom = c - 'A'
-            // move to the bottom of the room if there is no foreign pod
-            for (j in data.size - 4 + targetRoom downTo 11 step 4) {
-                val present = data[j]
-                if (present != '.' && present != c) break
-                val cost = getCost(i, j)
-                if (cost == 0) continue
-                possible[move(i, j)] = cost
-                continue@outer
+    // move to the bottom of the room if there is no foreign pod
+    inline fun collectMovesToRoom(from: Int, c: Char, targetRoom: Int, callback: (AmphipodLayout, Int) -> Unit): Boolean {
+        val data = this.data
+        var to = data.size - 4 + targetRoom
+        while (to >= 11) {
+            val present = data[to]
+            if (present != '.' && present != c) break
+            val cost = getCost(from, to)
+            if (cost != 0) {
+                callback(move(from, to), cost)
+                return true
             }
-            // move along the hallway
-            if (i >= 11) {
-                for (j in VALID_HALLWAY) {
-                    val cost = getCost(i, j)
-                    if (cost == 0) continue
-                    possible[move(i, j)] = cost
-                }
-            }
+            to -= 4
         }
-        return possible
+        return false
     }
 
-    private fun getCost(from: Int, to: Int): Int {
+    inline fun collectMovesToHallway(from: Int, callback: (AmphipodLayout, Int) -> Unit) {
+        if (from < 11) return
+        for (to in VALID_HALLWAY) {
+            val cost = getCost(from, to)
+            if (cost == 0) continue
+            callback(move(from, to), cost)
+        }
+    }
+
+    inline fun forPossibleMoves(callback: (AmphipodLayout, Int) -> Unit) {
+        val size = data.size
+        for (from in 0 until size) {
+            val c = data[from]
+            if (c == '.') continue
+            if (collectMovesToRoom(from, c, c - 'A', callback)) continue
+            collectMovesToHallway(from, callback)
+        }
+    }
+
+    fun getCost(from: Int, to: Int): Int {
+        val data = this.data
         //if (data[from] == '.' || data[to] != '.') return 0
         //if (to in 2..8 && to % 2 == 0) return 0
         //if (to >= 15 && data[to - 4] != '.') return 0
         //if (!isCorrectRoom(to, data[from])) return 0
         val path = getPath(from, to)
-        path.forEach { if (data[it] != '.') return 0 }
+        for (i in path.indices) {
+            if (data[path.getInt(i)] != '.') return 0
+        }
         return path.size * COST_MULTIPLIER[data[from] - 'A']
     }
 
     companion object {
         val SOLVED1 = AmphipodLayout("...........ABCDABCD".toCharArray())
         val SOLVED2 = AmphipodLayout("...........ABCDABCDABCDABCD".toCharArray())
-        private val COST_MULTIPLIER = arrayOf(1, 10, 100, 1000)
-        private val VALID_HALLWAY = arrayOf(0, 1, 3, 5, 7, 9, 10)
-        private val PATHS = Int2ObjectOpenHashMap<Int2ObjectMap<IntList>>()
+        private val COST_MULTIPLIER = intArrayOf(1, 10, 100, 1000)
+        val VALID_HALLWAY = intArrayOf(0, 1, 3, 5, 7, 9, 10)
+        private val PATHS = Array<IntList?>(27 * 27) { null }
 
         private fun isCorrectRoom(room: Int, pod: Char): Boolean {
             if (room < 11) return true
@@ -174,10 +179,18 @@ data class AmphipodLayout(val data: CharArray) {
 
         private fun getPositionInFront(pos: Int) = if (pos >= 11) 2 + 2 * ((pos - 11) % 4) else pos
 
-        private fun getPath(from: Int, to: Int) = PATHS.computeIfAbsent(from, Int2ObjectFunction{ Int2ObjectOpenHashMap() }).computeIfAbsent(to, Int2ObjectFunction{ computePath(from, to) })
+        private fun getPath(from: Int, to: Int): IntList {
+            val key = from * 27 + to
+            var path = PATHS[key]
+            if (path == null) {
+                path = computePath(from, to)
+                PATHS[key] = path
+            }
+            return path
+        }
 
         private fun computePath(from: Int, to: Int): IntList {
-            val path = IntArrayList()
+            val path = IntArrayList(12)
             if (from == to) return path
             var p = from
             val via = getPositionInFront(to)
@@ -186,7 +199,7 @@ data class AmphipodLayout(val data: CharArray) {
                 path.add(p)
             }
             if (p >= 11) {
-                p = getPositionInFront(p)
+                p = 2 + 2 * ((p - 11) % 4)
                 path.add(p)
             }
             while (p > via) path.add(--p)
