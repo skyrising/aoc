@@ -11,4 +11,5 @@ inline fun <T> puzzleLS(day: Int, name: String, crossinline run: (List<String>) 
 
 fun register2022() {
     registerDay1()
+    registerDay2()
 }
