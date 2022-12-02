@@ -3,6 +3,7 @@ package de.skyrising.aoc
 import de.skyrising.aoc2015.register2015
 import de.skyrising.aoc2020.register2020
 import de.skyrising.aoc2021.register2021
+import de.skyrising.aoc2022.register2022
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
@@ -99,6 +100,7 @@ fun registerAll() {
     register2015()
     register2020()
     register2021()
+    register2022()
 }
 
 const val RUNS = 10
