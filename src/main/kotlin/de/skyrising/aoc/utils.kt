@@ -1,8 +1,6 @@
 package de.skyrising.aoc
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectFunction
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.ints.*
 import java.net.URL
 import java.nio.Buffer
 import java.nio.ByteBuffer
@@ -152,3 +150,16 @@ fun <T : Buffer> T.inc(amount: Int = 1): T {
 fun ByteBuffer.toString(charset: Charset) = charset.decode(slice()).toString()
 
 class MutableBox<T>(var value: T)
+
+fun String.ints(): IntList {
+    val parts = split(Regex("\\b"))
+    val ints = IntArrayList()
+    for (part in parts) {
+        if (part.isEmpty()) continue
+        try {
+            val i = part.toInt()
+            ints.add(i)
+        } catch (_: NumberFormatException) {}
+    }
+    return ints
+}
