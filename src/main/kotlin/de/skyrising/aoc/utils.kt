@@ -18,6 +18,7 @@ fun getInput(year: Int, day: Int): ByteBuffer = inputs.computeIfAbsent(year, Int
 private fun getInput0(year: Int, day: Int): ByteBuffer {
     val connection = URL("https://adventofcode.com/${year}/day/$day/input").openConnection()
     connection.addRequestProperty("Cookie", System.getenv("AOC_COOKIE"))
+    connection.addRequestProperty("User-Agent", "github.com/skyrising/aoc simon@skyrising.xyz")
     return ByteBuffer.wrap(connection.getInputStream().readBytes()).asReadOnlyBuffer()
 }
 
