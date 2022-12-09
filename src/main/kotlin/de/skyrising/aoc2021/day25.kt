@@ -1,5 +1,6 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.Vec2i
 import it.unimi.dsi.fastutil.objects.Object2CharMap
 import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
 
@@ -66,8 +67,6 @@ private fun show(map: Object2CharMap<Vec2i>, size: Vec2i): String {
     }
     return sb.toString()
 }
-
-data class Vec2i(val x: Int, val y: Int)
 
 private fun parseInput25(input: List<String>): Pair<Object2CharMap<Vec2i>, Vec2i> {
     val map = Object2CharOpenHashMap<Vec2i>()
