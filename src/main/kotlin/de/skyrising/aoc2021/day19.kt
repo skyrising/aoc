@@ -1,6 +1,6 @@
 package de.skyrising.aoc2021
 
-import kotlin.math.abs
+import de.skyrising.aoc.Vec3i
 
 class BenchmarkDay19 : BenchmarkDayV1(19)
 
@@ -208,22 +208,6 @@ private fun parseInput19(input: List<String>): List<PointCloud> {
     return result
 }
 
-data class Vec3i(val x: Int, val y: Int, val z: Int) {
-    fun distanceSq(other: Vec3i) = (x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z)
-    override fun toString() = "[$x,$y,$z]"
-    operator fun get(i: Int) = when (i) {
-        0 -> x
-        1 -> y
-        2 -> z
-        else -> throw IndexOutOfBoundsException()
-    }
-
-    operator fun plus(v: Vec3i) = Vec3i(x + v.x, y + v.y, z + v.z)
-    operator fun minus(v: Vec3i) = Vec3i(x - v.x, y - v.y, z - v.z)
-    operator fun unaryMinus() = Vec3i(-x, -y, -z)
-
-    fun manhattanDistance(v: Vec3i) = abs(x - v.x) + abs(y - v.y) + abs(z - v.z)
-}
 data class PointCloud(val points: Set<Vec3i>) : Set<Vec3i> by points {
     val rotations: List<PointCloud> get() {
         return Rotation.ROTATIONS.map { it.apply(this) }
