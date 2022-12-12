@@ -44,26 +44,27 @@ class Graph<V, E> {
         it == to
     }
     fun dijkstra(from: Vertex<V>, to: (Vertex<V>) -> Boolean): Path<V, E>? {
-        val unvisited = HashSet(vertexes.values)
+        val unvisited = mutableSetOf(from)
+        val visited = mutableSetOf<Vertex<V>>()
         val inc = mutableMapOf<Vertex<V>, Edge<V, E?>>()
         val dist = mutableMapOf<Vertex<V>, Int>()
         dist[from] = 0
-        var steps = 0
         while (unvisited.isNotEmpty()) {
-            steps++
             val current = lowest(unvisited, dist)!!
             if (to(current) || current !in unvisited) {
                 return buildPath(from, current, inc)
             }
             val curDist = dist[current] ?: return null
             unvisited.remove(current)
+            visited.add(current)
             for (e in getOutgoing(current)) {
                 val v = e.to
-                if (!unvisited.contains(v)) continue
+                if (v in visited) continue
                 val alt = curDist + e.weight
                 if (alt < (dist[v] ?: Integer.MAX_VALUE)) {
                     dist[v] = alt
                     inc[v] = e
+                    unvisited.add(v)
                 }
             }
         }
