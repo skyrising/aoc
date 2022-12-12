@@ -71,6 +71,40 @@ class Graph<V, E> {
         return null
     }
 
+    fun astar(from: Vertex<V>, to: Vertex<V>, h: (Vertex<V>) -> Int) = astar(from, h) {
+        it == to
+    }
+    fun astar(from: Vertex<V>, h: (Vertex<V>) -> Int, to: (Vertex<V>) -> Boolean): Path<V, E>? {
+        val unvisited = mutableSetOf(from)
+        val visited = mutableSetOf<Vertex<V>>()
+        val inc = mutableMapOf<Vertex<V>, Edge<V, E?>>()
+        val distG = mutableMapOf<Vertex<V>, Int>()
+        val distF = mutableMapOf<Vertex<V>, Int>()
+        distG[from] = 0
+        distF[from] = h(from)
+        while (unvisited.isNotEmpty()) {
+            val current = lowest(unvisited, distF)!!
+            if (to(current) || current !in unvisited) {
+                return buildPath(from, current, inc)
+            }
+            val curDist = distG[current] ?: return null
+            unvisited.remove(current)
+            visited.add(current)
+            for (e in getOutgoing(current)) {
+                val v = e.to
+                if (visited.contains(v)) continue
+                val alt = curDist + e.weight
+                if (alt < (distG[v] ?: Integer.MAX_VALUE)) {
+                    distG[v] = alt
+                    distF[v] = alt + h(v)
+                    inc[v] = e
+                    unvisited.add(v)
+                }
+            }
+        }
+        return null
+    }
+
     fun tsp(): List<Edge<V, E?>>? {
         val vertexList = vertexes.values.toList()
         return tspBruteForce(vertexList[0], setOf(vertexList[0]), vertexList[0])?.first
