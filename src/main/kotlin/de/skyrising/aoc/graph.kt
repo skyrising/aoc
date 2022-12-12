@@ -40,7 +40,10 @@ class Graph<V, E> {
     fun getIncoming(v: V) = getIncoming(vertexes[v] ?: Vertex(v))
     fun getIncoming(v: Vertex<V>): Set<Edge<V, E?>> = incoming[v] ?: emptySet()
 
-    fun dijkstra(from: Vertex<V>, to: Vertex<V>): Path<V, E>? {
+    fun dijkstra(from: Vertex<V>, to: Vertex<V>) = dijkstra(from) {
+        it == to
+    }
+    fun dijkstra(from: Vertex<V>, to: (Vertex<V>) -> Boolean): Path<V, E>? {
         val unvisited = HashSet(vertexes.values)
         val inc = mutableMapOf<Vertex<V>, Edge<V, E?>>()
         val dist = mutableMapOf<Vertex<V>, Int>()
@@ -49,7 +52,9 @@ class Graph<V, E> {
         while (unvisited.isNotEmpty()) {
             steps++
             val current = lowest(unvisited, dist)!!
-            if (current == to || current !in unvisited) break
+            if (to(current) || current !in unvisited) {
+                return buildPath(from, current, inc)
+            }
             val curDist = dist[current] ?: return null
             unvisited.remove(current)
             for (e in getOutgoing(current)) {
@@ -62,8 +67,7 @@ class Graph<V, E> {
                 }
             }
         }
-        // println("$steps steps")
-        return buildPath(from, to, inc)
+        return null
     }
 
     fun tsp(): List<Edge<V, E?>>? {

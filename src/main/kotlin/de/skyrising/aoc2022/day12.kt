@@ -52,18 +52,12 @@ fun registerDay12() {
         grid.forEach { x, y, i ->
             for (n in Vec2i(x, y).fourNeighbors()) {
                 if (grid.contains(n) && grid[n] <= i + 1) {
-                    g.edge(Vec2i(x, y), n, 1)
+                    g.edge(n, Vec2i(x, y), 1)
                 }
             }
         }
-        var lowest = Int.MAX_VALUE
-        for (v in g.getVertexes()) {
-            if (grid[v.value] != 0) continue
-            val path = g.dijkstra(g.vertex(v), g.vertex(end))
-            if (path != null) {
-                lowest = minOf(lowest, path.size)
-            }
-        }
-        lowest
+        val ends = g.getVertexes().filterTo(mutableSetOf()) { v -> grid[v.value] == 0 }
+        val path = g.dijkstra(g.vertex(end), ends::contains) ?: return@puzzleLS -1
+        path.size
     }
 }
