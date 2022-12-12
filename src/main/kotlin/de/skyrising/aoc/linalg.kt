@@ -19,6 +19,8 @@ data class Vec2i(val x: Int, val y: Int) {
 
     infix fun dot(other: Vec2i) = x * other.x + y * other.y
 
+    fun manhattanDistance(v: Vec2i) = abs(x - v.x) + abs(y - v.y)
+
     fun fourNeighbors() = arrayOf(
         Vec2i(x - 1, y),
         Vec2i(x + 1, y),
