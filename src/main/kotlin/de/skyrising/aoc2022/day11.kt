@@ -1,67 +1,70 @@
 package de.skyrising.aoc2022
 
 import de.skyrising.aoc.ints
-import java.math.BigInteger
+import it.unimi.dsi.fastutil.longs.LongArrayList
+import it.unimi.dsi.fastutil.longs.LongList
+import java.util.function.LongConsumer
 
 class BenchmarkDay11 : BenchmarkDayV1(11)
 
-private val MOD = (2 * 3 * 5 * 7 * 11 * 13 * 17 * 19).toBigInteger()
-
-data class Monkey(val items: MutableList<BigInteger>, val op: (BigInteger) -> BigInteger, val divisor: BigInteger, val trueMonkey: Int, val falseMonkey: Int) {
+data class Monkey(val items: LongList, val op: (Long) -> Long, val divisor: Int, val trueMonkey: Int, val falseMonkey: Int) {
     var inspected = 0L
 
     fun step(monkeys: List<Monkey>, divideByThree: Boolean) {
-        for (item in items) {
+        items.forEach(LongConsumer { item ->
             var newLevel = op(item)
             if (divideByThree) {
-                newLevel /= 3.toBigInteger()
-            } else {
-                newLevel %= MOD
+                newLevel /= 3
             }
-            val throwTo = if (newLevel % divisor == BigInteger.ZERO) trueMonkey else falseMonkey
+            newLevel %= 2 * 3 * 5 * 7 * 11 * 13 * 17 * 19
+            val throwTo = if (newLevel % divisor == 0L) trueMonkey else falseMonkey
             monkeys[throwTo].items.add(newLevel)
             inspected++
-        }
+        })
         items.clear()
     }
+}
+
+private fun monkeyBusiness(input: List<String>, steps: Int, divideByThree: Boolean): Long {
+    val monkeys = parseInput(input)
+    repeat(steps) {
+        for (monkey in monkeys) {
+            monkey.step(monkeys, divideByThree)
+        }
+    }
+    val (a, b) = monkeys.sortedByDescending(Monkey::inspected).take(2)
+    return a.inspected * b.inspected
 }
 
 private fun parseInput(input: List<String>): List<Monkey> {
     return input.chunked(7) {
         val startingItems = it[1].ints()
         val opText = it[2].substringAfter("= ")
-        val op: (BigInteger) -> BigInteger = when {
-            opText == "old * old" -> { x -> x * x }
-            opText[4] == '*' -> { x -> x * opText.ints().getInt(0).toBigInteger() }
-            opText[4] == '+' -> { x -> x + opText.ints().getInt(0).toBigInteger() }
+        val split = opText.split(' ')
+        val op: (Long) -> Long = when {
+            split[2] == "old" -> { x -> x * x }
+            split[1] == "*" -> {
+                val factor = split[2].toInt();
+                { x -> x * factor }
+            }
+            split[1] == "+" -> {
+                val addend = split[2].toInt();
+                { x -> x + addend }
+            }
             else -> error("Unknown op: $opText")
         }
         val divisor = it[3].ints().getInt(0)
         val trueMonkey = it[4].ints().getInt(0)
         val falseMonkey = it[5].ints().getInt(0)
-        Monkey(startingItems.mapTo(mutableListOf(), Int::toBigInteger), op, BigInteger.valueOf(divisor.toLong()), trueMonkey, falseMonkey)
+        Monkey(startingItems.mapTo(LongArrayList(), Int::toLong), op, divisor, trueMonkey, falseMonkey)
     }
 }
 
 fun registerDay11() {
     puzzleLS(11, "Monkey in the Middle") {
-        val monkeys = parseInput(it)
-        repeat(20) {
-            for (monkey in monkeys) {
-                monkey.step(monkeys, true)
-            }
-        }
-        val (a, b) = monkeys.sortedByDescending(Monkey::inspected).take(2)
-        a.inspected * b.inspected
+        monkeyBusiness(it, 20, true)
     }
     puzzleLS(11, "Part Two") {
-        val monkeys = parseInput(it)
-        repeat(10000) {
-            for (monkey in monkeys) {
-                monkey.step(monkeys, false)
-            }
-        }
-        val (a, b) = monkeys.sortedByDescending(Monkey::inspected).take(2)
-        a.inspected * b.inspected
+        monkeyBusiness(it, 10000, false)
     }
 }
