@@ -41,3 +41,22 @@ fun parseDisplay(display: String, litChar: Char = '█'): String {
     }
     return sb.toString()
 }
+
+class IntGrid(val width: Int, val height: Int, private val data: IntArray) {
+    operator fun get(point: Vec2i) = get(point.x, point.y)
+    operator fun get(x: Int, y: Int) = data[y * width + x]
+    operator fun set(x: Int, y: Int, value: Int) {
+        data[y * width + x] = value
+    }
+
+    inline fun forEach(action: (Int, Int, Int) -> Unit) {
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                action(x, y, this[x, y])
+            }
+        }
+    }
+
+    fun contains(x: Int, y: Int) = x in 0 until width && y in 0 until height
+    fun contains(point: Vec2i) = contains(point.x, point.y)
+}

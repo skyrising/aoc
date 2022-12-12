@@ -40,7 +40,7 @@ class Graph<V, E> {
     fun getIncoming(v: V) = getIncoming(vertexes[v] ?: Vertex(v))
     fun getIncoming(v: Vertex<V>): Set<Edge<V, E?>> = incoming[v] ?: emptySet()
 
-    fun dijkstra(from: Vertex<V>, to: Vertex<V>): List<Edge<V, E?>>? {
+    fun dijkstra(from: Vertex<V>, to: Vertex<V>): Path<V, E>? {
         val unvisited = HashSet(vertexes.values)
         val inc = mutableMapOf<Vertex<V>, Edge<V, E?>>()
         val dist = mutableMapOf<Vertex<V>, Int>()
@@ -50,7 +50,7 @@ class Graph<V, E> {
             steps++
             val current = lowest(unvisited, dist)!!
             if (current == to || current !in unvisited) break
-            val curDist = dist[current]!!
+            val curDist = dist[current] ?: return null
             unvisited.remove(current)
             for (e in getOutgoing(current)) {
                 val v = e.to
@@ -177,14 +177,14 @@ private fun <V> lowest(unvisited: Collection<Vertex<V>>, map: Map<Vertex<V>, Int
     return lowest
 }
 
-private fun <V, E> buildPath(from: Vertex<V>, to: Vertex<V>, inc: Map<Vertex<V>, Edge<V, E>>): List<Edge<V, E>>? {
+private fun <V, E> buildPath(from: Vertex<V>, to: Vertex<V>, inc: Map<Vertex<V>, Edge<V, E?>>): Path<V, E>? {
     val first = inc[to] ?: return null
-    val path = LinkedList<Edge<V, E>>()
+    val path = LinkedList<Edge<V, E?>>()
     path.add(first)
-    var edge: Edge<V, E>? = first
+    var edge: Edge<V, E?>? = first
     while (true) {
         val eFrom = edge!!.from
-        if (eFrom == from) return path
+        if (eFrom == from) return Path(path)
         edge = inc[eFrom]
         if (edge == null) return null
         path.addFirst(edge)

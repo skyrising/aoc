@@ -19,6 +19,13 @@ data class Vec2i(val x: Int, val y: Int) {
 
     infix fun dot(other: Vec2i) = x * other.x + y * other.y
 
+    fun fourNeighbors() = arrayOf(
+        Vec2i(x - 1, y),
+        Vec2i(x + 1, y),
+        Vec2i(x, y - 1),
+        Vec2i(x, y + 1)
+    )
+
     fun withZ(z: Int) = Vec3i(x, y, z)
 
     companion object {
