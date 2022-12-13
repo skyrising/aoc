@@ -20,6 +20,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("it.unimi.dsi:fastutil:8.5.6")
     implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.3.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 }
 
 application {
