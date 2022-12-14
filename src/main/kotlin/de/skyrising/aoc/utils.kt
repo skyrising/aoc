@@ -6,6 +6,8 @@ import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.Charset
+import java.nio.file.Files
+import kotlin.io.path.exists
 
 val inputs: Int2ObjectMap<Int2ObjectMap<PuzzleInput>> = Int2ObjectOpenHashMap()
 
@@ -16,10 +18,18 @@ fun getInput(year: Int, day: Int): PuzzleInput = inputs.computeIfAbsent(year, In
 })
 
 private fun getInput0(year: Int, day: Int): PuzzleInput {
+    val cachePath = java.nio.file.Path.of("inputs", year.toString(), "$day.txt")
+    if (cachePath.exists()) {
+        return RealInput(ByteBuffer.wrap(Files.readAllBytes(cachePath)).asReadOnlyBuffer())
+    }
+    println("Downloading input for $year/$day")
     val connection = URL("https://adventofcode.com/${year}/day/$day/input").openConnection()
     connection.addRequestProperty("Cookie", System.getenv("AOC_COOKIE"))
     connection.addRequestProperty("User-Agent", "github.com/skyrising/aoc simon@skyrising.xyz")
-    return RealInput(ByteBuffer.wrap(connection.getInputStream().readBytes()).asReadOnlyBuffer())
+    val bytes = connection.getInputStream().readBytes()
+    Files.createDirectories(cachePath.parent)
+    Files.write(cachePath, bytes)
+    return RealInput(ByteBuffer.wrap(bytes).asReadOnlyBuffer())
 }
 
 fun lineList(buf: ByteBuffer): List<ByteBuffer> {
