@@ -9,7 +9,8 @@ import java.nio.charset.Charset
 import java.nio.file.Files
 import kotlin.io.path.exists
 
-val inputs: Int2ObjectMap<Int2ObjectMap<PuzzleInput>> = Int2ObjectOpenHashMap()
+private val inputs: Int2ObjectMap<Int2ObjectMap<PuzzleInput>> = Int2ObjectOpenHashMap()
+private val cookie: String by lazy { Files.readString(java.nio.file.Path.of("COOKIE.txt")) }
 
 fun getInput(year: Int, day: Int): PuzzleInput = inputs.computeIfAbsent(year, Int2ObjectFunction {
     Int2ObjectOpenHashMap()
@@ -24,7 +25,7 @@ private fun getInput0(year: Int, day: Int): PuzzleInput {
     }
     println("Downloading input for $year/$day")
     val connection = URL("https://adventofcode.com/${year}/day/$day/input").openConnection()
-    connection.addRequestProperty("Cookie", System.getenv("AOC_COOKIE"))
+    connection.addRequestProperty("Cookie", cookie)
     connection.addRequestProperty("User-Agent", "github.com/skyrising/aoc simon@skyrising.xyz")
     val bytes = connection.getInputStream().readBytes()
     Files.createDirectories(cachePath.parent)
