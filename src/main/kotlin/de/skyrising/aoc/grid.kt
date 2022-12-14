@@ -45,6 +45,7 @@ fun parseDisplay(display: String, litChar: Char = '█'): String {
 class IntGrid(val width: Int, val height: Int, private val data: IntArray) {
     operator fun get(point: Vec2i) = get(point.x, point.y)
     operator fun get(x: Int, y: Int) = data[y * width + x]
+    operator fun set(point: Vec2i, value: Int) = set(point.x, point.y, value)
     operator fun set(x: Int, y: Int, value: Int) {
         data[y * width + x] = value
     }
@@ -59,4 +60,36 @@ class IntGrid(val width: Int, val height: Int, private val data: IntArray) {
 
     fun contains(x: Int, y: Int) = x in 0 until width && y in 0 until height
     fun contains(point: Vec2i) = contains(point.x, point.y)
+}
+
+class CharGrid(val width: Int, val height: Int, private val data: CharArray) {
+    operator fun get(point: Vec2i) = get(point.x, point.y)
+    operator fun get(x: Int, y: Int) = data[y * width + x]
+    operator fun set(point: Vec2i, value: Char) = set(point.x, point.y, value)
+    operator fun set(x: Int, y: Int, value: Char) {
+        if (x < 0 || y < 0 || x >= width || y >= height) error("Out of bounds: $x, $y")
+        data[y * width + x] = value
+    }
+
+    inline fun forEach(action: (Int, Int, Char) -> Unit) {
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                action(x, y, this[x, y])
+            }
+        }
+    }
+
+    fun contains(x: Int, y: Int) = x in 0 until width && y in 0 until height
+    fun contains(point: Vec2i) = contains(point.x, point.y)
+
+    override fun toString(): String {
+        val sb = StringBuilder((width + 1) * height)
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                sb.append(this[x, y])
+            }
+            sb.append('\n')
+        }
+        return sb.toString()
+    }
 }

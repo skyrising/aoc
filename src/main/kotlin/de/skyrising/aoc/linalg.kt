@@ -45,6 +45,24 @@ data class Vec2i(val x: Int, val y: Int) {
     }
 }
 
+fun Collection<Vec2i>.boundingBox(): Pair<Vec2i, Vec2i> {
+    var min: Vec2i? = null
+    var max: Vec2i? = null
+    for (v in this) {
+        if (min == null || max == null) {
+            min = v
+            max = v
+        } else {
+            if (v.x < min.x) min = min.copy(x = v.x)
+            if (v.y < min.y) min = min.copy(y = v.y)
+            if (v.x > max.x) max = max.copy(x = v.x)
+            if (v.y > max.y) max = max.copy(y = v.y)
+        }
+    }
+    if (min == null || max == null) return Vec2i.ZERO to Vec2i.ZERO
+    return min to max
+}
+
 data class Vec3i(val x: Int, val y: Int, val z: Int) {
     fun distanceSq(other: Vec3i) = (x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z)
     override fun toString() = "[$x,$y,$z]"
