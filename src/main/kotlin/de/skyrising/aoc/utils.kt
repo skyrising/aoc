@@ -153,7 +153,7 @@ fun ByteBuffer.toString(charset: Charset) = charset.decode(slice()).toString()
 class MutableBox<T>(var value: T)
 
 fun String.ints(): IntList {
-    val parts = split(Regex("\\b"))
+    val parts = split(Regex("[^0-9-]"))
     val ints = IntArrayList()
     for (part in parts) {
         if (part.isEmpty()) continue
@@ -163,4 +163,20 @@ fun String.ints(): IntList {
         } catch (_: NumberFormatException) {}
     }
     return ints
+}
+
+fun <T> T.iterate(step: T.() -> T?): T {
+    var current = this
+    while (true) {
+        val next = step(current) ?: return current
+        current = next
+    }
+}
+
+fun countWhile(predicate: () -> Boolean): Int {
+    var count = 0
+    while (predicate()) {
+        count++
+    }
+    return count
 }

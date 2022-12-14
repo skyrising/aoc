@@ -42,51 +42,69 @@ fun parseDisplay(display: String, litChar: Char = '█'): String {
     return sb.toString()
 }
 
-class IntGrid(val width: Int, val height: Int, private val data: IntArray) {
+abstract class Grid(val offset: Vec2i, val width: Int, val height: Int) {
+    protected fun index(x: Int, y: Int): Int {
+        if (!contains(x, y)) throw IndexOutOfBoundsException("($x, $y) is not in [$offset,${offset + Vec2i(width, height)})")
+        return (y - offset.y) * width + (x - offset.x)
+    }
+
+    fun localIndex(x: Int, y: Int): Int {
+        if (x < 0 || y < 0 || x >= width || y >= height) throw IndexOutOfBoundsException("($x, $y) is not in [0, $width) x [0, $height)")
+        return y * width + x
+    }
+
+    fun contains(x: Int, y: Int) = x >= offset.x && y >= offset.y && x < offset.x + width && y < offset.y + height
+    operator fun contains(point: Vec2i) = contains(point.x, point.y)
+}
+
+class IntGrid(width: Int, height: Int, val data: IntArray, offset: Vec2i = Vec2i.ZERO) : Grid(offset, width, height) {
     operator fun get(point: Vec2i) = get(point.x, point.y)
-    operator fun get(x: Int, y: Int) = data[y * width + x]
+    operator fun get(x: Int, y: Int) = data[index(x, y)]
     operator fun set(point: Vec2i, value: Int) = set(point.x, point.y, value)
     operator fun set(x: Int, y: Int, value: Int) {
-        data[y * width + x] = value
+        data[index(x, y)] = value
+    }
+    operator fun set(points: Iterable<Vec2i>, value: Int) {
+        for (point in points) {
+            this[point] = value
+        }
     }
 
     inline fun forEach(action: (Int, Int, Int) -> Unit) {
         for (y in 0 until height) {
             for (x in 0 until width) {
-                action(x, y, this[x, y])
+                action(x + offset.x, y + offset.y, data[y * width + x])
             }
         }
     }
-
-    fun contains(x: Int, y: Int) = x in 0 until width && y in 0 until height
-    fun contains(point: Vec2i) = contains(point.x, point.y)
 }
 
-class CharGrid(val width: Int, val height: Int, private val data: CharArray) {
+class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec2i.ZERO) : Grid(offset, width, height) {
     operator fun get(point: Vec2i) = get(point.x, point.y)
-    operator fun get(x: Int, y: Int) = data[y * width + x]
+    operator fun get(x: Int, y: Int) = data[index(x, y)]
     operator fun set(point: Vec2i, value: Char) = set(point.x, point.y, value)
     operator fun set(x: Int, y: Int, value: Char) {
-        if (x < 0 || y < 0 || x >= width || y >= height) error("Out of bounds: $x, $y")
-        data[y * width + x] = value
+        data[index(x, y)] = value
+    }
+    operator fun set(points: Iterable<Vec2i>, value: Char) {
+        for (point in points) {
+            this[point] = value
+        }
     }
 
     inline fun forEach(action: (Int, Int, Char) -> Unit) {
         for (y in 0 until height) {
             for (x in 0 until width) {
-                action(x, y, this[x, y])
+                action(x + offset.x, y + offset.y, data[localIndex(x, y)])
             }
         }
     }
-
-    fun contains(x: Int, y: Int) = x in 0 until width && y in 0 until height
-    fun contains(point: Vec2i) = contains(point.x, point.y)
 
     override fun toString(): String {
         val sb = StringBuilder((width + 1) * height)
         for (y in 0 until height) {
             for (x in 0 until width) {
-                sb.append(this[x, y])
+                sb.append(data[localIndex(x, y)])
             }
             sb.append('\n')
         }
