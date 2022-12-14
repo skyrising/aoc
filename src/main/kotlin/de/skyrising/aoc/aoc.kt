@@ -9,25 +9,23 @@ import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
 import java.util.*
 import kotlin.math.sqrt
-import kotlin.random.Random
 
 interface Puzzle<T> : Comparable<Puzzle<T>> {
-    fun getName(): String
-    fun getYear(): Int
-    fun getDay(): Int
-    fun getRealInput() = getInput(getYear(), getDay())
-    fun generateInput(rand: Random): Pair<ByteBuffer, T>?
+    val name: String
+    val year: Int
+    val day: Int
+    fun getRealInput() = getInput(year, day)
     fun runPuzzle(input: PuzzleInput): T
 
     override fun compareTo(other: Puzzle<T>): Int {
-        val yearCmp = getYear().compareTo(other.getYear())
+        val yearCmp = year.compareTo(other.year)
         if (yearCmp != 0) return yearCmp
-        val dayCmp = getDay().compareTo(other.getDay())
+        val dayCmp = day.compareTo(other.day)
         if (dayCmp != 0) return dayCmp
-        val part = if (getName().startsWith("Part Two")) 2 else 1
-        val otherPart = if (other.getName().startsWith("Part Two")) 2 else 1
+        val part = if (name.startsWith("Part Two")) 2 else 1
+        val otherPart = if (other.name.startsWith("Part Two")) 2 else 1
         if (part != otherPart) return part - otherPart
-        return getName().compareTo(other.getName())
+        return name.compareTo(other.name)
     }
 }
 
@@ -83,16 +81,7 @@ class TestInput(str: String) : PuzzleInput {
 val allPuzzles = TreeMap<Int, TreeMap<Int, MutableList<Puzzle<*>>>>()
 
 fun register(puzzle: Puzzle<*>) {
-    allPuzzles.computeIfAbsent(puzzle.getYear()) { TreeMap() }.computeIfAbsent(puzzle.getDay()) { mutableListOf() }.add(puzzle)
-}
-
-@Suppress("LeakingThis")
-abstract class AbstractPuzzle<T>(private val year: Int, private val day: Int, private val name: String) : Puzzle<T> {
-    override fun getName() = name
-    override fun getYear() = year
-    override fun getDay() = day
-    override fun generateInput(rand: Random): Pair<ByteBuffer, T>? = null
-    override fun toString() = "Puzzle(year=$year,day=$day,name=$name})"
+    allPuzzles.computeIfAbsent(puzzle.year) { TreeMap() }.computeIfAbsent(puzzle.day) { mutableListOf() }.add(puzzle)
 }
 
 inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer, T>?>, noinline fn: (ByteBuffer) -> T): T {
@@ -106,7 +95,10 @@ inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer
 }
 
 inline fun <T> puzzle(year: Int, day: Int, name: String, crossinline run: PuzzleInput.() -> T): Puzzle<T> {
-    return object : AbstractPuzzle<T>(year, day, name) {
+    return object : Puzzle<T> {
+        override val name get() = name
+        override val year get() = year
+        override val day get() = day
         override fun runPuzzle(input: PuzzleInput): T = run(input)
     }.also(::register)
 }
@@ -152,13 +144,13 @@ fun main(args: Array<String>) {
     var year: Int? = null
     var day: Int? = null
     for (puzzle in puzzlesToRun) {
-        if (puzzle.getYear() != year) {
-            year = puzzle.getYear()
+        if (puzzle.year != year) {
+            year = puzzle.year
             day = null
             println("$year:")
         }
-        if (puzzle.getDay() != day) {
-            day = puzzle.getDay()
+        if (puzzle.day != day) {
+            day = puzzle.day
             println("Day $day:")
         }
         val input = puzzle.getRealInput()
@@ -174,7 +166,7 @@ fun main(args: Array<String>) {
             val avg = times.average()
             val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
             println(String.format(Locale.ROOT, "%-26s: %16s, %s ± %4.1f%%",
-                puzzle.getName(),
+                puzzle.name,
                 puzzle.runPuzzle(input),
                 formatTime(avg),
                 stddev * 100 / avg
@@ -184,7 +176,7 @@ fun main(args: Array<String>) {
             val result = puzzle.runPuzzle(input)
             val time = (System.nanoTime() - start) / 1000.0
             println(String.format(Locale.ROOT, "%-26s: %16s, %s ± ?",
-                puzzle.getName(),
+                puzzle.name,
                 result,
                 formatTime(time)
             ))
