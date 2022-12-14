@@ -1,13 +1,10 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.Puzzle
-import java.nio.ByteBuffer
-import java.nio.CharBuffer
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.puzzle
 
-inline fun <T> puzzleB(day: Int, name: String, crossinline run: (ByteBuffer) -> T): Puzzle<T> = de.skyrising.aoc.puzzleB(2020, day, name, run)
-inline fun <T> puzzleLB(day: Int, name: String, crossinline run: (List<ByteBuffer>) -> T): Puzzle<T> = de.skyrising.aoc.puzzleLB(2020, day, name, run)
-inline fun <T> puzzleS(day: Int, name: String, crossinline run: (CharBuffer) -> T): Puzzle<T> = de.skyrising.aoc.puzzleS(2020, day, name, run)
-inline fun <T> puzzleLS(day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> = de.skyrising.aoc.puzzleLS(2020, day, name, run)
+inline fun <T> puzzle(day: Int, name: String, crossinline run: PuzzleInput.() -> T): Puzzle<T> = puzzle(2020, day, name, run)
 
 fun register2020() {
     registerDay1()

@@ -6,7 +6,7 @@ import java.nio.ByteBuffer
 
 class BenchmarkDay5 : BenchmarkDay(5)
 
-fun seatId(s: String): Int {
+private fun seatId(s: String): Int {
     val chars = s.toCharArray()
     var id = 0
     for (i in 0..9) {
@@ -16,7 +16,7 @@ fun seatId(s: String): Int {
 }
 
 
-fun seatId(b: ByteBuffer, offset: Int): Int {
+private fun seatId(b: ByteBuffer, offset: Int): Int {
     val first = (b.getLong(offset) xor 0x4646464646464652L) and 0x404040404040404L
     val second = (b.getShort(offset + 8).toInt() xor 0x5252) and 0x40404
     //println("${first.toString(16)}, ${second.toString(16)}")
@@ -49,17 +49,17 @@ fun seatIdVector(b: ByteBuffer, offset: Int): Int {
 
 fun registerDay5() {
     //println(seatId(ByteBuffer.wrap("BFFFBBFRRR".toByteArray()), 0))
-    puzzleLS(5, "Binary Boarding v1") {
+    puzzle(5, "Binary Boarding v1") {
         var highest = 0
-        for (line in it) {
+        for (line in lines) {
             highest = maxOf(highest, seatId(line))
         }
         highest
     }
-    puzzleB(5, "Binary Boarding v2") {
+    puzzle(5, "Binary Boarding v2") {
         var highest = 0
-        for (i in 0 until it.remaining() step 11) {
-            highest = maxOf(highest, seatId(it, i))
+        for (i in 0 until input.remaining() step 11) {
+            highest = maxOf(highest, seatId(input, i))
         }
         highest
     }
@@ -72,49 +72,49 @@ fun registerDay5() {
         highest
     }
     */
-    puzzleLS(5, "Part Two v1") {
+    puzzle(5, "Part Two v1") {
         var highest = 0
         var lowest = 1 shl 10
         val seats = LongArray(lowest shr 6)
-        for (line in it) {
+        for (line in lines) {
             val id = seatId(line)
             lowest = minOf(lowest, id)
             highest = maxOf(highest, id)
             setBit(seats, id)
         }
         for (i in lowest + 1 until highest) {
-            if (!isBitSet(seats, i)) return@puzzleLS i
+            if (!isBitSet(seats, i)) return@puzzle i
         }
         -1
     }
-    puzzleB(5, "Part Two v2") {
+    puzzle(5, "Part Two v2") {
         var highest = 0
         var lowest = 1 shl 10
         val seats = LongArray(lowest shr 6)
-        for (i in 0 until it.remaining() step 11) {
-            val id = seatId(it, i)
+        for (i in 0 until input.remaining() step 11) {
+            val id = seatId(input, i)
             lowest = minOf(lowest, id)
             highest = maxOf(highest, id)
             setBit(seats, id)
         }
         for (i in lowest + 1 until highest) {
-            if (!isBitSet(seats, i)) return@puzzleB i
+            if (!isBitSet(seats, i)) return@puzzle i
         }
         -1
     }
     /*
-    puzzleB(5, "Part Two v3") {
+    puzzle(5, "Part Two v3") {
         var highest = 0
         var lowest = 1 shl 10
         val seats = LongArray(lowest shr 6)
-        for (i in 0 until it.remaining() step 11) {
-            val id = seatIdVector(it, i)
+        for (i in 0 until input.remaining() step 11) {
+            val id = seatIdVector(input, i)
             lowest = minOf(lowest, id)
             highest = maxOf(highest, id)
             setBit(seats, id)
         }
         for (i in lowest + 1 until highest) {
-            if (!isBitSet(seats, i)) return@puzzleB i
+            if (!isBitSet(seats, i)) return@puzzle i
         }
         -1
     }

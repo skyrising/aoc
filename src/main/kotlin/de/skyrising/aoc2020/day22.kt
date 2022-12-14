@@ -1,15 +1,16 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
 import java.util.*
-import kotlin.collections.ArrayList
 
 class BenchmarkDay22 : BenchmarkDayV1(22)
 
-private fun readInput(input: List<String>): Map<Int, LinkedList<Int>> {
+private fun readInput(input: PuzzleInput): Map<Int, LinkedList<Int>> {
     val map = mutableMapOf<Int, LinkedList<Int>>()
     var current = LinkedList<Int>()
     var id = -1
-    for (line in input) {
+    for (line in input.lines) {
         when {
             line.startsWith("Player ") -> {
                 id = line.substring(7, line.length - 1).toInt()
@@ -80,7 +81,7 @@ private fun roundRecursive(p1: LinkedList<Int>, p2: LinkedList<Int>, previous: M
 }
 
 fun registerDay22() {
-    val test = """
+    val test = TestInput("""
         Player 1:
         9
         2
@@ -94,8 +95,8 @@ fun registerDay22() {
         4
         7
         10
-    """.trimIndent().split("\n")
-    val test2 = """
+    """)
+    val test2 = TestInput("""
         Player 1:
         43
         19
@@ -104,9 +105,9 @@ fun registerDay22() {
         2
         29
         14
-    """.trimIndent().split("\n")
-    puzzleLS(22, "Crab Combat v1") {
-        val (p1, p2) = ArrayList(readInput(it).values)
+    """)
+    puzzle(22, "Crab Combat v1") {
+        val (p1, p2) = ArrayList(readInput(this).values)
         while (!round(p1, p2)) {}
         var sum = 0
         val winner = if (p1.isEmpty()) p2 else p1
@@ -115,8 +116,8 @@ fun registerDay22() {
         }
         sum
     }
-    puzzleLS(22, "Part 2 v1") {
-        val (p1, p2) = ArrayList(readInput(it).values)
+    puzzle(22, "Part 2 v1") {
+        val (p1, p2) = ArrayList(readInput(this).values)
         gameRecursive(p1, p2)
         var sum = 0
         val winner = if (p1.isEmpty()) p2 else p1

@@ -1,30 +1,31 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.Graph
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 
 class BenchmarkDay8 : BenchmarkDayV1(8)
 
 fun registerDay8() {
-    val test = """
-            nop +0
-            acc +1
-            jmp +4
-            acc +3
-            jmp -3
-            acc -99
-            acc +1
-            jmp -4
-            acc +6
-        """.trimIndent().split("\n")
-    puzzleLS(8, "Handheld Halting v1") {
+    val test = TestInput("""
+        nop +0
+        acc +1
+        jmp +4
+        acc +3
+        jmp -3
+        acc -99
+        acc +1
+        jmp -4
+        acc +6
+    """)
+    puzzle(8, "Handheld Halting v1") {
         var acc = 0
         var pc = 0
         val counts = Int2IntOpenHashMap()
         counts.defaultReturnValue(0)
         while (counts[pc] == 0) {
             counts[pc] = counts[pc] + 1
-            val (op, arg) = it[pc].split(" ")
+            val (op, arg) = lines[pc].split(" ")
             pc++
             // println("$pc: $op, $arg")
             when (op) {
@@ -39,11 +40,11 @@ fun registerDay8() {
         }
         acc
     }
-    puzzleLS(8, "Part 2 v1") {
+    puzzle(8, "Part 2 v1") {
         val instrs = mutableListOf<Pair<String, Int>>()
         var bbStart = 0
         val graph = Graph.build<Int, Nothing?> {
-            it.forEachIndexed { i, line ->
+            lines.forEachIndexed { i, line ->
                 val (op, arg) = line.split(" ")
                 val argInt = arg.toInt()
                 instrs.add(Pair(op, argInt))
@@ -71,7 +72,7 @@ fun registerDay8() {
             }
         }
         val end = instrs.size
-        val path = graph.dijkstra(graph[0]!!, graph[end - 1]!!) ?: return@puzzleLS null
+        val path = graph.dijkstra(graph[0]!!, graph[end - 1]!!) ?: return@puzzle null
         for (edge in path) {
             if (edge.weight <= 0) continue
             val i = edge.from.value

@@ -1,16 +1,19 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.ints
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap
 
 class BenchmarkDay21 : BenchmarkDayV1(21)
 
 fun registerDay21() {
-    val test = listOf(
-        "Player 1 starting position: 4",
-        "Player 2 starting position: 8"
-    )
-    puzzleLS(21, "Dirac Dice") {
-        var (p1, p2) = parseInput21(it)
+    val test = TestInput("""
+        Player 1 starting position: 4
+        Player 2 starting position: 8
+    """)
+    puzzle(21, "Dirac Dice") {
+        var (p1, p2) = parseInput(this)
         val dice = Dice()
         var score1 = 0
         var score2 = 0
@@ -26,8 +29,8 @@ fun registerDay21() {
         }
         minOf(score1, score2) * rolls
     }
-    puzzleLS(21, "Part Two") {
-        val (i1, i2) = parseInput21(it)
+    puzzle(21, "Part Two") {
+        val (i1, i2) = parseInput(this)
         var wins1 = 0L
         var wins2 = 0L
         val universes = Object2LongLinkedOpenHashMap<Universe>()
@@ -72,4 +75,4 @@ data class Dice(var next: Int = 1) {
     }
 }
 
-private fun parseInput21(input: List<String>) = Pair(input[0][28].digitToInt(), input[1][28].digitToInt())
+private fun parseInput(input: PuzzleInput) = Pair(input.lines[0].ints().getInt(1), input.lines[1].ints().getInt(1))

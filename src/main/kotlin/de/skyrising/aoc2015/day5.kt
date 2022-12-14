@@ -2,7 +2,7 @@ package de.skyrising.aoc2015
 
 class BenchmarkDay5 : BenchmarkDayV1(5)
 
-fun isNice1(s: String): Boolean {
+private fun isNice1(s: String): Boolean {
     if (!Regex("[aeiou].*[aeiou].*[aeiou]").containsMatchIn(s)) return false
     var doubleLetter = false
     for (i in 1 .. s.lastIndex) {
@@ -13,7 +13,7 @@ fun isNice1(s: String): Boolean {
     return true
 }
 
-fun isNice2(s: String): Boolean {
+private fun isNice2(s: String): Boolean {
     var doublePair = false
     for (i in 0 until s.lastIndex) {
         val pair = s.substring(i, i + 2)
@@ -30,10 +30,10 @@ fun isNice2(s: String): Boolean {
 }
 
 fun registerDay5() {
-    puzzleLS(5, "Doesn't He Have Intern-Elves For This?") {
-        it.count(::isNice1)
+    puzzle(5, "Doesn't He Have Intern-Elves For This?") {
+        lines.count(::isNice1)
     }
-    puzzleLS(5, "Part Two") {
-        it.count(::isNice2)
+    puzzle(5, "Part Two") {
+        lines.count(::isNice2)
     }
 }

@@ -1,12 +1,17 @@
 package de.skyrising.aoc2015
 
+import de.skyrising.aoc.TestInput
+
 class BenchmarkDay2 : BenchmarkDayV1(2)
 
 fun registerDay2() {
-    puzzleLS(2, "I Was Told There Would Be No Math") {
-        val test = listOf("2x3x4", "1x1x10")
+    val test = TestInput("""
+        2x3x4
+        1x1x10
+    """)
+    puzzle(2, "I Was Told There Would Be No Math") {
         var total = 0
-        for (line in it) {
+        for (line in lines) {
             val (ls, ws, hs) = line.split('x', limit = 3)
             val l = ls.toInt()
             val w = ws.toInt()
@@ -18,10 +23,9 @@ fun registerDay2() {
         }
         total
     }
-    puzzleLS(2, "Part Two") {
-        val test = listOf("2x3x4", "1x1x10")
+    puzzle(2, "Part Two") {
         var total = 0
-        for (line in it) {
+        for (line in lines) {
             val (ls, ws, hs) = line.split('x', limit = 3)
             val l = ls.toInt()
             val w = ws.toInt()

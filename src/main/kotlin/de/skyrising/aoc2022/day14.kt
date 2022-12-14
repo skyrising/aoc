@@ -4,8 +4,8 @@ import de.skyrising.aoc.*
 
 class BenchmarkDay14 : BenchmarkDayV1(14)
 
-private fun parseInput(input: List<String>, floor: Boolean = false): CharGrid {
-    val lines = input.flatMapTo(mutableListOf()) { line ->
+private fun parseInput(input: PuzzleInput, floor: Boolean = false): CharGrid {
+    val lines = input.lines.flatMapTo(mutableListOf()) { line ->
         line.split(" -> ").map(Vec2i::parse).zipWithNext { a, b -> a lineTo b }
     }
     if (floor) {
@@ -25,18 +25,18 @@ private fun CharGrid.dropSand(pos: Vec2i) = pos.iterate {
 }.also { if (it in this) this[it] = 'o' }
 
 fun registerDay14() {
-    val test = """
+    val test = TestInput("""
         498,4 -> 498,6 -> 496,6
         503,4 -> 502,4 -> 502,9 -> 494,9
-    """.trimIndent().lines().filter(String::isNotBlank)
-    puzzleLS(14, "Regolith Reservoir") {
-        val grid = parseInput(it)
+    """)
+    puzzle(14, "Regolith Reservoir") {
+        val grid = parseInput(this)
         countWhile {
             grid.dropSand(Vec2i(500, 0)) in grid
         }
     }
-    puzzleLS(14, "Part Two") {
-        val grid = parseInput(it, true)
+    puzzle(14, "Part Two") {
+        val grid = parseInput(this, true)
         1 + countWhile {
             grid.dropSand(Vec2i(500, 0)).y != 0
         }

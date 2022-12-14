@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
@@ -73,7 +74,7 @@ private fun stepDay(grid: LongSet): LongSet {
 }
 
 fun registerDay24() {
-    val test = """
+    val test = TestInput("""
         sesenwnenenewseeswwswswwnenewsewsw
         neeenesenwnwwswnenewnwwsewnenwseswesw
         seswneswswsenwwnwse
@@ -94,18 +95,18 @@ fun registerDay24() {
         eneswnwswnwsenenwnwnwwseeswneewsenese
         neswnwewnwnwseenwseesewsenwsweewe
         wseweeenwnesenwwwswnew
-    """.trimIndent().split('\n')
-    puzzleLS(24, "Lobby Layout v1") {
+    """)
+    puzzle(24, "Lobby Layout v1") {
         val grid = Long2BooleanOpenHashMap()
-        for (line in it) {
+        for (line in lines) {
             val tile = tileFromPath(0, line)
             grid[tile] = !grid[tile]
         }
         grid.values.sumOf { if (it) 1L else 0 }
     }
-    puzzleLS(24, "Part 2 v1") {
+    puzzle(24, "Part 2 v1") {
         val tiles = LongArrayList()
-        for (line in it) tiles.add(tileFromPath(0, line))
+        for (line in lines) tiles.add(tileFromPath(0, line))
         var grid: LongSet = LongOpenHashSet()
         for (tile in tiles) {
             if (tile in grid) {

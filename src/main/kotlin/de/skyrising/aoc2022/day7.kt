@@ -1,15 +1,16 @@
 package de.skyrising.aoc2022
 
+import de.skyrising.aoc.PuzzleInput
 import it.unimi.dsi.fastutil.objects.Object2LongMap
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap
 import java.nio.file.Path
 
 class BenchmarkDay7 : BenchmarkDayV1(7)
 
-private fun parseInput(input: List<String>): Object2LongMap<Path> {
+private fun parseInput(input: PuzzleInput): Object2LongMap<Path> {
     val commands = mutableListOf<Pair<String, List<String>>>()
     var current: Pair<String, MutableList<String>>? = null
-    for (line in input) {
+    for (line in input.lines) {
         if (line.startsWith("$")) {
             if (current != null) {
                 commands.add(current)
@@ -46,8 +47,8 @@ private fun parseInput(input: List<String>): Object2LongMap<Path> {
 }
 
 fun registerDay7() {
-    puzzleLS(7, "No Space Left On Device") {
-        val spaceUsed = parseInput(it)
+    puzzle(7, "No Space Left On Device") {
+        val spaceUsed = parseInput(this)
         var sum = 0L
         for (v in spaceUsed.values) {
             if (v <= 100000) sum += v
@@ -55,8 +56,8 @@ fun registerDay7() {
         sum
     }
 
-    puzzleLS(7, "Part Two") {
-        val spaceUsed = parseInput(it)
+    puzzle(7, "Part Two") {
+        val spaceUsed = parseInput(this)
         var smallestMatching = Long.MAX_VALUE
         val used = spaceUsed.getLong(Path.of("/"))
         val available = 70000000 - used

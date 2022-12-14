@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import de.skyrising.aoc.positionAfter
 import de.skyrising.aoc.until
 import it.unimi.dsi.fastutil.ints.IntArrayList
@@ -56,23 +57,23 @@ private fun parseLong(buf: ByteBuffer): Long {
 }
 
 fun registerDay14() {
-    val test = """
+    val test = TestInput("""
         mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
         mem[8] = 11
         mem[7] = 101
         mem[8] = 0
-        """.trimIndent().split("\n")
-    val test2 = """
+    """)
+    val test2 = TestInput("""
         mask = 000000000000000000000000000000X1001X
         mem[42] = 100
         mask = 00000000000000000000000000000000X0XX
         mem[26] = 1
-    """.trimIndent().split("\n")
-    puzzleLS(14, "Docking Data v1") {
+    """)
+    puzzle(14, "Docking Data v1") {
         val mem = Long2LongOpenHashMap()
         var mask = -1L
         var maskBits = 0L
-        for (line in it) {
+        for (line in lines) {
             if (line.startsWith("mask = ")) {
                 val m = getMask(line.substring(7))
                 mask = m.first
@@ -87,11 +88,11 @@ fun registerDay14() {
         // println(mem)
         mem.values.sum()
     }
-    puzzleLB(14, "Docking Data v2") {
+    puzzle(14, "Docking Data v2") {
         val mem = Long2LongOpenHashMap()
         var mask = -1L
         var maskBits = 0L
-        for (line in it) {
+        for (line in byteLines) {
             if (line[1] == 'a'.toByte()) {
                 val m = getMask(line)
                 mask = m.first
@@ -112,12 +113,12 @@ fun registerDay14() {
         // println(mem)
         mem.values.sum()
     }
-    puzzleLS(14, "Part 2 v1") {
+    puzzle(14, "Part 2 v1") {
         val mem = Long2LongOpenHashMap()
         var mask = 0L
         var maskBits = 0L
         var floatingPos = IntArray(0)
-        for (line in it) {
+        for (line in lines) {
             if (line.startsWith("mask = ")) {
                 val m = getMask(line.substring(7))
                 mask = m.first
@@ -143,12 +144,12 @@ fun registerDay14() {
         // println(mem)
         mem.values.sum()
     }
-    puzzleLB(14, "Part 2 v2") {
+    puzzle(14, "Part 2 v2") {
         val mem = Long2LongOpenHashMap()
         var mask = 0L
         var maskBits = 0L
         var floatingPos = IntArray(0)
-        for (line in it) {
+        for (line in byteLines) {
             if (line[1] == 'a'.toByte()) {
                 val m = getMask(line)
                 mask = m.first

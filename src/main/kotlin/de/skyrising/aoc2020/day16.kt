@@ -1,19 +1,20 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.ObjectArraySet
 import java.util.*
-import kotlin.collections.HashSet
 
 class BenchmarkDay16 : BenchmarkDay(16)
 
-private fun parseInput(input: List<String>, v2: Boolean = false): Triple<Map<String, Set<IntRange>>, IntList, MutableList<IntList>> {
+private fun parseInput(input: PuzzleInput, v2: Boolean = false): Triple<Map<String, Set<IntRange>>, IntList, MutableList<IntList>> {
     val classes = mutableMapOf<String, Set<IntRange>>()
     var state = 0
     val yourTicket = IntArrayList()
     val nearby = mutableListOf<IntList>()
-    for (line in input) {
+    for (line in input.lines) {
         if (line.isEmpty()) {
             state++
             continue
@@ -117,7 +118,7 @@ fun mergeRanges(ranges: Collection<IntRange>): Set<IntRange> {
 }
 
 fun registerDay16() {
-    val test = """
+    val test = TestInput("""
         class: 1-3 or 5-7
         row: 6-11 or 33-44
         seat: 13-40 or 45-50
@@ -130,8 +131,8 @@ fun registerDay16() {
         40,4,50
         55,2,20
         38,6,12
-    """.trimIndent().split("\n")
-    val test2 = """
+    """)
+    val test2 = TestInput("""
         class: 0-1 or 4-19
         row: 0-5 or 8-19
         seat: 0-13 or 16-19
@@ -143,9 +144,9 @@ fun registerDay16() {
         3,9,18
         15,1,5
         5,14,9
-    """.trimIndent().split("\n")
-    puzzleLS(16, "Ticket Translation v1") {
-        val (classes, _, nearby) = parseInput(it)
+    """)
+    puzzle(16, "Ticket Translation v1") {
+        val (classes, _, nearby) = parseInput(this)
         var sum = 0
         for (ticket in nearby) {
             for (i in ticket) {
@@ -163,8 +164,8 @@ fun registerDay16() {
         }
         sum
     }
-    puzzleLS(16, "Ticket Translation v2") {
-        val (classes, _, nearby) = parseInput(it, true)
+    puzzle(16, "Ticket Translation v2") {
+        val (classes, _, nearby) = parseInput(this, true)
         val ranges = mutableSetOf<IntRange>()
         for ((_, r) in classes) ranges.addAll(r)
         val merged = mergeRanges(ranges)
@@ -185,8 +186,8 @@ fun registerDay16() {
         }
         sum
     }
-    puzzleLS(16, "Part 2 v1") {
-        val (classes, yourTicket, nearby) = parseInput(it)
+    puzzle(16, "Part 2 v1") {
+        val (classes, yourTicket, nearby) = parseInput(this)
         val candidates = Array<MutableSet<String>>(yourTicket.size) { HashSet(classes.keys) }
         ticketLoop@ for (ticket in nearby) {
             for (i in ticket) {
@@ -238,8 +239,8 @@ fun registerDay16() {
         }
         product
     }
-    puzzleLS(16, "Part 2 v2") {
-        val (classes, yourTicket, nearby) = parseInput(it, true)
+    puzzle(16, "Part 2 v2") {
+        val (classes, yourTicket, nearby) = parseInput(this, true)
         val ranges = mutableSetOf<IntRange>()
         for ((_, r) in classes) ranges.addAll(r)
         val merged = mergeRanges(ranges)

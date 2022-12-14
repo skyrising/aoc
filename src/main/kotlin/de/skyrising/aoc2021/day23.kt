@@ -1,5 +1,6 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
@@ -9,21 +10,21 @@ class BenchmarkDay23 : BenchmarkDayV1(23)
 private const val DUMP_PATH = false
 
 fun registerDay23() {
-    val test = listOf(
-        "#############",
-        "#...........#",
-        "###B#C#B#D###",
-        "  #A#D#C#A#",
-        "  #########"
-    )
-    puzzleLS(23, "Amphipod") {
-        val layout = parseInput23(it)
+    val test = TestInput("""
+        #############
+        #...........#
+        ###B#C#B#D###
+          #A#D#C#A#
+          #########
+    """)
+    puzzle(23, "Amphipod") {
+        val layout = parseInput(lines)
         solve(layout, AmphipodLayout.SOLVED1)
     }
-    puzzleLS(23, "Part Two") {
-        val input = ArrayList(it)
+    puzzle(23, "Part Two") {
+        val input = ArrayList(lines)
         input.addAll(3, listOf("  #D#C#B#A#", "  #D#B#A#C#"))
-        val layout = parseInput23(input)
+        val layout = parseInput(input)
         solve(layout, AmphipodLayout.SOLVED2)
     }
 }
@@ -81,7 +82,7 @@ private fun solveStep(
     return minSolve1
 }
 
-private fun parseInput23(input: List<String>): AmphipodLayout {
+private fun parseInput(input: List<String>): AmphipodLayout {
     val data = CharArray(11 + (input.size - 3) * 4)
     for (i in 0 until 11) data[i] = input[1][1 + i]
     for (j in 0 until input.size - 3) {

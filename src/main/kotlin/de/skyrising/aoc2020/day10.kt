@@ -1,12 +1,13 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.Graph
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 
 class BenchmarkDay10 : BenchmarkDayV1(10)
 
 fun registerDay10() {
-    val test = """
+    val test = TestInput("""
         28
         33
         18
@@ -38,9 +39,9 @@ fun registerDay10() {
         34
         10
         3
-        """.trimIndent().split("\n")
-    puzzleLS(10, "Adapter Array v1") {
-        val numbers = it.map(String::toInt).sorted()
+    """)
+    puzzle(10, "Adapter Array v1") {
+        val numbers = lines.map(String::toInt).sorted()
         val diffs = IntArray(3)
         var prev = 0
         for (n in numbers) {
@@ -49,8 +50,8 @@ fun registerDay10() {
         }
         diffs[0] * (diffs[2] + 1)
     }
-    puzzleLS(10, "Part 2 v1") {
-        val numbers = it.map(String::toInt).sorted()
+    puzzle(10, "Part 2 v1") {
+        val numbers = lines.map(String::toInt).sorted()
         val graph = Graph.build<Int, Nothing?> {
             val numbersSet = IntOpenHashSet(numbers)
             numbersSet.add(0)

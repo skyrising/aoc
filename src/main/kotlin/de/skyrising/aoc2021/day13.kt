@@ -1,49 +1,43 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.parseDisplay
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
-import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
 
 class BenchmarkDay13 : BenchmarkDayV1(13)
 
 fun registerDay13() {
-    val test = listOf(
-        "6,10",
-        "0,14",
-        "9,10",
-        "0,3",
-        "10,4",
-        "4,11",
-        "6,0",
-        "6,12",
-        "4,1",
-        "0,13",
-        "10,12",
-        "3,4",
-        "3,0",
-        "8,4",
-        "1,10",
-        "2,14",
-        "8,10",
-        "9,0",
-        "",
-        "fold along y=7",
-        "fold along x=5"
-    )
-    val font = Object2CharOpenHashMap<String>()
-    font.defaultReturnValue('?')
-    font["### #  #### #  ##  #### "] = 'B'
-    font["#####   ### #   #   ####"] = 'E'
-    font[" ## #  ##   # ###  # ###"] = 'G'
-    font["#  ## # ##  # # # # #  #"] = 'K'
-    font["  ##   #   #   ##  # ## "] = 'J'
-    font["#  ##  ##  ##  ##  # ## "] = 'U'
-    puzzleLS(13, "Transparent Origami") {
-        val (points, instructions) = readInput(it)
+    val test = TestInput("""
+        6,10
+        0,14
+        9,10
+        0,3
+        10,4
+        4,11
+        6,0
+        6,12
+        4,1
+        0,13
+        10,12
+        3,4
+        3,0
+        8,4
+        1,10
+        2,14
+        8,10
+        9,0
+        
+        fold along y=7
+        fold along x=5
+    """)
+    puzzle(13, "Transparent Origami") {
+        val (points, instructions) = readInput(this)
         fold(points, instructions.getInt(0)).size
     }
-    puzzleLS(13, "Part Two") {
-        val (points, instructions) = readInput(it)
+    puzzle(13, "Part Two") {
+        val (points, instructions) = readInput(this)
         var folded = points
         for (i in instructions.indices) {
             folded = fold(folded, instructions.getInt(i))
@@ -53,35 +47,32 @@ fun registerDay13() {
         val chars = Array(8) { CharArray(24) }
         result.append('\n')
         for (y in 0 .. max.second) {
+            if (y > 0) result.append('\n')
             for (x in 0 .. max.first) {
-                val char = if (Pair(x, y) in folded) '#' else ' '
+                val char = if (Pair(x, y) in folded) '█' else ' '
                 if (x % 5 < 4) {
-                    println("$x,$y ${x / 5},${y * 4 + (x % 5)}")
                     chars[x / 5][y * 4 + (x % 5)] = char
                 }
                 result.append(char)
             }
-            result.append('\n')
         }
-        for (char in chars) {
-            result.append(font.getChar(String(char)))
-        }
-        result.toString()
+        log(result)
+        parseDisplay(result.toString())
     }
 }
 
-private fun readInput(input: List<String>): Pair<Set<Pair<Int, Int>>, IntList> {
+private fun readInput(input: PuzzleInput): Pair<Set<Pair<Int, Int>>, IntList> {
     val points = mutableSetOf<Pair<Int, Int>>()
     val instructions = IntArrayList()
     var i = 0
-    while (i < input.size) {
-        val line = input[i++]
+    while (i < input.lines.size) {
+        val line = input.lines[i++]
         if (line.isEmpty()) break
         val (x, y) = line.split(',')
         points.add(x.toInt() to y.toInt())
     }
-    while (i < input.size) {
-        val line = input[i++]
+    while (i < input.lines.size) {
+        val line = input.lines[i++]
         if (line[11] == 'y') {
             instructions.add(-line.substring(13).toInt())
         } else {

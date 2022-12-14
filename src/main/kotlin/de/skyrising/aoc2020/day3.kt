@@ -3,33 +3,33 @@ package de.skyrising.aoc2020
 class BenchmarkDay3 : BenchmarkDay(3)
 
 fun registerDay3() {
-    puzzleLS(3, "Toboggan Trajectory v1") {
+    puzzle(3, "Toboggan Trajectory v1") {
         var trees = 0
         var x = 0
-        for (line in it) {
+        for (line in lines) {
             val tree = line[x % line.length] == '#'
             if (tree )trees++
             x += 3
         }
         trees
     }
-    puzzleLB(3, "Toboggan Trajectory v2") {
+    puzzle(3, "Toboggan Trajectory v2") {
         var trees = 0
         var x = 0
-        val len = it[0].remaining()
-        for (line in it) {
+        val len = byteLines[0].remaining()
+        for (line in byteLines) {
             val tree = line[x] == '#'.toByte()
             if (tree) trees++
             x = wrap(x + 3, len)
         }
         trees
     }
-    puzzleLS(3, "Part Two v1") {
+    puzzle(3, "Part Two v1") {
         val slopes = intArrayOf(1, 3, 5, 7, 1)
         val step = intArrayOf(1, 1, 1, 1, 2)
         val trees = LongArray(5)
         val x = intArrayOf(0, 0, 0, 0, 0)
-        for ((lineCount, line) in it.withIndex()) {
+        for ((lineCount, line) in lines.withIndex()) {
             for (i in 0..4) {
                 if (lineCount % step[i] == 0) {
                     val tree = line[x[i] % line.length] == '#'
@@ -41,7 +41,7 @@ fun registerDay3() {
         //trees.contentToString()
         trees.reduce {a, b -> a * b}
     }
-    puzzleLB(3, "Part Two v2") {
+    puzzle(3, "Part Two v2") {
         var t0 = 0
         var t1 = 0
         var t2 = 0
@@ -52,8 +52,8 @@ fun registerDay3() {
         var x2 = 0
         var x3 = 0
         var x4 = 0
-        val len = it[0].remaining()
-        for ((lineCount, line) in it.withIndex()) {
+        val len = byteLines[0].remaining()
+        for ((lineCount, line) in byteLines.withIndex()) {
             t0 += if (line[x0] == '#'.toByte()) 1 else 0
             x0 = wrap(x0 + 1, len)
             if (x0 >= len) x0 -= len

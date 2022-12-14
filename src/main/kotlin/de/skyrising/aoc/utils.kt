@@ -7,19 +7,19 @@ import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.Charset
 
-val inputs: Int2ObjectMap<Int2ObjectMap<ByteBuffer>> = Int2ObjectOpenHashMap()
+val inputs: Int2ObjectMap<Int2ObjectMap<PuzzleInput>> = Int2ObjectOpenHashMap()
 
-fun getInput(year: Int, day: Int): ByteBuffer = inputs.computeIfAbsent(year, Int2ObjectFunction {
+fun getInput(year: Int, day: Int): PuzzleInput = inputs.computeIfAbsent(year, Int2ObjectFunction {
     Int2ObjectOpenHashMap()
 }).computeIfAbsent(day, Int2ObjectFunction {
     getInput0(year, it)
 })
 
-private fun getInput0(year: Int, day: Int): ByteBuffer {
+private fun getInput0(year: Int, day: Int): PuzzleInput {
     val connection = URL("https://adventofcode.com/${year}/day/$day/input").openConnection()
     connection.addRequestProperty("Cookie", System.getenv("AOC_COOKIE"))
     connection.addRequestProperty("User-Agent", "github.com/skyrising/aoc simon@skyrising.xyz")
-    return ByteBuffer.wrap(connection.getInputStream().readBytes()).asReadOnlyBuffer()
+    return RealInput(ByteBuffer.wrap(connection.getInputStream().readBytes()).asReadOnlyBuffer())
 }
 
 fun lineList(buf: ByteBuffer): List<ByteBuffer> {

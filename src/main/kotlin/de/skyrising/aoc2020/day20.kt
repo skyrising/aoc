@@ -1,11 +1,11 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.ints.IntSet
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.sqrt
 
 class BenchmarkDay20 : BenchmarkDayV1(20)
@@ -297,7 +297,7 @@ private class Tile(val id: Int, val width: Int, val height: Int, val flipped: Bo
 }
 
 fun registerDay20() {
-    val test = """
+    val test = TestInput("""
         Tile 2311:
         ..##.#..#.
         ##..#.....
@@ -405,9 +405,9 @@ fun registerDay20() {
         ..#.###...
         ..#.......
         ..#.###...
-    """.trimIndent().split("\n")
-    puzzleLS(20, "Jurassic Jigsaw v1") {
-        val tiles = Tile.parseTiles(it)
+    """)
+    puzzle(20, "Jurassic Jigsaw v1") {
+        val tiles = Tile.parseTiles(lines)
         val variants = Tile.getVariants(tiles)
         val size = sqrt(tiles.size.toDouble()).toInt()
         val borders = Tile.findBorders(variants)
@@ -419,17 +419,17 @@ fun registerDay20() {
                 bordersDedup.add(sBorder)
             }
         }
-        if (dedup.size == 1) return@puzzleLS dedup.single().map(Int::toLong).reduceRight(Long::times)
+        if (dedup.size == 1) return@puzzle dedup.single().map(Int::toLong).reduceRight(Long::times)
         0
     }
-    puzzleLS(20, "Part 2 v1") {
+    puzzle(20, "Part 2 v1") {
         val seaMonster = Tile.parseTiles("""
             |Tile 1:
             |                  # 
             |#    ##    ##    ###
             | #  #  #  #  #  #   
         """.trimMargin("|").split("\n"), 60).single()
-        val tiles = Tile.parseTiles(it)
+        val tiles = Tile.parseTiles(lines)
         val variants = Tile.getVariants(tiles)
         val size = sqrt(tiles.size.toDouble()).toInt()
         val solutions = Tile.solveFull(variants)
@@ -448,7 +448,7 @@ fun registerDay20() {
                     }
                 }
             }
-            return@puzzleLS solution.count()
+            return@puzzle solution.count()
         }
         0
     }

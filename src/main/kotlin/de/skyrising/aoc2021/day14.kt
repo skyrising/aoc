@@ -1,5 +1,7 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap
 import it.unimi.dsi.fastutil.chars.Char2LongMap
 import it.unimi.dsi.fastutil.chars.Char2LongOpenHashMap
@@ -11,28 +13,28 @@ import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
 class BenchmarkDay14 : BenchmarkDayV1(14)
 
 fun registerDay14() {
-    val test = listOf(
-        "NNCB",
-        "",
-        "CH -> B",
-        "HH -> N",
-        "CB -> H",
-        "NH -> C",
-        "HB -> C",
-        "HC -> B",
-        "HN -> C",
-        "NN -> C",
-        "BH -> H",
-        "NC -> B",
-        "NB -> B",
-        "BN -> B",
-        "BB -> N",
-        "BC -> B",
-        "CC -> N",
-        "CN -> C"
-    )
-    puzzleLS(14, "Extended Polymerization") {
-        val (start, rules) = parseInput14(it)
+    val test = TestInput("""
+        NNCB
+        
+        CH -> B
+        HH -> N
+        CB -> H
+        NH -> C
+        HB -> C
+        HC -> B
+        HN -> C
+        NN -> C
+        BH -> H
+        NC -> B
+        NB -> B
+        BN -> B
+        BB -> N
+        BC -> B
+        CC -> N
+        CN -> C
+    """)
+    puzzle(14, "Extended Polymerization") {
+        val (start, rules) = parseInput(this)
         var current = start
         for (step in 1..10) {
             val sb = StringBuilder(current.length * 2)
@@ -52,12 +54,12 @@ fun registerDay14() {
         val min = counts.minOf(Map.Entry<Char, Int>::value)
         max - min
     }
-    puzzleLS(14, "Extended Polymerization v2") {
-        val (start, rules) = parseInput14(it)
+    puzzle(14, "Extended Polymerization v2") {
+        val (start, rules) = parseInput(this)
         solveDay14Fast(start, rules, 10)
     }
-    puzzleLS(14, "Part Two") {
-        val (start, rules) = parseInput14(it)
+    puzzle(14, "Part Two") {
+        val (start, rules) = parseInput(this)
         solveDay14Fast(start, rules, 40)
     }
 }
@@ -96,11 +98,11 @@ private fun pairIndex(a: Char, b: Char) = a.code or (b.code shl 8)
 private fun firstOfPair(pair: Int) = (pair and 0xff).toChar()
 private fun secondOfPair(pair: Int) = (pair shr 8).toChar()
 
-private fun parseInput14(input: List<String>): Pair<String, Object2CharMap<String>> {
-    val start = input[0]
-    val rules = Object2CharOpenHashMap<String>(input.size - 2)
-    for (i in 2 until input.size) {
-        val (a, b) = input[i].split(" -> ")
+private fun parseInput(input: PuzzleInput): Pair<String, Object2CharMap<String>> {
+    val start = input.lines[0]
+    val rules = Object2CharOpenHashMap<String>(input.lines.size - 2)
+    for (i in 2 until input.lines.size) {
+        val (a, b) = input.lines[i].split(" -> ")
         rules[a] = b[0]
     }
     return start to rules

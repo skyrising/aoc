@@ -1,14 +1,15 @@
 package de.skyrising.aoc2022
 
+import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.ints
 import it.unimi.dsi.fastutil.chars.CharArrayList
 
 class BenchmarkDay5 : BenchmarkDayV1(5)
 
-private fun parseInput(it: List<String>): Pair<List<String>, Array<CharArrayList>> {
-    val splitPoint = it.indexOf("")
-    val setup = it.subList(0, splitPoint - 1)
-    val moves = it.subList(splitPoint + 1, it.size)
+private fun parseInput(input: PuzzleInput): Pair<List<String>, Array<CharArrayList>> {
+    val splitPoint = input.lines.indexOf("")
+    val setup = input.lines.subList(0, splitPoint - 1)
+    val moves = input.lines.subList(splitPoint + 1, input.lines.size)
     val width = (setup[0].length + 1) / 4
     val stacks = Array(width) { CharArrayList() }
     for (depth in setup.size - 1 downTo 0) {
@@ -30,8 +31,8 @@ private fun Array<CharArrayList>.toResult(): String {
 }
 
 fun registerDay5() {
-    puzzleLS(5, "Supply Stacks") {
-        val (moves, stacks) = parseInput(it)
+    puzzle(5, "Supply Stacks") {
+        val (moves, stacks) = parseInput(this)
         for (move in moves) {
             val (count, from, to) = move.ints()
             repeat(count) {
@@ -41,8 +42,8 @@ fun registerDay5() {
         stacks.toResult()
     }
 
-    puzzleLS(5, "Part Two") {
-        val (moves, stacks) = parseInput(it)
+    puzzle(5, "Part Two") {
+        val (moves, stacks) = parseInput(this)
         for (move in moves) {
             val (count, from, to) = move.ints()
             val indexFrom = stacks[from - 1].size - count

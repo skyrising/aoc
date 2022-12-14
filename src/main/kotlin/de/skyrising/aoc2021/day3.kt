@@ -1,11 +1,26 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.TestInput
+
 class BenchmarkDay3 : BenchmarkDayV1(3)
 
 fun registerDay3() {
-    puzzleLS(3, "Binary Diagnostic") {
-        val test = listOf("00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000", "11001", "00010", "01010")
-        val input = it
+    val test = TestInput("""
+        00100
+        11110
+        10110
+        10111
+        10101
+        01111
+        00111
+        11100
+        10000
+        11001
+        00010
+        01010
+    """)
+    puzzle(3, "Binary Diagnostic") {
+        val input = lines
         val count = IntArray(input[0].length)
         for (line in input) {
             for (i in count.indices) {
@@ -32,9 +47,8 @@ fun registerDay3() {
         return list[0]
     }
 
-    puzzleLS(3, "Part Two") {
-        val test = listOf("00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000", "11001", "00010", "01010")
-        val input = it
+    puzzle(3, "Part Two") {
+        val input = lines
         val list = input.mapTo(ArrayList()) { line -> line.toInt(2) }
         val bits = input[0].length
         val oxygen = getRating(ArrayList(list), bits, false)

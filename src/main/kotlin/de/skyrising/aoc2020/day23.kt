@@ -67,8 +67,8 @@ private fun move(cups: Int2IntMap, current: Int) {
 
 fun registerDay23() {
     val test = "389125467\n"
-    puzzleS(23, "Crab Cups v1") {
-        val base = IntArray(it.length - 1) { i -> it[i] - '0' }
+    puzzle(23, "Crab Cups v1") {
+        val base = IntArray(chars.length - 1) { i -> chars[i] - '0' }
         val cups = Int2IntOpenHashMap(base.size)
         for (i in 0 until base.size - 1) cups[base[i]] = base[i + 1]
         cups[base.last()] = base[0]
@@ -87,8 +87,8 @@ fun registerDay23() {
         }
         sb.toString()
     }
-    puzzleS(23, "Part 2 v1") {
-        val base = IntArray(it.length - 1) { i -> it[i] - '0' }
+    puzzle(23, "Part 2 v1") {
+        val base = IntArray(chars.length - 1) { i -> chars[i] - '0' }
         //println(base.contentToString())
         val cups = Int2IntOpenHashMap(1_000_000)
         for (i in 0 until base.size - 1) cups[base[i]] = base[i + 1]

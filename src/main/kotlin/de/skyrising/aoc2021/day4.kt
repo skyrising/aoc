@@ -1,9 +1,12 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
+
 class BenchmarkDay4 : BenchmarkDayV1(4)
 
 fun registerDay4() {
-    val test = """
+    val test = TestInput("""
             7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
             22 13 17 11  0
@@ -23,15 +26,15 @@ fun registerDay4() {
             18  8 23 26 20
             22 11 13  6  5
              2  0 12  3  7
-        """.trimIndent().lines()
+        """)
 
-    fun readInput(input: List<String>): Pair<List<Int>, List<IntArray>> {
-        val numbers = input[0].split(',').map(String::toInt)
+    fun readInput(input: PuzzleInput): Pair<List<Int>, List<IntArray>> {
+        val numbers = input.lines[0].split(',').map(String::toInt)
         val boards = mutableListOf<IntArray>()
-        for (i in 0 until (input.size - 1) / 6) {
+        for (i in 0 until (input.lines.size - 1) / 6) {
             val board = IntArray(25)
             for (y in 0 until 5) {
-                val line = input[2 + i * 6 + y].trim().split(Regex("\\s+"))
+                val line = input.lines[2 + i * 6 + y].trim().split(Regex("\\s+"))
                 for (x in 0 until 5) {
                     board[y * 5 + x] = line[x].toInt()
                 }
@@ -41,8 +44,8 @@ fun registerDay4() {
         return numbers to boards
     }
 
-    puzzleLS(4, "Giant Squid") {
-        val (numbers, boards) = readInput(it)
+    puzzle(4, "Giant Squid") {
+        val (numbers, boards) = readInput(this)
         val markedByRow = ByteArray(boards.size * 5)
         val markedByColumn = ByteArray(boards.size * 5)
         for (number in numbers) {
@@ -78,13 +81,13 @@ fun registerDay4() {
                         }
                     }
                 }
-                return@puzzleLS sum * number
+                return@puzzle sum * number
             }
         }
         -1
     }
-    puzzleLS(4, "Part Two") {
-        val (numbers, boards) = readInput(it)
+    puzzle(4, "Part Two") {
+        val (numbers, boards) = readInput(this)
         val markedByRow = ByteArray(boards.size * 5)
         val markedByColumn = ByteArray(boards.size * 5)
         val wonBoards = linkedSetOf<Int>()
@@ -125,6 +128,6 @@ fun registerDay4() {
                 }
             }
         }
-        return@puzzleLS sum * wonNumbers.last()
+        return@puzzle sum * wonNumbers.last()
     }
 }

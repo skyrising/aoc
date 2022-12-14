@@ -1,5 +1,6 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.PuzzleInput
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.util.function.IntFunction
@@ -8,11 +9,11 @@ import java.util.function.IntFunction
 class BenchmarkDay24 : BenchmarkDayV1(24)
 
 fun registerDay24() {
-    puzzleLS(24, "Arithmetic Logic Unit") {
-        solve(it, intArrayOf(9, 8, 7, 6, 5, 4, 3, 2, 1))
+    puzzle(24, "Arithmetic Logic Unit") {
+        solve(this, intArrayOf(9, 8, 7, 6, 5, 4, 3, 2, 1))
     }
-    puzzleLS(24, "Part Two") {
-        solve(it, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))
+    puzzle(24, "Part Two") {
+        solve(this, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))
     }
 }
 
@@ -38,9 +39,9 @@ class IntIntCache<T> {
     operator fun get(a: Int, b: Int): Box<T>? = cache[a]?.getAndMoveToFirst(b)
 }
 
-fun solve(input: List<String>, order: IntArray): String? {
+fun solve(input: PuzzleInput, order: IntArray): String? {
     val cache = IntIntCache<String?>()
-    return solveRecursive(input.map {
+    return solveRecursive(input.lines.map {
         val parts = it.split(' ')
         AluInstr(parts[0], *parts.subList(1, parts.size).map(::AluSymbol).toTypedArray())
     }, cache, order, 0, 0)

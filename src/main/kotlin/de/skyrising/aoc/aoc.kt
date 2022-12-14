@@ -17,7 +17,7 @@ interface Puzzle<T> : Comparable<Puzzle<T>> {
     fun getDay(): Int
     fun getRealInput() = getInput(getYear(), getDay())
     fun generateInput(rand: Random): Pair<ByteBuffer, T>?
-    fun runPuzzle(input: ByteBuffer): T
+    fun runPuzzle(input: PuzzleInput): T
 
     override fun compareTo(other: Puzzle<T>): Int {
         val yearCmp = getYear().compareTo(other.getYear())
@@ -29,6 +29,55 @@ interface Puzzle<T> : Comparable<Puzzle<T>> {
         if (part != otherPart) return part - otherPart
         return getName().compareTo(other.getName())
     }
+}
+
+var lastInputLB = MutableBox<Pair<ByteBuffer, List<ByteBuffer>>?>(null)
+var lastInputS = MutableBox<Pair<ByteBuffer, CharBuffer>?>(null)
+var lastInputLS = MutableBox<Pair<ByteBuffer, List<String>>?>(null)
+
+fun calcInputS(input: ByteBuffer): CharBuffer = StandardCharsets.US_ASCII.decode(input.slice())
+fun calcInputLS(input: ByteBuffer) = lineList(input).map { StandardCharsets.US_ASCII.decode(it.slice()).toString() }
+
+interface PuzzleInput {
+    var benchmark: Boolean
+    val input: ByteBuffer
+    val lines: List<String>
+    val byteLines: List<ByteBuffer>
+    val string: String
+    val chars: CharBuffer
+
+    fun log(value: Any) {
+        if (benchmark) return
+        when (value) {
+            is Array<*> -> println(value.contentToString())
+            is ByteArray -> println(value.contentToString())
+            is ShortArray -> println(value.contentToString())
+            is IntArray -> println(value.contentToString())
+            is LongArray -> println(value.contentToString())
+            is FloatArray -> println(value.contentToString())
+            is DoubleArray -> println(value.contentToString())
+            is BooleanArray -> println(value.contentToString())
+            is CharArray -> println(value.contentToString())
+            is CharSequence -> println(value)
+            else -> println(value.toString())
+        }
+    }
+}
+
+class RealInput(override val input: ByteBuffer, override var benchmark: Boolean = false) : PuzzleInput {
+    override val lines by lazy { getInput(input, lastInputLS, ::calcInputLS) }
+    override val byteLines by lazy { getInput(input, lastInputLB, ::lineList) }
+    override val chars by lazy { getInput(input, lastInputS, ::calcInputS) }
+    override val string by lazy { chars.toString() }
+}
+
+class TestInput(str: String) : PuzzleInput {
+    override var benchmark: Boolean = false
+    override val string: String = str.trimIndent().trimEnd()
+    override val lines by lazy { string.lines() }
+    override val byteLines by lazy { lines.map { ByteBuffer.wrap(it.toByteArray()) } }
+    override val chars: CharBuffer by lazy { CharBuffer.wrap(string) }
+    override val input: ByteBuffer by lazy { ByteBuffer.wrap(string.toByteArray()) }
 }
 
 val allPuzzles = TreeMap<Int, TreeMap<Int, MutableList<Puzzle<*>>>>()
@@ -46,14 +95,6 @@ abstract class AbstractPuzzle<T>(private val year: Int, private val day: Int, pr
     override fun toString() = "Puzzle(year=$year,day=$day,name=$name})"
 }
 
-inline fun <T> puzzleB(year: Int, day: Int, name: String, crossinline run: (ByteBuffer) -> T): Puzzle<T> {
-    val p = object : AbstractPuzzle<T>(year, day, name) {
-        override fun runPuzzle(input: ByteBuffer) = run(input)
-    }
-    register(p)
-    return p
-}
-
 inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer, T>?>, noinline fn: (ByteBuffer) -> T): T {
     val value = lastInput.value
     if (value == null || value.first !== input) {
@@ -64,33 +105,10 @@ inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer
     return value.second
 }
 
-var lastInputLB = MutableBox<Pair<ByteBuffer, List<ByteBuffer>>?>(null)
-inline fun <T> puzzleLB(year: Int, day: Int, name: String, crossinline run: (List<ByteBuffer>) -> T): Puzzle<T> {
-    val p = object : AbstractPuzzle<T>(year, day, name) {
-        override fun runPuzzle(input: ByteBuffer) = run(getInput(input, lastInputLB, ::lineList))
-    }
-    register(p)
-    return p
-}
-
-var lastInputS = MutableBox<Pair<ByteBuffer, CharBuffer>?>(null)
-fun calcInputS(input: ByteBuffer): CharBuffer = StandardCharsets.US_ASCII.decode(input.slice())
-inline fun <T> puzzleS(year: Int, day: Int, name: String, crossinline run: (CharBuffer) -> T): Puzzle<T> {
-    val p = object : AbstractPuzzle<T>(year, day, name) {
-        override fun runPuzzle(input: ByteBuffer) = run(getInput(input, lastInputS, ::calcInputS).slice())
-    }
-    register(p)
-    return p
-}
-
-var lastInputLS = MutableBox<Pair<ByteBuffer, List<String>>?>(null)
-fun calcInputLS(input: ByteBuffer) = lineList(input).map { StandardCharsets.US_ASCII.decode(it.slice()).toString() }
-inline fun <T> puzzleLS(year: Int, day: Int, name: String, crossinline run: (List<String>) -> T): Puzzle<T> {
-    val p = object : AbstractPuzzle<T>(year, day, name) {
-        override fun runPuzzle(input: ByteBuffer) = run(getInput(input, lastInputLS, ::calcInputLS))
-    }
-    register(p)
-    return p
+inline fun <T> puzzle(year: Int, day: Int, name: String, crossinline run: PuzzleInput.() -> T): Puzzle<T> {
+    return object : AbstractPuzzle<T>(year, day, name) {
+        override fun runPuzzle(input: PuzzleInput): T = run(input)
+    }.also(::register)
 }
 
 private var registeredAll = false
@@ -145,12 +163,14 @@ fun main(args: Array<String>) {
         }
         val input = puzzle.getRealInput()
         if (BENCHMARK) {
+            input.benchmark = true
             repeat(WARMUP) {
                 measure(RUNS) { puzzle.runPuzzle(input) }
             }
             val times = DoubleArray(MEASURE_ITERS) {
                 measure(RUNS) { puzzle.runPuzzle(input) }
             }
+            input.benchmark = false
             val avg = times.average()
             val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
             println(String.format(Locale.ROOT, "%-26s: %16s, %s ± %4.1f%%",

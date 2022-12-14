@@ -1,5 +1,6 @@
 package de.skyrising.aoc2022
 
+import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.ints
 import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongList
@@ -25,7 +26,7 @@ data class Monkey(val items: LongList, val op: (Long) -> Long, val divisor: Int,
     }
 }
 
-private fun monkeyBusiness(input: List<String>, steps: Int, divideByThree: Boolean): Long {
+private fun monkeyBusiness(input: PuzzleInput, steps: Int, divideByThree: Boolean): Long {
     val monkeys = parseInput(input)
     repeat(steps) {
         for (monkey in monkeys) {
@@ -36,8 +37,8 @@ private fun monkeyBusiness(input: List<String>, steps: Int, divideByThree: Boole
     return a.inspected * b.inspected
 }
 
-private fun parseInput(input: List<String>): List<Monkey> {
-    return input.chunked(7) {
+private fun parseInput(input: PuzzleInput): List<Monkey> {
+    return input.lines.chunked(7) {
         val startingItems = it[1].ints()
         val opText = it[2].substringAfter("= ")
         val split = opText.split(' ')
@@ -61,10 +62,10 @@ private fun parseInput(input: List<String>): List<Monkey> {
 }
 
 fun registerDay11() {
-    puzzleLS(11, "Monkey in the Middle") {
-        monkeyBusiness(it, 20, true)
+    puzzle(11, "Monkey in the Middle") {
+        monkeyBusiness(this, 20, true)
     }
-    puzzleLS(11, "Part Two") {
-        monkeyBusiness(it, 10000, false)
+    puzzle(11, "Part Two") {
+        monkeyBusiness(this, 10000, false)
     }
 }

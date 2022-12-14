@@ -1,25 +1,26 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.longs.LongArrayList
 
 class BenchmarkDay10 : BenchmarkDayV1(10)
 
 fun registerDay10() {
-    val test = listOf(
-        "[({(<(())[]>[[{[]{<()<>>",
-        "[(()[<>])]({[<{<<[]>>(",
-        "{([(<{}[<>[]}>{[]{[(<()>",
-        "(((({<>}<{<{<>}{[]{[]{}",
-        "[[<[([]))<([[{}[[()]]]",
-        "[{[{({}]{}}([{[{{{}}([]",
-        "{<[[]]>}<{[{[{[]{()[[[]",
-        "[<(<(<(<{}))><([]([]()",
-        "<{([([[(<>()){}]>(<<{{",
-        "<{([{{}}[<[[[<>{}]]]>[]]"
-    )
-    puzzleLS(10, "Syntax Scoring") {
+    val test = TestInput("""
+        [({(<(())[]>[[{[]{<()<>>
+        [(()[<>])]({[<{<<[]>>(
+        {([(<{}[<>[]}>{[]{[(<()>
+        (((({<>}<{<{<>}{[]{[]{}
+        [[<[([]))<([[{}[[()]]]
+        [{[{({}]{}}([{[{{{}}([]
+        {<[[]]>}<{[{[{[]{()[[[]
+        [<(<(<(<{}))><([]([]()
+        <{([([[(<>()){}]>(<<{{
+        <{([{{}}[<[[[<>{}]]]>[]]
+    """)
+    puzzle(10, "Syntax Scoring") {
         var score = 0
-        for (line in it) {
+        for (line in lines) {
             val stack = ArrayDeque<Char>()
             for (c in line) {
                 when (c) {
@@ -44,9 +45,9 @@ fun registerDay10() {
         }
         score
     }
-    puzzleLS(10, "Part Two") {
+    puzzle(10, "Part Two") {
         val scores = LongArrayList()
-        outer@for (line in it) {
+        outer@for (line in lines) {
             val stack = ArrayDeque<Char>()
             for (c in line) {
                 when (c) {

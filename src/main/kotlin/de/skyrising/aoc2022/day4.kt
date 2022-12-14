@@ -8,9 +8,9 @@ private fun parseRange(range: String): IntRange {
 }
 
 fun registerDay4() {
-    puzzleLS(4, "Camp Cleanup") {
+    puzzle(4, "Camp Cleanup") {
         var count = 0
-        for (line in it) {
+        for (line in lines) {
             val (a, b) = line.split(",")
             val aRange = parseRange(a)
             val bRange = parseRange(b)
@@ -21,9 +21,9 @@ fun registerDay4() {
         count
     }
 
-    puzzleLS(4, "Part Two") {
+    puzzle(4, "Part Two") {
         var count = 0
-        for (line in it) {
+        for (line in lines) {
             val (a, b) = line.split(",")
             val aRange = parseRange(a)
             val bRange = parseRange(b)

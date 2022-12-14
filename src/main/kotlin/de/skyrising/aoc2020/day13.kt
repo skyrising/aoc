@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import de.skyrising.aoc.positionAfter
 import de.skyrising.aoc.splitToRanges
 import de.skyrising.aoc.until
@@ -67,34 +68,34 @@ inline fun crt(n: Int, divisors: (Int) -> Long, remainders: (Int) -> Long): Long
 }
 
 fun registerDay13() {
-    val test = """
+    val test = TestInput("""
         939
         7,13,x,x,59,x,31,19
-        """.trimIndent().split("\n")
-    puzzleLS(13, "Shuttle Search v1") {
-        val earliest = it[0].toInt()
-        val buses = it[1].split(",").stream().filter { it != "x" }.mapToInt(String::toInt).toArray()
+    """)
+    puzzle(13, "Shuttle Search v1") {
+        val earliest = lines[0].toInt()
+        val buses = lines[1].split(",").stream().filter { it != "x" }.mapToInt(String::toInt).toArray()
         var i = earliest
         while (true) {
             for (bus in buses) {
-                if (i % bus == 0) return@puzzleLS (i - earliest) * bus
+                if (i % bus == 0) return@puzzle (i - earliest) * bus
             }
             i++
         }
     }
-    puzzleLS(13, "Shuttle Search v2") {
-        val earliest = it[0].toInt()
-        val buses = it[1].split(",").stream().filter { it != "x" }.mapToInt(String::toInt).toArray()
+    puzzle(13, "Shuttle Search v2") {
+        val earliest = lines[0].toInt()
+        val buses = lines[1].split(",").stream().filter { it != "x" }.mapToInt(String::toInt).toArray()
         var pair = Pair(0, Integer.MAX_VALUE)
         for (bus in buses) {
-            if (earliest % bus == 0) return@puzzleLS 0
+            if (earliest % bus == 0) return@puzzle 0
             val dist = bus * (earliest / bus + 1) - earliest
             if (dist < pair.second) pair = Pair(bus, dist)
         }
         pair.first * pair.second
     }
-    puzzleLS(13, "Part 2 v1") {
-        val split = it[1].split(",")
+    puzzle(13, "Part 2 v1") {
+        val split = lines[1].split(",")
         val buses = LongArrayList()
         val indexes = LongArrayList()
         split.forEachIndexed { i, s ->
@@ -113,13 +114,13 @@ fun registerDay13() {
         )
     }
 
-    puzzleS(13, "Part 2 v2") {
+    puzzle(13, "Part 2 v2") {
         val remainders = LongArrayList()
         val divisors = LongArrayList()
         var i = 0
-        if (!it.positionAfter('\n')) throw IllegalArgumentException("Invalid input")
-        if (!it.until('\n')) throw IllegalArgumentException("Invalid input")
-        splitToRanges(it, ',') { from, to ->
+        if (!chars.positionAfter('\n')) throw IllegalArgumentException("Invalid input")
+        if (!chars.until('\n')) throw IllegalArgumentException("Invalid input")
+        splitToRanges(chars, ',') { from, to ->
             val index = i++
             if (to == from + 1 && this[position() + from] == 'x') return@splitToRanges
             val bus = substring(from, to).toLong()

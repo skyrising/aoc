@@ -1,5 +1,7 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
+
 class BenchmarkDay11 : BenchmarkDayV1(11)
 
 private inline fun scanQueenMove(row: Int, column: Int, grid: List<CharArray>, width: Int, fn: (Char, Int, Int) -> Boolean) {
@@ -14,7 +16,7 @@ private inline fun scanQueenMove(row: Int, column: Int, grid: List<CharArray>, w
 }
 
 fun registerDay11() {
-    val test = """
+    val test = TestInput("""
         L.LL.LL.LL
         LLLLLLL.LL
         L.L.L..L..
@@ -25,8 +27,8 @@ fun registerDay11() {
         LLLLLLLLLL
         L.LLLLLL.L
         L.LLLLL.LL
-        """.trimIndent().split("\n")
-    val test2 = """
+    """)
+    val test2 = TestInput("""
         .......#.
         ...#.....
         .#.......
@@ -36,10 +38,10 @@ fun registerDay11() {
         .........
         #........
         ...#.....
-    """.trimIndent().split("\n")
-    puzzleLS(11, "Seating System v1") {
+    """)
+    puzzle(11, "Seating System v1") {
         var grid = mutableListOf<CharArray>()
-        for (line in it) {
+        for (line in lines) {
             grid.add(line.toCharArray())
         }
         while (true) {
@@ -88,14 +90,14 @@ fun registerDay11() {
                         if (seat == '#') count++
                     }
                 }
-                return@puzzleLS count
+                return@puzzle count
             }
         }
     }
-    puzzleLS(11, "Part 2 v1") {
+    puzzle(11, "Part 2 v1") {
         var grid = mutableListOf<CharArray>()
         var width = 0
-        for (line in it) {
+        for (line in lines) {
             val row = line.toCharArray()
             assert(width == 0 || width == row.size)
             width = row.size
@@ -150,7 +152,7 @@ fun registerDay11() {
                         if (seat == '#') count++
                     }
                 }
-                return@puzzleLS count
+                return@puzzle count
             }
         }
     }

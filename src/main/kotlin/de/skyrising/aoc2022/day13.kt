@@ -27,8 +27,8 @@ private fun compare(left: JsonElement, right: JsonElement): Int {
 }
 
 fun registerDay13() {
-    puzzleLS(13, "Distress Signal") {
-        val values = it.filter(String::isNotBlank).map(Json::parseToJsonElement).chunked(2)
+    puzzle(13, "Distress Signal") {
+        val values = lines.filter(String::isNotBlank).map(Json::parseToJsonElement).chunked(2)
         var result = 0
         for (i in values.indices) {
             val (left, right) = values[i]
@@ -37,8 +37,8 @@ fun registerDay13() {
         }
         result
     }
-    puzzleLS(13, "Part Two") {
-        val values = it.filter(String::isNotBlank).mapTo(mutableListOf(),  Json::parseToJsonElement)
+    puzzle(13, "Part Two") {
+        val values = lines.filter(String::isNotBlank).mapTo(mutableListOf(),  Json::parseToJsonElement)
         val div1 = JsonArray(listOf(JsonArray(listOf(JsonPrimitive(2)))))
         val div2 = JsonArray(listOf(JsonArray(listOf(JsonPrimitive(6)))))
         values.add(div1)

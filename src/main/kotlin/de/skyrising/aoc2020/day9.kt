@@ -1,12 +1,13 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.HashCommon
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 
 class BenchmarkDay9 : BenchmarkDay(9)
 
 fun registerDay9() {
-    val test = """
+    val test = TestInput("""
         35
         20
         15
@@ -27,7 +28,7 @@ fun registerDay9() {
         277
         309
         576
-        """.trimIndent().split("\n")
+    """)
     fun longArrayOf(numbers: List<String>): LongArray {
         val arr = LongArray(numbers.size)
         for (i in arr.indices) {
@@ -75,33 +76,33 @@ fun registerDay9() {
         }
         return null
     }
-    puzzleLS(9, "Encoding Error v1") {
-        val numbers = it.map(String::toLong)
+    puzzle(9, "Encoding Error v1") {
+        val numbers = lines.map(String::toLong)
         findInvalid(numbers)
     }
-    puzzleLS(9, "Encoding Error v2") {
-        val numbers = longArrayOf(it)
+    puzzle(9, "Encoding Error v2") {
+        val numbers = longArrayOf(lines)
         findInvalid2(numbers)
     }
-    puzzleLS(9, "Part 2 v1") {
-        val numbers = it.map(String::toLong)
-        val invalid = findInvalid(numbers) ?: return@puzzleLS null
+    puzzle(9, "Part 2 v1") {
+        val numbers = lines.map(String::toLong)
+        val invalid = findInvalid(numbers) ?: return@puzzle null
         for (i in numbers.indices) {
             var sum = 0L
             for (j in i until numbers.size) {
                 sum += numbers[j]
                 if (sum == invalid) {
                     val sorted = numbers.subList(i, j + 1).sorted()
-                    return@puzzleLS sorted[0] + sorted[sorted.size - 1]
+                    return@puzzle sorted[0] + sorted[sorted.size - 1]
                 }
                 if (sum > invalid) break
             }
         }
-        return@puzzleLS null
+        return@puzzle null
     }
-    puzzleLS(9, "Part 2 v2") {
-        val numbers = longArrayOf(it)
-        val invalid = findInvalid2(numbers) ?: return@puzzleLS null
+    puzzle(9, "Part 2 v2") {
+        val numbers = longArrayOf(lines)
+        val invalid = findInvalid2(numbers) ?: return@puzzle null
         for (i in numbers.lastIndex downTo 0) {
             var sum = numbers[i]
             var min = sum
@@ -111,10 +112,10 @@ fun registerDay9() {
                 min = minOf(min, n)
                 max = maxOf(max, n)
                 sum += n
-                if (sum == invalid && max != min) return@puzzleLS min + max
+                if (sum == invalid && max != min) return@puzzle min + max
                 if (sum > invalid) break
             }
         }
-        return@puzzleLS null
+        return@puzzle null
     }
 }

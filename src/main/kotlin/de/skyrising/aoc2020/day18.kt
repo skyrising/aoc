@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import java.util.*
 
 class BenchmarkDay18 : BenchmarkDay(18)
@@ -171,39 +172,37 @@ private fun parseBinOp(tokens: List<Token>, lhs: Expr, minPrecedence: Int, prece
 }
 
 fun registerDay18() {
-    val test = """
-        2 * 3 + (4 * 5)
-    """.trimIndent().split("\n")
-    puzzleLS(18, "Operation Order v1") {
+    val test = TestInput("2 * 3 + (4 * 5)")
+    puzzle(18, "Operation Order v1") {
         var sum = 0L
-        for (line in it) {
+        for (line in lines) {
             val expr = parse(lex(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 1)))
             sum += expr.eval()
             // println("$line: $expr, ${expr.eval()}")
         }
         sum
     }
-    puzzleLS(18, "Operation Order v2") {
+    puzzle(18, "Operation Order v2") {
         var sum = 0L
-        for (line in it) {
+        for (line in lines) {
             val expr = parse(lex2(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 1)))
             sum += expr.eval()
             // println("$line: $expr, ${expr.eval()}")
         }
         sum
     }
-    puzzleLS(18, "Part 2 v1") {
+    puzzle(18, "Part 2 v1") {
         var sum = 0L
-        for (line in it) {
+        for (line in lines) {
             val expr = parse(lex(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 2)))
             sum += expr.eval()
             // println("$line: $expr, ${expr.eval()}")
         }
         sum
     }
-    puzzleLS(18, "Part 2 v2") {
+    puzzle(18, "Part 2 v2") {
         var sum = 0L
-        for (line in it) {
+        for (line in lines) {
             val expr = parse(lex2(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 2)))
             sum += expr.eval()
             // println("$line: $expr, ${expr.eval()}")

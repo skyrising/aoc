@@ -1,13 +1,14 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.bytes.ByteArrayList
 
 class BenchmarkDay6 : BenchmarkDayV1(6)
 
 fun registerDay6() {
-    val test = "3,4,3,1,2"
-    puzzleS(6, "Lanternfish") {
-        val fish = ByteArrayList(it.trim().split(',').map(String::toByte))
+    val test = TestInput("3,4,3,1,2")
+    puzzle(6, "Lanternfish") {
+        val fish = ByteArrayList(chars.trim().split(',').map(String::toByte))
         for (day in 1..80) {
             val newFish = ByteArrayList()
             for (i in fish.indices) {
@@ -24,8 +25,8 @@ fun registerDay6() {
         }
         fish.size
     }
-    puzzleS(6, "Part Two") {
-        val fish = it.trim().split(',').map(String::toInt)
+    puzzle(6, "Part Two") {
+        val fish = chars.trim().split(',').map(String::toInt)
         val createCount = LongArray(280)
         for (f in fish) createCount[f + 1]++
         val count = LongArray(280)

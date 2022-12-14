@@ -6,10 +6,10 @@ import java.util.regex.Pattern
 class BenchmarkDay2 : BenchmarkDay(2)
 
 fun registerDay2() {
-    puzzleLS(2, "Password Philosophy v1") {
+    puzzle(2, "Password Philosophy v1") {
         val pattern = Pattern.compile("^(?<min>\\d+)-(?<max>\\d+) (?<char>.): (?<password>.*)$")
         var valid = 0
-        outer@ for (line in it) {
+        outer@ for (line in lines) {
             val match = pattern.matcher(line)
             if (!match.find()) {
                 println("Could not parse $line")
@@ -30,9 +30,9 @@ fun registerDay2() {
         }
         valid
     }
-    puzzleLB(2, "Password Philosophy v2") {
+    puzzle(2, "Password Philosophy v2") {
         var valid = 0
-        for (line in it) {
+        for (line in byteLines) {
             valid += day2(line) { min, max, c, start, end ->
                 var count = 0
                 for (i in start until end) {
@@ -46,10 +46,10 @@ fun registerDay2() {
         }
         valid
     }
-    puzzleLS(2, "Part Two v1") {
+    puzzle(2, "Part Two v1") {
         val pattern = Pattern.compile("^(?<first>\\d+)-(?<second>\\d+) (?<char>.): (?<password>.*)$")
         var valid = 0
-        for (line in it) {
+        for (line in lines) {
             val match = pattern.matcher(line)
             if (!match.find()) {
                 println("Could not parse $line")
@@ -65,9 +65,9 @@ fun registerDay2() {
         }
         valid
     }
-    puzzleLB(2, "Part Two v2") {
+    puzzle(2, "Part Two v2") {
         var valid = 0
-        for (line in it) {
+        for (line in byteLines) {
             valid += day2(line) { first, second, c, start, _ ->
                 (line[start + first - 1] == c) xor (line[start + second - 1] == c)
             }
@@ -76,7 +76,7 @@ fun registerDay2() {
     }
 }
 
-inline fun day2(line: ByteBuffer, predicate: (n1: Int, n2: Int, c: Byte, start: Int, end: Int) -> Boolean): Int {
+private inline fun day2(line: ByteBuffer, predicate: (n1: Int, n2: Int, c: Byte, start: Int, end: Int) -> Boolean): Int {
     val len = line.remaining()
     var num1 = 0
     var num2 = 0

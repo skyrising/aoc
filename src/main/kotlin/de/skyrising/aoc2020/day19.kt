@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
@@ -48,7 +49,7 @@ private fun readPreRules(lines: List<String>): Triple<Int, Int2ObjectMap<String>
 }
 
 fun registerDay19() {
-    val test = """
+    val test = TestInput("""
         0: 4 1 5
         1: 2 3 | 3 2
         2: 4 4 | 5 5
@@ -61,8 +62,8 @@ fun registerDay19() {
         abbbab
         aaabbb
         aaaabbb
-    """.trimIndent().split("\n")
-    val test2 = """
+    """)
+    val test2 = TestInput("""
         42: 9 14 | 10 1
         9: 14 27 | 1 26
         10: 23 14 | 28 1
@@ -110,23 +111,23 @@ fun registerDay19() {
         aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
         babaaabbbaaabaababbaabababaaab
         aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
-    """.trimIndent().split("\n")
-    puzzleLS(19, "Monster Messages v1") {
-        val (rulesCount, _, buildRule) = readPreRules(it)
+    """)
+    puzzle(19, "Monster Messages v1") {
+        val (rulesCount, _, buildRule) = readPreRules(lines)
         val rule0 = Regex(buildRule(0))
         var count = 0
-        for (i in rulesCount + 1 until it.size) {
-            val message = it[i]
+        for (i in rulesCount + 1 until lines.size) {
+            val message = lines[i]
             if (rule0.matches(message)) count++
         }
         count
     }
-    puzzleLS(19, "Part 2 v1") {
+    puzzle(19, "Part 2 v1") {
         // 0: 8 11
         // 8: 42 | 42 8 -> 42+
         // 11: 42 31 | 42 11 31 -> (42(?-1)?31)
         // https://regex101.com/r/9CrEQm/1
-        val (_, cache, buildRule) = readPreRules(it)
+        val (_, cache, buildRule) = readPreRules(lines)
         val rule31 = buildRule(31)
         val rule42 = buildRule(42)
         cache[8] = "(?:$rule42)+"

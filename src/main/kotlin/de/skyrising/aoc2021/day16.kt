@@ -1,14 +1,15 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.BitBuf
+import de.skyrising.aoc.TestInput
 import java.util.*
 
 class BenchmarkDay16 : BenchmarkDayV1(16)
 
 fun registerDay16() {
-    val test = "CE00C43D881120"
-    puzzleS(16, "Packet Decoder") {
-        val bytes = HexFormat.of().parseHex(it.trimEnd())
+    val test = TestInput("CE00C43D881120")
+    puzzle(16, "Packet Decoder") {
+        val bytes = HexFormat.of().parseHex(chars.trimEnd())
         val data = BitBuf(bytes)
         val packets = mutableListOf<Packet>()
         while (true) {
@@ -17,8 +18,8 @@ fun registerDay16() {
         }
         sumPacketVersions(packets)
     }
-    puzzleS(16, "Part Two") {
-        val bytes = HexFormat.of().parseHex(it.trimEnd())
+    puzzle(16, "Part Two") {
+        val bytes = HexFormat.of().parseHex(chars.trimEnd())
         val data = BitBuf(bytes)
         readPacket(data)?.value()
     }

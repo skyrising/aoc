@@ -1,22 +1,23 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import kotlin.math.*
 
 class BenchmarkDay12 : BenchmarkDayV1(12)
 
 fun registerDay12() {
-    val test = """
+    val test = TestInput("""
         F10
         N3
         F7
         R90
         F11
-        """.trimIndent().split("\n")
-    puzzleLS(12, "Rain Risk v1") {
+    """)
+    puzzle(12, "Rain Risk v1") {
         var x = 0
         var y = 0
         var angle = 0
-        for (line in it) {
+        for (line in lines) {
             val command = line[0]
             val amount = line.substring(1).toInt()
             when (command) {
@@ -35,12 +36,12 @@ fun registerDay12() {
         }
         abs(x) + abs(y)
     }
-    puzzleLS(12, "Part 2 v1") {
+    puzzle(12, "Part 2 v1") {
         var x = 0
         var y = 0
         var wx = 10
         var wy = 1
-        for (line in it) {
+        for (line in lines) {
             val command = line[0]
             val amount = line.substring(1).toInt()
             when (command) {

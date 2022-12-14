@@ -1,5 +1,7 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
 import de.skyrising.aoc.Vec2i
 import it.unimi.dsi.fastutil.objects.Object2CharMap
 import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
@@ -7,19 +9,19 @@ import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
 class BenchmarkDay25 : BenchmarkDayV1(25)
 
 fun registerDay25() {
-    val test = listOf(
-        "v...>>.vv>",
-        ".vv>>.vv..",
-        ">>.>v>...v",
-        ">>v>>.>.v.",
-        "v>v.vv.v..",
-        ">.>>..v...",
-        ".vv..>.>v.",
-        "v.v..>>v.v",
-        "....v..v.>"
-    )
-    puzzleLS(25, "Sea Cucumber") {
-        val (map, size) = parseInput25(it)
+    val test = TestInput("""
+        v...>>.vv>
+        .vv>>.vv..
+        >>.>v>...v
+        >>v>>.>.v.
+        v>v.vv.v..
+        >.>>..v...
+        .vv..>.>v.
+        v.v..>>v.v
+        ....v..v.>
+    """)
+    puzzle(25, "Sea Cucumber") {
+        val (map, size) = parseInput(this)
         var state = map
         var steps = 0
         while (true) {
@@ -68,13 +70,13 @@ private fun show(map: Object2CharMap<Vec2i>, size: Vec2i): String {
     return sb.toString()
 }
 
-private fun parseInput25(input: List<String>): Pair<Object2CharMap<Vec2i>, Vec2i> {
+private fun parseInput(input: PuzzleInput): Pair<Object2CharMap<Vec2i>, Vec2i> {
     val map = Object2CharOpenHashMap<Vec2i>()
-    for ((y, line) in input.withIndex()) {
+    for ((y, line) in input.lines.withIndex()) {
         for ((x, c) in line.withIndex()) {
             if (c == '.') continue
             map[Vec2i(x, y)] = c
         }
     }
-    return map to Vec2i(input[0].length, input.size)
+    return map to Vec2i(input.lines[0].length, input.lines.size)
 }

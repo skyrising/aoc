@@ -1,17 +1,21 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntArrayList
 
 class BenchmarkDay9 : BenchmarkDayV1(9)
 
 fun registerDay9() {
-    val test = listOf("2199943210",
-        "3987894921",
-        "9856789892",
-        "8767896789",
-        "9899965678")
-    puzzleLS(9, "Smoke Basin") {
-        val (points, width, height) = parseInput(it)
+    val test = TestInput("""
+        2199943210
+        3987894921
+        9856789892
+        8767896789
+        9899965678
+    """)
+    puzzle(9, "Smoke Basin") {
+        val (points, width, height) = parseInput(this)
         var risk = 0
         forEachLowPoint(points, width, height) { _, _, value ->
             //println("$x,$y $value")
@@ -19,8 +23,8 @@ fun registerDay9() {
         }
         risk
     }
-    puzzleLS(9, "Part Two") {
-        val (points, width, height) = parseInput(it)
+    puzzle(9, "Part Two") {
+        val (points, width, height) = parseInput(this)
         val basins = IntArrayList()
         forEachLowPoint(points, width, height) { x, y, _ ->
             val basin = mutableSetOf<Pair<Int, Int>>()
@@ -33,8 +37,8 @@ fun registerDay9() {
     }
 }
 
-fun parseInput(input: List<String>): Triple<Array<IntArray>, Int, Int> {
-    val points = Array<IntArray>(input.size) { line -> input[line].chars().map { n -> n - '0'.code }.toArray() }
+private fun parseInput(input: PuzzleInput): Triple<Array<IntArray>, Int, Int> {
+    val points = Array<IntArray>(input.lines.size) { line -> input.lines[line].chars().map { n -> n - '0'.code }.toArray() }
     val width = points[0].size
     val height = points.size
     return Triple(points, width, height)

@@ -1,35 +1,31 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
 import java.util.*
 
 class BenchmarkDay20 : BenchmarkDayV1(20)
 
 fun registerDay20() {
-    val test = listOf(
-        "..#.#..#####.#.#.#.###.##.....###.##.#..###.####..#####..#....#..#..##..##" +
-        "#..######.###...####..#..#####..##..#.#####...##.#.#..#.##..#.#......#.###" +
-        ".######.###.####...#.##.##..#..#..#####.....#.#....###..#.##......#.....#." +
-        ".#..#..##..#...##.######.####.####.#.#...#.......#..#.#.#...####.##.#....." +
-        ".#..#...##.#.##..#...##.#.##..###.#......#.#.......#.#.#.####.###.##...#.." +
-        "...####.#..#..#.##.#....##..#.####....##...##..#...#......#.#.......#....." +
-        "..##..####..#...#.#.#...##..#.#..###..#####........#..####......#..#",
-        "",
-        "#..#.",
-        "#....",
-        "##..#",
-        "..#..",
-        "..###"
-    )
-    puzzleLS(20, "Trench Map") {
-        val (algorithm, image) = parseInput20(it)
+    val test = TestInput("""
+        ..#.#..#####.#.#.#.###.##.....###.##.#..###.####..#####..#....#..#..##..###..######.###...####..#..#####..##..#.#####...##.#.#..#.##..#.#......#.###.######.###.####...#.##.##..#..#..#####.....#.#....###..#.##......#.....#..#..#..##..#...##.######.####.####.#.#...#.......#..#.#.#...####.##.#......#..#...##.#.##..#...##.#.##..###.#......#.#.......#.#.#.####.###.##...#.....####.#..#..#.##.#....##..#.####....##...##..#...#......#.#.......#.......##..####..#...#.#.#...##..#.#..###..#####........#..####......#..#
+
+        #..#.
+        #....
+        ##..#
+        ..#..
+        ..###
+    """)
+    puzzle(20, "Trench Map") {
+        val (algorithm, image) = parseInput(this)
         var img = InfiniteBitImage(image, 0, 0, false)
         repeat(2) {
             img = processImageStep(img, algorithm)
         }
         img.count()
     }
-    puzzleLS(20, "Part Two") {
-        val (algorithm, image) = parseInput20(it)
+    puzzle(20, "Part Two") {
+        val (algorithm, image) = parseInput(this)
         var img = InfiniteBitImage(image, 0, 0, false)
         repeat(50) {
             img = processImageStep(img, algorithm)
@@ -38,13 +34,13 @@ fun registerDay20() {
     }
 }
 
-private fun parseInput20(input: List<String>): Pair<BitSet, BitImage> {
-    val algLine = input[0]
+private fun parseInput(input: PuzzleInput): Pair<BitSet, BitImage> {
+    val algLine = input.lines[0]
     val alg = BitSet(algLine.length)
     for (i in algLine.indices) alg[i] = algLine[i] == '#'
-    val img = BitImage(input[2].length, input.size - 2)
+    val img = BitImage(input.lines[2].length, input.lines.size - 2)
     for (y in 0 until img.height) {
-        val line = input[y + 2]
+        val line = input.lines[y + 2]
         for (x in 0 until img.width) {
             img[x, y] = line[x] == '#'
         }

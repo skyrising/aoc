@@ -1,13 +1,14 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.TestInput
 import kotlin.math.abs
 
 class BenchmarkDay7 : BenchmarkDayV1(7)
 
 fun registerDay7() {
-    val test = "16,1,2,0,4,2,7,1,2,14"
-    puzzleS(7, "The Treachery of Whales") {
-        val crabs = it.trim().split(',').map(String::toInt).sorted()
+    val test = TestInput("16,1,2,0,4,2,7,1,2,14")
+    puzzle(7, "The Treachery of Whales") {
+        val crabs = chars.trim().split(',').map(String::toInt).sorted()
         var minFuel = Int.MAX_VALUE
         for (pos in crabs.first()..crabs.last()) {
             var fuel = 0
@@ -18,8 +19,8 @@ fun registerDay7() {
         }
         minFuel
     }
-    puzzleS(7, "Part Two") {
-        val crabs = it.trim().split(',').map(String::toInt).sorted()
+    puzzle(7, "Part Two") {
+        val crabs = chars.trim().split(',').map(String::toInt).sorted()
         var minFuel = Int.MAX_VALUE
         for (pos in crabs.first()..crabs.last()) {
             var fuel = 0

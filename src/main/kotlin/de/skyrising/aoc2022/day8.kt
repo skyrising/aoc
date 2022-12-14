@@ -1,13 +1,14 @@
 package de.skyrising.aoc2022
 
-import java.nio.ByteBuffer
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
 import java.util.*
 
 class BenchmarkDay8 : BenchmarkDayV1(8)
 
-private fun parseInput(input: List<ByteBuffer>): Array<IntArray> {
+private fun parseInput(input: PuzzleInput): Array<IntArray> {
     val rows = mutableListOf<IntArray>()
-    for (line in input) {
+    for (line in input.byteLines) {
         val row = IntArray(line.remaining())
         for (i in 0 until line.remaining()) {
             row[i] = line[i] - '0'.code.toByte()
@@ -31,15 +32,15 @@ private fun viewingDistance(limit: Int, lookup: (k: Int) -> Int): Int {
 }
 
 fun registerDay8() {
-    val test = arrayOf(
-        intArrayOf(3, 0, 3, 7, 3),
-        intArrayOf(2, 5, 5, 1, 2),
-        intArrayOf(6, 5, 3, 3, 2),
-        intArrayOf(3, 3, 5, 4, 9),
-        intArrayOf(3, 5, 3, 9, 0)
-    )
-    puzzleLB(8, "") {
-        val rows = parseInput(it)
+    val test = TestInput("""
+        30373
+        25512
+        65332
+        33549
+        35390
+    """)
+    puzzle(8, "Treetop Tree House") {
+        val rows = parseInput(this)
         val width = rows[0].size
         val height = rows.size
         val visible = BitSet(width * height)
@@ -77,8 +78,8 @@ fun registerDay8() {
         }*/
         visible.cardinality()
     }
-    puzzleLB(8, "Part Two") {
-        val rows = parseInput(it)
+    puzzle(8, "Part Two") {
+        val rows = parseInput(this)
         val width = rows[0].size
         val height = rows.size
         var highscore = 0

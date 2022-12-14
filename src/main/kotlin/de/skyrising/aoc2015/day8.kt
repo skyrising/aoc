@@ -1,18 +1,20 @@
 package de.skyrising.aoc2015
 
+import de.skyrising.aoc.TestInput
+
 class BenchmarkDay8 : BenchmarkDayV1(8)
 
 fun registerDay8() {
-    val test = """
-            ""
-            "abc"
-            "aaa\"aaa"
-            "\x27"
-        """.trimIndent().lines().toList()
-    puzzleLS(8, "Matchsticks") {
+    val test = TestInput("""
+        ""
+        "abc"
+        "aaa\"aaa"
+        "\x27"
+    """)
+    puzzle(8, "Matchsticks") {
         var totalChars = 0
         var memChars = 0
-        for (line in it) {
+        for (line in lines) {
             totalChars += line.length
             var i = 1
             while (i < line.lastIndex) {
@@ -31,10 +33,10 @@ fun registerDay8() {
         }
         totalChars - memChars
     }
-    puzzleLS(8, "Part Two") {
+    puzzle(8, "Part Two") {
         var totalChars = 0
         var origChars = 0
-        for (line in it) {
+        for (line in lines) {
             origChars += line.length
             totalChars += line.length + 2
             for (c in line) {

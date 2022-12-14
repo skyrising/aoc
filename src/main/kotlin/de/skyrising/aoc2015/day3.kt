@@ -3,12 +3,12 @@ package de.skyrising.aoc2015
 class BenchmarkDay3 : BenchmarkDayV1(3)
 
 fun registerDay3() {
-    puzzleS(3, "Perfectly Spherical Houses in a Vacuum") {
+    puzzle(3, "Perfectly Spherical Houses in a Vacuum") {
         val houses = mutableSetOf<Pair<Int, Int>>()
         var x = 0
         var y = 0
         houses.add(x to y)
-        for (c in it) {
+        for (c in chars) {
             when (c) {
                 '>' -> x++
                 '^' -> y--
@@ -19,13 +19,13 @@ fun registerDay3() {
         }
         houses.size
     }
-    puzzleS(3, "Part Two") {
+    puzzle(3, "Part Two") {
         val houses = mutableSetOf<Pair<Int, Int>>()
         val x = arrayOf(0, 0)
         val y = arrayOf(0, 0)
         houses.add(x[0] to y[0])
         var i = 0
-        for (c in it) {
+        for (c in chars) {
             when (c) {
                 '>' -> x[i % 2]++
                 '^' -> y[i % 2]--

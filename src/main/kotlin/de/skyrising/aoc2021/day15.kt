@@ -1,24 +1,25 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.Graph
+import de.skyrising.aoc.TestInput
 
 class BenchmarkDay15 : BenchmarkDayV1(15)
 
 fun registerDay15() {
-    val test = listOf(
-        "1163751742",
-        "1381373672",
-        "2136511328",
-        "3694931569",
-        "7463417111",
-        "1319128137",
-        "1359912421",
-        "3125421639",
-        "1293138521",
-        "2311944581"
-    )
-    puzzleLS(15, "Chiton") {
-        val input = it
+    val test = TestInput("""
+        1163751742
+        1381373672
+        2136511328
+        3694931569
+        7463417111
+        1319128137
+        1359912421
+        3125421639
+        1293138521
+        2311944581
+    """)
+    puzzle(15, "Chiton") {
+        val input = lines
         val g = Graph.build<Pair<Int, Int>, Int> {
             for (y in input.indices) {
                 val line = input[y]
@@ -32,8 +33,8 @@ fun registerDay15() {
         val path = g.dijkstra(g[Pair(0, 0)]!!, g[Pair(input.lastIndex, input.last().lastIndex)]!!)
         path?.sumOf { e -> e.weight }
     }
-    puzzleLS(15, "Part Two") {
-        val input = it
+    puzzle(15, "Part Two") {
+        val input = lines
         val width = input.last().length
         val height = input.size
         val map = Array(height * 5) { IntArray(width * 5) }

@@ -3,11 +3,11 @@ package de.skyrising.aoc2020
 class BenchmarkDay4 : BenchmarkDay(4)
 
 fun registerDay4() {
-    puzzleLS(4, "Passport Processing v1") {
+    puzzle(4, "Passport Processing v1") {
         val fields = mutableSetOf<String>()
         val required = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
         var valid = 0
-        for (line in it) {
+        for (line in lines) {
             if (line.isEmpty()) {
                 if (fields.containsAll(required)) valid++
                 fields.clear()
@@ -21,11 +21,11 @@ fun registerDay4() {
         if (fields.containsAll(required)) valid++
         valid
     }
-    puzzleLS(4, "Passport Processing v2") {
+    puzzle(4, "Passport Processing v2") {
         val fields = mutableSetOf<String>()
         val required = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
         var valid = 0
-        for (line in it) {
+        for (line in lines) {
             if (line.isEmpty()) {
                 if (fields.size == 7) valid++
                 fields.clear()
@@ -40,7 +40,7 @@ fun registerDay4() {
         if (fields.size == 7) valid++
         valid
     }
-    puzzleLS(4, "Part Two v1") {
+    puzzle(4, "Part Two v1") {
         val fields = mutableSetOf<String>()
         var valid = 0
         val yearRegex = Regex("^\\d{4}$")
@@ -48,7 +48,7 @@ fun registerDay4() {
         val hclRegex = Regex("^#[0-9a-f]{6}$")
         val ecls = setOf("amb", "blu", "brn", "gry", "grn", "hzl", "oth")
         val pidRegex = Regex("^\\d{9}$")
-        for (line in it) {
+        for (line in lines) {
             if (line.isEmpty()) {
                 if (fields.size == 7) valid++
                 fields.clear()
@@ -84,13 +84,13 @@ fun registerDay4() {
         if (fields.size == 7) valid++
         valid
     }
-    puzzleLS(4, "Part Two v2") {
+    puzzle(4, "Part Two v2") {
         val fields = mutableSetOf<String>()
         var valid = 0
         val hclRegex = Regex("^#[0-9a-f]{6}$")
         val ecls = setOf("amb", "blu", "brn", "gry", "grn", "hzl", "oth")
         val pidRegex = Regex("^\\d{9}$")
-        for (line in it) {
+        for (line in lines) {
             if (line.isEmpty()) {
                 if (fields.size == 7) valid++
                 fields.clear()

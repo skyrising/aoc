@@ -1,16 +1,18 @@
 package de.skyrising.aoc2022
 
+import de.skyrising.aoc.TestInput
+
 class BenchmarkDay2 : BenchmarkDayV1(2)
 
 fun registerDay2() {
-    val test = listOf(
-        "A Y",
-        "B X",
-        "C Z"
-    )
-    puzzleLS(2, "Rock Paper Scissors") {
+    val test = TestInput("""
+        A Y
+        B X
+        C Z
+    """)
+    puzzle(2, "Rock Paper Scissors") {
         var total = 0
-        for (line in it) {
+        for (line in lines) {
             if (line.isBlank()) continue
             val (a, b) = line.split(" ")
             val aInt = a[0].code - 'A'.code
@@ -27,9 +29,9 @@ fun registerDay2() {
         total
     }
 
-    puzzleLS(2, "Part Two") {
+    puzzle(2, "Part Two") {
         var total = 0
-        for (line in it) {
+        for (line in lines) {
             if (line.isBlank()) continue
             val (a, b) = line.split(" ")
             val aInt = a[0].code - 'A'.code

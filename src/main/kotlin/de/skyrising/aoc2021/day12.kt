@@ -1,54 +1,56 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.Graph
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
 import de.skyrising.aoc.Vertex
 
 class BenchmarkDay12 : BenchmarkDay(12)
 
 fun registerDay12() {
-    val test = listOf(
-        "start-A",
-        "start-b",
-        "A-c",
-        "A-b",
-        "b-d",
-        "A-end",
-        "b-end"
-    )
-    val test2 = listOf(
-        "dc-end",
-        "HN-start",
-        "start-kj",
-        "dc-start",
-        "dc-HN",
-        "LN-dc",
-        "HN-end",
-        "kj-sa",
-        "kj-HN",
-        "kj-dc"
-    )
-    val test3 = listOf(
-        "fs-end",
-        "he-DX",
-        "fs-he",
-        "start-DX",
-        "pj-DX",
-        "end-zg",
-        "zg-sl",
-        "zg-pj",
-        "pj-he",
-        "RW-he",
-        "fs-DX",
-        "pj-RW",
-        "zg-RW",
-        "start-pj",
-        "he-WI",
-        "zg-he",
-        "pj-fs",
-        "start-RW"
-    )
-    puzzleLS(12, "Passage Pathing") {
-        val g = readInput(it) { s -> s }
+    val test = TestInput("""
+        start-A
+        start-b
+        A-c
+        A-b
+        b-d
+        A-end
+        b-end
+    """)
+    val test2 = TestInput("""
+        dc-end
+        HN-start
+        start-kj
+        dc-start
+        dc-HN
+        LN-dc
+        HN-end
+        kj-sa
+        kj-HN
+        kj-dc
+    """)
+    val test3 = TestInput("""
+        fs-end
+        he-DX
+        fs-he
+        start-DX
+        pj-DX
+        end-zg
+        zg-sl
+        zg-pj
+        pj-he
+        RW-he
+        fs-DX
+        pj-RW
+        zg-RW
+        start-pj
+        he-WI
+        zg-he
+        pj-fs
+        start-RW
+    """)
+    puzzle(12, "Passage Pathing") {
+        val g = readInput(this) { s -> s }
         g.getPathsV1(g["start"]!!, g["end"]!!) { p ->
             val caves = p.getVertexes().map(Vertex<String>::value)
             val small = mutableSetOf<String>()
@@ -60,9 +62,9 @@ fun registerDay12() {
             true
         }.size
     }
-    puzzleLS(12, "Passage Pathing V2") {
+    puzzle(12, "Passage Pathing V2") {
         val caves = mutableMapOf<String, Cave>()
-        val g = readInput(it) { s -> caves.computeIfAbsent(s, ::Cave) }
+        val g = readInput(this) { s -> caves.computeIfAbsent(s, ::Cave) }
         g.getPaths(g[caves["start"]!!]!!, g[caves["end"]!!]!!) { p ->
             val small = HashSet<Cave>(p.size)
             p.forEachVertex { v ->
@@ -72,8 +74,8 @@ fun registerDay12() {
             true
         }.size
     }
-    puzzleLS(12, "Part Two") {
-        val g = readInput(it) { s -> s }
+    puzzle(12, "Part Two") {
+        val g = readInput(this) { s -> s }
         g.getPathsV1(g["start"]!!, g["end"]!!) { p ->
             val caves = p.getVertexes().map(Vertex<String>::value)
             val small = mutableSetOf<String>()
@@ -92,9 +94,9 @@ fun registerDay12() {
             true
         }.size
     }
-    puzzleLS(12, "Part Two V2") {
+    puzzle(12, "Part Two V2") {
         val caves = mutableMapOf<String, Cave>()
-        val g = readInput(it) { s -> caves.computeIfAbsent(s, ::Cave) }
+        val g = readInput(this) { s -> caves.computeIfAbsent(s, ::Cave) }
         g.getPaths(g[caves["start"]!!]!!, g[caves["end"]!!]!!) { p ->
             val small = HashSet<Cave>(p.size)
             var smallDouble = false
@@ -113,8 +115,8 @@ fun registerDay12() {
     }
 }
 
-private fun <V> readInput(input: List<String>, vertexLabel: (String) -> V): Graph<V, Nothing> = Graph.build {
-    for (line in input) {
+private fun <V> readInput(input: PuzzleInput, vertexLabel: (String) -> V): Graph<V, Nothing> = Graph.build {
+    for (line in input.lines) {
         val (from, to) = line.split('-')
         val fromCave = vertexLabel(from)
         val toCave = vertexLabel(to)

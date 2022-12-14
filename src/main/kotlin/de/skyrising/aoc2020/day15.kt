@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.HashCommon
 import it.unimi.dsi.fastutil.ints.Int2IntMap
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
@@ -85,21 +86,21 @@ private fun day15v2(starting: List<Int>, limit: Int): Int {
 }
 
 fun registerDay15() {
-    val test = "0,3,6"
-    puzzleS(15, "Rambunctious Recitation v1") {
-        val starting = it.trim().split(",").map(String::toInt)
+    val test = TestInput("0,3,6")
+    puzzle(15, "Rambunctious Recitation v1") {
+        val starting = chars.trim().split(",").map(String::toInt)
         day15(starting, 2020)
     }
-    puzzleS(15, "Rambunctious Recitation v2") {
-        val starting = it.trim().split(",").map(String::toInt)
+    puzzle(15, "Rambunctious Recitation v2") {
+        val starting = chars.trim().split(",").map(String::toInt)
         day15v2(starting, 2020)
     }
-    puzzleS(15, "Part 2 v1") {
-        val starting = it.trim().split(",").map(String::toInt)
+    puzzle(15, "Part 2 v1") {
+        val starting = chars.trim().split(",").map(String::toInt)
         day15(starting, 30000000)
     }
-    puzzleS(15, "Part 2 v2") {
-        val starting = it.trim().split(",").map(String::toInt)
+    puzzle(15, "Part 2 v2") {
+        val starting = chars.trim().split(",").map(String::toInt)
         day15v2(starting, 30000000)
     }
 }

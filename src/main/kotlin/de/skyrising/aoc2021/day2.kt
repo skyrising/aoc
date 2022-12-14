@@ -1,13 +1,22 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.TestInput
+
 class BenchmarkDay2 : BenchmarkDayV1(2)
 
 fun registerDay2() {
-    puzzleLS(2, "Dive!") {
-        val test = listOf("forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2")
+    val test = TestInput("""
+        forward 5
+        down 5
+        forward 8
+        up 3
+        down 8
+        forward 2
+    """)
+    puzzle(2, "Dive!") {
         var horizontal = 0
         var depth = 0
-        for (line in it) {
+        for (line in lines) {
             val (cmd, num) = line.split(' ', limit = 2)
             when (cmd) {
                 "forward" -> horizontal += num.toInt()
@@ -17,12 +26,11 @@ fun registerDay2() {
         }
         depth * horizontal
     }
-    puzzleLS(2, "Part Two") {
-        val test = listOf("forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2")
+    puzzle(2, "Part Two") {
         var horizontal = 0
         var depth = 0
         var aim = 0
-        for (line in it) {
+        for (line in lines) {
             val (cmd, num) = line.split(' ', limit = 2)
             when (cmd) {
                 "forward" -> {

@@ -1,5 +1,6 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.TestInput
 import de.skyrising.aoc.isBitSet
 import de.skyrising.aoc.setBit
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
@@ -199,23 +200,21 @@ private fun part2(input: List<String>, delegator: (Int) -> StateDelegate): Int {
 }
 
 fun registerDay17() {
-    val test = """
+    val test = TestInput("""
         .#.
         ..#
         ###
-    """.trimIndent().split("\n")
-    val test2 = """
-    """.trimIndent().split("\n")
-    puzzleLS(17, "Conway Cubes v1") {
-        part1(it, ::DenseState)
+    """)
+    puzzle(17, "Conway Cubes v1") {
+        part1(lines, ::DenseState)
     }
-    puzzleLS(17, "Conway Cubes v2") {
-        part1(it) { SparseState() }
+    puzzle(17, "Conway Cubes v2") {
+        part1(lines) { SparseState() }
     }
-    puzzleLS(17, "Part 2 v1") {
-        part2(it, ::DenseState)
+    puzzle(17, "Part 2 v1") {
+        part2(lines, ::DenseState)
     }
-    puzzleLS(17, "Part 2 v2") {
-        part2(it) { SparseState() }
+    puzzle(17, "Part 2 v2") {
+        part2(lines) { SparseState() }
     }
 }

@@ -5,10 +5,10 @@ import it.unimi.dsi.fastutil.chars.CharOpenHashSet
 class BenchmarkDay6 : BenchmarkDay(6)
 
 fun registerDay6() {
-    puzzleLS(6, "Custom Customs v1") {
+    puzzle(6, "Custom Customs v1") {
         var sum = 0
         val group = CharOpenHashSet()
-        for (line in it) {
+        for (line in lines) {
             if (line.isEmpty()) {
                 sum += group.size
                 group.clear()
@@ -18,10 +18,10 @@ fun registerDay6() {
         }
         sum + group.size
     }
-    puzzleLB(6, "Custom Customs v2") {
+    puzzle(6, "Custom Customs v2") {
         var sum = 0
         var group = 0
-        for (line in it) {
+        for (line in byteLines) {
             val len = line.remaining()
             if (len == 0) {
                 sum += Integer.bitCount(group)
@@ -34,11 +34,11 @@ fun registerDay6() {
         }
         sum + Integer.bitCount(group)
     }
-    puzzleLS(6, "Part 2 v1") {
+    puzzle(6, "Part 2 v1") {
         var sum = 0
         val group = CharOpenHashSet()
         var first = true
-        for (line in it) {
+        for (line in lines) {
             if (line.isEmpty()) {
                 sum += group.size
                 group.clear()
@@ -54,11 +54,11 @@ fun registerDay6() {
         }
         sum + group.size
     }
-    puzzleLB(6, "Part 2 v2") {
+    puzzle(6, "Part 2 v2") {
         var sum = 0
         var group = 0
         var first = true
-        for (line in it) {
+        for (line in byteLines) {
             val len = line.remaining()
             if (len == 0) {
                 sum += Integer.bitCount(group)

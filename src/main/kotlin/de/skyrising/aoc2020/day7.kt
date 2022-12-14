@@ -37,12 +37,12 @@ private fun readGraph(lines: List<String>) = Graph.build<String, Nothing?> {
 }
 
 fun registerDay7() {
-    puzzleLS(7, "Handy Haversacks v1") {
+    puzzle(7, "Handy Haversacks v1") {
         val set = mutableSetOf<String>()
         var count = 0
         var lastCount = -1
         while (count > lastCount) {
-            for (line in it) {
+            for (line in lines) {
                 val (bags, contain) = line.split(" bags contain ")
                 if (contain.startsWith("no other")) continue
                 val containList = contain.split(", ")
@@ -60,8 +60,8 @@ fun registerDay7() {
         }
         count
     }
-    puzzleLS(7, "Handy Haversacks v2") {
-        val graph = readGraph(it)
+    puzzle(7, "Handy Haversacks v2") {
+        val graph = readGraph(lines)
         val set = mutableSetOf("shiny gold")
         var count = 0
         while (set.size > count) {
@@ -76,8 +76,8 @@ fun registerDay7() {
         }
         count - 1
     }
-    puzzleLS(7, "Part 2 v1") {
-        val map = readMap(it)
+    puzzle(7, "Part 2 v1") {
+        val map = readMap(lines)
         fun getContained(type: String): Int {
             val set = map[type] ?: return 1
             var sum = 1
@@ -88,8 +88,8 @@ fun registerDay7() {
         }
         getContained("shiny gold") - 1
     }
-    puzzleLS(7, "Part 2 v2") {
-        val graph = readGraph(it)
+    puzzle(7, "Part 2 v2") {
+        val graph = readGraph(lines)
         fun getContained(type: Vertex<String>): Int {
             var sum = 1
             for ((_, contained, num, _) in graph.getOutgoing(type)) {

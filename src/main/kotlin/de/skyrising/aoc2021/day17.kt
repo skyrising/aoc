@@ -1,11 +1,14 @@
 package de.skyrising.aoc2021
 
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.TestInput
+
 class BenchmarkDay17 : BenchmarkDayV1(17)
 
 fun registerDay17() {
-    val test = "target area: x=20..30, y=-10..-5"
-    puzzleS(17, "Trick Shot") {
-        val target = parseInput17(it)
+    val test = TestInput("target area: x=20..30, y=-10..-5")
+    puzzle(17, "Trick Shot") {
+        val target = parseInput(this)
         val x2 = target.first.last
         val y1 = target.second.first
         var maxY = 0
@@ -20,13 +23,13 @@ fun registerDay17() {
         }
         maxY
     }
-    puzzleS(17, "Trick Shot v2") {
-        val target = parseInput17(it)
+    puzzle(17, "Trick Shot v2") {
+        val target = parseInput(this)
         val vy = -target.second.first - 1
         vy * (vy + 1) / 2
     }
-    puzzleS(17, "Part Two") {
-        val target = parseInput17(it)
+    puzzle(17, "Part Two") {
+        val target = parseInput(this)
         val x2 = target.first.last
         val y1 = target.second.first
         var hits = 0
@@ -43,10 +46,10 @@ fun registerDay17() {
     }
 }
 
-private fun parseInput17(input: CharSequence): Pair<IntRange, IntRange> {
-    val comma = input.indexOf(',')
-    val (x1, x2) = input.substring(15, comma).split("..").map(String::toInt)
-    val (y1, y2) = input.substring(comma + 4).trimEnd().split("..").map(String::toInt)
+private fun parseInput(input: PuzzleInput): Pair<IntRange, IntRange> {
+    val comma = input.chars.indexOf(',')
+    val (x1, x2) = input.chars.substring(15, comma).split("..").map(String::toInt)
+    val (y1, y2) = input.chars.substring(comma + 4).trimEnd().split("..").map(String::toInt)
     return Pair(x1..x2, y1..y2)
 }
 
