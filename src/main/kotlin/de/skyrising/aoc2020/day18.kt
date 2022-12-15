@@ -124,6 +124,7 @@ private fun parseStep(left: Expr?, tokens: List<Token>, precedence: EnumMap<BinO
                 when (tokens[i].type) {
                     TokenType.OPEN_PARENTHESIS -> depth++
                     TokenType.CLOSE_PARENTHESIS -> depth--
+                    else -> {}
                 }
                 if (depth == 0) {
                     val expr = parse(tokens.subList(1, i), precedence)

@@ -2,8 +2,8 @@ import kotlinx.benchmark.gradle.JvmBenchmarkTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.0"
-    kotlin("plugin.allopen") version "1.6.0"
+    kotlin("jvm") version "1.7.21"
+    kotlin("plugin.allopen") version "1.7.21"
     id("org.jetbrains.kotlinx.benchmark") version "0.3.1"
     id("application")
 }
@@ -32,7 +32,7 @@ allOpen {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "16"
+    kotlinOptions.jvmTarget = "17"
 }
 
 benchmark {

@@ -184,10 +184,32 @@ fun <T> T.iterate(step: T.() -> T?): T {
     }
 }
 
-fun countWhile(predicate: () -> Boolean): Int {
+inline fun countWhile(predicate: () -> Boolean): Int {
     var count = 0
     while (predicate()) {
         count++
     }
     return count
+}
+
+inline fun <T, C: MutableCollection<T>> Collection<T>.mergeTo(collection: C, merger: (T, T) -> T?): C {
+    val it = iterator()
+    if (!it.hasNext()) return collection
+    var last = it.next()
+    while (it.hasNext()) {
+        val next = it.next()
+        val merged = merger(last, next)
+        last = if (merged != null) {
+            merged
+        } else {
+            collection.add(last)
+            next
+        }
+    }
+    collection.add(last)
+    return collection
+}
+
+fun joinRanges(ranges: Collection<IntRange>) = ranges.sortedBy { it.first }.mergeTo(mutableSetOf()) {
+        a, b -> if (b.first <= a.last + 1) a.first..kotlin.math.max(a.last, b.last) else null
 }

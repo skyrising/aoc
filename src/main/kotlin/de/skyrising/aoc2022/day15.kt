@@ -1,54 +1,33 @@
 package de.skyrising.aoc2022
 
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.Vec2i
-import de.skyrising.aoc.ints
+import de.skyrising.aoc.*
 import kotlin.math.abs
 
 class BenchmarkDay15 : BenchmarkDayV1(15)
 
-private fun parseInput(input: PuzzleInput): List<Pair<Vec2i, Vec2i>> {
-    return input.lines.map { val (a, b, c, d) = it.ints(); Vec2i(a, b) to Vec2i(c, d) }
+private fun parseInput(input: PuzzleInput) = input.lines.map {
+    val (a, b, c, d) = it.ints();
+    Vec2i(a, b) to Vec2i(c, d)
 }
 
-private fun joinRanges(ranges: Collection<IntRange>): Set<IntRange> {
-    if (ranges.isEmpty()) return emptySet()
-    val sorted = ranges.sortedBy { it.first }
-    val result = mutableSetOf<IntRange>()
-    var current = sorted.first()
-    for (range in sorted) {
-        if (range.first <= current.last + 1) {
-            current = current.first..maxOf(current.last, range.last)
-        } else {
-            result += current
-            current = range
+private fun rangesForRow(pairs: List<Pair<Vec2i, Vec2i>>, row: Int) = joinRanges(pairs.mapNotNull { (s, b) ->
+    val dist = s.manhattanDistance(b)
+    val yDiff = abs(s.y - row)
+    val width = dist - yDiff
+    if (width < 0) null else s.x - width..s.x + width
+})
+
+private fun findGap(ranges: Set<IntRange>, min: Int, max: Int) = when (ranges.size) {
+    1 -> {
+        val range = ranges.single()
+        when {
+            min !in range -> min
+            max !in range -> max
+            else -> null
         }
     }
-    result += current
-    return result
-}
-
-private fun rangesForRow(pairs: List<Pair<Vec2i, Vec2i>>, row: Int): Set<IntRange> {
-    val ranges = mutableListOf<IntRange>()
-    for ((s, b) in pairs) {
-        val dist = s.manhattanDistance(b)
-        val yDiff = abs(s.y - row)
-        val width = dist - yDiff
-        if (width < 0) continue
-        ranges.add(s.x - width..s.x + width)
-    }
-    return joinRanges(ranges)
-}
-
-private fun findGap(ranges: Set<IntRange>, min: Int, max: Int): Int? {
-    if (ranges.size == 2) {
-        return ranges.minByOrNull { it.first }!!.last + 1
-    }
-    val range = ranges.single()
-    if (min !in range) return min
-    if (max !in range) return max
-    return null
+    2 ->  ranges.minBy(IntRange::first).last + 1
+    else -> null
 }
 
 fun registerDay15() {
