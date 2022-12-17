@@ -100,6 +100,18 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
         }
     }
 
+    inline fun where(predicate: (Char) -> Boolean): List<Vec2i> {
+        val result = mutableListOf<Vec2i>()
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                if (predicate(data[localIndex(x, y)])) {
+                    result.add(Vec2i(x + offset.x, y + offset.y))
+                }
+            }
+        }
+        return result
+    }
+
     override fun toString(): String {
         val sb = StringBuilder((width + 1) * height)
         for (y in 0 until height) {

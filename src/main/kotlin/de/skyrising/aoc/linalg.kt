@@ -64,12 +64,12 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
 fun min(a: Vec2i, b: Vec2i) = Vec2i(min(a.x, b.x), min(a.y, b.y))
 fun max(a: Vec2i, b: Vec2i) = Vec2i(max(a.x, b.x), max(a.y, b.y))
 
-data class BoundingBox2i(val min: Vec2i, val max: Vec2i) {
+data class BoundingBox2i(val min: Vec2i, val max: Vec2i): HasBoundingBox2i {
     init {
         if (min.x > max.x || min.y > max.y) throw IllegalArgumentException()
     }
 
-    val boundingBox get() = this
+    override val boundingBox get() = this
     val size get() = max - min
 
     inline fun charGrid(init: (Int) -> Char): CharGrid {
