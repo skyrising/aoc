@@ -213,3 +213,25 @@ inline fun <T, C: MutableCollection<T>> Collection<T>.mergeTo(collection: C, mer
 fun joinRanges(ranges: Collection<IntRange>) = ranges.sortedBy { it.first }.mergeTo(mutableSetOf()) {
         a, b -> if (b.first <= a.last + 1) a.first..kotlin.math.max(a.last, b.last) else null
 }
+
+fun <T> Collection<T>.subsets(): Iterable<Set<T>> {
+    val list = toList()
+    return object : Iterable<Set<T>> {
+        override fun iterator(): Iterator<Set<T>> {
+            return object : Iterator<Set<T>> {
+                var i = 0
+                override fun hasNext() = i < 1 shl list.size
+                override fun next(): Set<T> {
+                    val set = mutableSetOf<T>()
+                    for (j in list.indices) {
+                        if (i and (1 shl j) != 0) {
+                            set.add(list[j])
+                        }
+                    }
+                    i++
+                    return set
+                }
+            }
+        }
+    }
+}
