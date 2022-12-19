@@ -249,3 +249,16 @@ inline fun <T> floodFill(origin: T, step: (T) -> Collection<T>): Set<T> {
     }
     return result
 }
+
+
+operator fun <E> List<E>.component6() = this[5]
+operator fun <E> List<E>.component7() = this[6]
+operator fun <E> List<E>.component8() = this[7]
+operator fun <E> List<E>.component9() = this[8]
+operator fun <E> List<E>.component10() = this[9]
+operator fun <E> List<E>.component11() = this[10]
+operator fun <E> List<E>.component12() = this[11]
+operator fun <E> List<E>.component13() = this[12]
+operator fun <E> List<E>.component14() = this[13]
+operator fun <E> List<E>.component15() = this[14]
+operator fun <E> List<E>.component16() = this[15]
