@@ -31,21 +31,19 @@ private data class RobotBlueprint(val id: Int, val oreOre: Int, val clayOre: Int
     val maxObsidian get() = geodeObsidian
 
     fun getStates(time: Int): Set<RobotState> {
-        if (time == 0) return setOf(RobotState(0, 1, 0, 0, 0, 0, 0, 0, 0))
-        val previous = getStates(time - 1)
-        // if (time >= 24) println("$time: ${previous.size}")
-        val next = mutableSetOf<RobotState>()
-        for (s in previous) {
-            if (s.canCraftOre(this) && s.shouldCraftOre(this)) next += s.craftOre(this)
-            if (s.canCraftClay(this) && s.shouldCraftClay(this)) next += s.craftClay(this)
-            if (s.canCraftObsidian(this) && s.shouldCraftObsidian(this)) next += s.craftObsidian(this)
-            next += if (s.canCraftGeode(this)) {
-                s.craftGeode(this)
-            } else {
-                s.step()
+        var states = setOf(RobotState(0, 1, 0, 0, 0, 0, 0, 0, 0))
+        for (t in 1..time) {
+            val next = mutableSetOf<RobotState>()
+            for (s in states) {
+                if (s.canCraftOre(this) && s.shouldCraftOre(this)) next += s.craftOre(this)
+                if (s.canCraftClay(this) && s.shouldCraftClay(this)) next += s.craftClay(this)
+                if (s.canCraftObsidian(this) && s.shouldCraftObsidian(this)) next += s.craftObsidian(this)
+                next += if (s.canCraftGeode(this)) s.craftGeode(this) else s.step()
             }
+            states = next
+            println("$t: ${states.size}")
         }
-        return next
+        return states
     }
 
     fun qualityLevel(): Int {
