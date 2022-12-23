@@ -20,6 +20,7 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
         1 -> y
         else -> throw IndexOutOfBoundsException()
     }
+    operator fun rem(other: Vec2i) = Vec2i(x % other.x, y % other.y)
 
     infix fun dot(other: Vec2i) = x * other.x + y * other.y
 

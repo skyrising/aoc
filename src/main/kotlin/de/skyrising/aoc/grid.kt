@@ -43,6 +43,8 @@ fun parseDisplay(display: String, litChar: Char = '█'): String {
 }
 
 abstract class Grid(val offset: Vec2i, val width: Int, val height: Int) {
+    val size get() = Vec2i(width, height)
+
     protected fun index(x: Int, y: Int): Int {
         if (!contains(x, y)) throw IndexOutOfBoundsException("($x, $y) is not in [$offset,${offset + Vec2i(width, height)})")
         return (y - offset.y) * width + (x - offset.x)
