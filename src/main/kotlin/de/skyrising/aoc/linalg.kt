@@ -72,6 +72,7 @@ data class BoundingBox2i(val min: Vec2i, val max: Vec2i): HasBoundingBox2i {
 
     override val boundingBox get() = this
     val size get() = max - min
+    val area get() = (max.x - min.x + 1) * (max.y - min.y + 1)
 
     inline fun charGrid(init: (Int) -> Char): CharGrid {
         val width = max.x - min.x + 1

@@ -184,9 +184,9 @@ fun <T> T.iterate(step: T.() -> T?): T {
     }
 }
 
-inline fun countWhile(predicate: () -> Boolean): Int {
+inline fun countWhile(predicate: (Int) -> Boolean): Int {
     var count = 0
-    while (predicate()) {
+    while (predicate(count)) {
         count++
     }
     return count
