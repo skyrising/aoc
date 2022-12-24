@@ -1,9 +1,6 @@
 package de.skyrising.aoc2022
 
-import de.skyrising.aoc.CharGrid
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.Vec2i
+import de.skyrising.aoc.*
 
 class BenchmarkDay22 : BenchmarkDayV1(22)
 
@@ -22,32 +19,109 @@ private fun parseInput(input: PuzzleInput): Pair<CharGrid, List<String>> {
     return grid to path
 }
 
-private fun nextTile(grid: CharGrid, pos: Vec2i, dir: Vec2i): Vec2i {
-    var p = pos
-    do {
-        p = (p + dir + grid.size) % grid.size
-    } while (grid[p] == ' ')
-    return if (grid[p] == '.') p else pos
+private fun nextTile(grid: CharGrid, state: VecState, transitions: Map<VecState, VecState>? = null): VecState {
+    var (pos, dir) = state
+    return if (transitions == null) {
+        do {
+            pos = (pos + dir + grid.size) % grid.size
+        } while (grid[pos] == ' ')
+        if (grid[pos] == '.') pos to dir else state
+    } else {
+        val next = transitions[state] ?: ((pos + dir + grid.size) % grid.size to dir)
+        when (grid[next.first]) {
+            '.' -> next
+            '#' -> state
+            else -> error("Invalid tile: $next='${grid[next.first]}' ($pos+$dir)")
+        }
+    }
 }
 
-private fun move(grid: CharGrid, pos: Vec2i, facing: Int, step: String) = when(step) {
-    "R" -> pos to ((facing + 1) and 3)
-    "L" -> pos to ((facing + 3) and 3)
+private val FACINGS = arrayOf(Vec2i.E, Vec2i.S, Vec2i.W, Vec2i.N)
+
+private fun move(grid: CharGrid, state: VecState, step: String, transitions: Map<VecState, VecState>? = null) = when(step) {
+    "R" -> state.first to FACINGS[(FACINGS.indexOf(state.second) + 1) % 4]
+    "L" -> state.first to FACINGS[(FACINGS.indexOf(state.second) + 3) % 4]
     else -> {
         val steps = step.toInt()
-        val dir = when (facing) {
-            0 -> Vec2i(1, 0)
-            1 -> Vec2i(0, 1)
-            2 -> Vec2i(-1, 0)
-            3 -> Vec2i(0, -1)
-            else -> error("Invalid facing: $facing")
+        var state = state
+        repeat(steps) {
+            state = nextTile(grid, state, transitions)
         }
-        var pos = pos
-        for (i in 0 until steps) {
-            pos = nextTile(grid, pos, dir)
-        }
-        pos to facing
+        state
     }
+}
+
+private typealias EdgeSide = Pair<Line2i, Vec2i>
+private typealias Edge = Pair<EdgeSide, EdgeSide>
+private typealias VecState = Pair<Vec2i, Vec2i>
+
+private fun EdgeSide.reverse() = first.reverse() to second
+
+private class CubeNetDSL(size: Int, val A: Vec2i, val B: Vec2i, val C: Vec2i, val D: Vec2i, val E: Vec2i, val F: Vec2i) {
+    private val last = size - 1
+    val edges = mutableListOf<Edge>()
+    fun bottom(side: Vec2i) = Line2i(Vec2i(side.x, side.y + last), Vec2i(side.x + last, side.y + last)) to Vec2i.S
+    fun top(side: Vec2i) = Line2i(Vec2i(side.x, side.y), Vec2i(side.x + last, side.y)) to Vec2i.N
+    fun left(side: Vec2i) = Line2i(Vec2i(side.x, side.y), Vec2i(side.x, side.y + last)) to Vec2i.W
+    fun right(side: Vec2i) = Line2i(Vec2i(side.x + last, side.y), Vec2i(side.x + last, side.y + last)) to Vec2i.E
+    fun edge(edge: Edge) {
+        edges.add(edge)
+    }
+}
+
+private fun cubeNet(size: Int, A: Vec2i, B: Vec2i, C: Vec2i, D: Vec2i, E: Vec2i, F: Vec2i, block: CubeNetDSL.() -> Unit) =
+    CubeNetDSL(size, A * size, B * size, C * size, D * size, E * size, F * size).apply(block).edges
+
+private fun cubeNetTest(size: Int) = cubeNet(size, Vec2i(2, 0), Vec2i(0, 1), Vec2i(1, 1), Vec2i(2, 1), Vec2i(2, 2), Vec2i(3, 2)) {
+    // ..A.
+    // BCD.
+    // ..EF
+    edge(left(A) to top(C))
+    edge(top(A) to top(B).reverse())
+    edge(right(A) to right(F).reverse())
+    edge(left(B) to bottom(F).reverse())
+    edge(bottom(B) to bottom(E).reverse())
+    edge(bottom(C) to left(E).reverse())
+    edge(right(D) to top(F).reverse())
+}
+
+private fun cubeNetReal(size: Int) = cubeNet(size, Vec2i(1, 0), Vec2i(2, 0), Vec2i(1, 1), Vec2i(0, 2), Vec2i(1, 2), Vec2i(0, 3)) {
+    // .AB
+    // .C.
+    // DE.
+    // F..
+    edge(left(A) to left(D).reverse())
+    edge(top(A) to left(F))
+    edge(top(B) to bottom(F))
+    edge(right(B) to right(E).reverse())
+    edge(bottom(B) to right(C))
+    edge(left(C) to top(D))
+    edge(bottom(E) to right(F))
+}
+
+private fun buildTransitions(edges: List<Edge>): MutableMap<VecState, VecState> {
+    val transitions = mutableMapOf<VecState, VecState>()
+    for ((a, b) in edges) {
+        val (aLine, aDir) = a
+        val aPoints = aLine.toList()
+        val (bLine, bDir) = b
+        val bPoints = bLine.toList()
+        for (i in aPoints.indices) {
+            transitions[aPoints[i] to aDir] = bPoints[i] to -bDir
+            transitions[bPoints[i] to bDir] = aPoints[i] to -aDir
+        }
+    }
+    return transitions
+}
+
+private fun run(input: PuzzleInput, transitions: Map<VecState, VecState>? = null): Int {
+    val (grid, path) = parseInput(input)
+    var state = grid.where { it == '.' }.first() to Vec2i.E
+    for (step in path) {
+        state = move(grid, state, step, transitions)
+    }
+    val pos = state.first
+    return pos.y * 1000 + pos.x * 4 + FACINGS.indexOf(state.second) + 1004
 }
 
 fun registerDay22() {
@@ -68,16 +142,10 @@ fun registerDay22() {
         10R5L5R10L4R5L5
     """)
     puzzle(22, "Monkey Map") {
-        val (grid, path) = parseInput(this)
-        var pos = grid.where { it == '.' }.first()
-        var facing = 0
-        for (step in path) {
-            val (newPos, newFacing) = move(grid, pos, facing, step)
-            pos = newPos
-            facing = newFacing
-        }
-        pos.y * 1000 + pos.x * 4 + facing + 1004
+        run(this)
     }
     puzzle(22, "Part Two") {
+        // run(test, buildTransitions(cubeNetTest(4)))
+        run(this, buildTransitions(cubeNetReal(50)))
     }
 }

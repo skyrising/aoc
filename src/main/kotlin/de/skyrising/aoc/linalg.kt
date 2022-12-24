@@ -21,6 +21,7 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
         else -> throw IndexOutOfBoundsException()
     }
     operator fun rem(other: Vec2i) = Vec2i(x % other.x, y % other.y)
+    operator fun rem(other: Int) = Vec2i(x % other, y % other)
 
     infix fun dot(other: Vec2i) = x * other.x + y * other.y
 
@@ -44,15 +45,19 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
 
     companion object {
         val ZERO = Vec2i(0, 0)
+        val N = Vec2i(0, -1)
+        val E = Vec2i(1, 0)
+        val S = Vec2i(0, 1)
+        val W = Vec2i(-1, 0)
         val KNOWN = mapOf(
-            "U" to Vec2i(0, -1),
-            "R" to Vec2i(1, 0),
-            "D" to Vec2i(0, 1),
-            "L" to Vec2i(-1, 0),
-            "N" to Vec2i(0, -1),
-            "E" to Vec2i(1, 0),
-            "S" to Vec2i(0, 1),
-            "W" to Vec2i(-1, 0)
+            "U" to N,
+            "R" to E,
+            "D" to S,
+            "L" to W,
+            "N" to N,
+            "E" to E,
+            "S" to S,
+            "W" to W
         )
 
         fun parse(input: String): Vec2i {
@@ -142,6 +147,7 @@ data class Line2i(val from: Vec2i, val to: Vec2i) : Iterable<Vec2i>, HasBounding
     }
 
     override fun toString() = "$from -> $to"
+    fun reverse() = Line2i(to, from)
 }
 
 data class Vec3i(val x: Int, val y: Int, val z: Int) : HasBoundingBox3i {
