@@ -43,6 +43,7 @@ interface PuzzleInput {
     val byteLines: List<ByteBuffer>
     val string: String
     val chars: CharBuffer
+    val charGrid: CharGrid
 
     fun log(value: Any) {
         if (benchmark) return
@@ -66,6 +67,7 @@ class RealInput(override val input: ByteBuffer, override var benchmark: Boolean 
     override val lines by lazy { getInput(input, lastInputLS, ::calcInputLS) }
     override val byteLines by lazy { getInput(input, lastInputLB, ::lineList) }
     override val chars by lazy { getInput(input, lastInputS, ::calcInputS) }
+    override val charGrid: CharGrid by lazy { CharGrid.parse(lines) }
     override val string by lazy { chars.toString() }
 }
 
@@ -75,6 +77,7 @@ class TestInput(str: String) : PuzzleInput {
     override val lines by lazy { string.lines() }
     override val byteLines by lazy { lines.map { ByteBuffer.wrap(it.toByteArray()) } }
     override val chars: CharBuffer by lazy { CharBuffer.wrap(string) }
+    override val charGrid: CharGrid by lazy { CharGrid.parse(lines) }
     override val input: ByteBuffer by lazy { ByteBuffer.wrap(string.toByteArray()) }
 }
 

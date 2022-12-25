@@ -37,6 +37,7 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
     val northWest get() = Vec2i(x - 1, y - 1)
 
     fun fourNeighbors() = arrayOf(north, east, south, west)
+    fun fiveNeighbors() = arrayOf(north, east, south, west, this)
     fun eightNeighbors() = arrayOf(north, northEast, east, southEast, south, southWest, west, northWest)
 
     fun withZ(z: Int) = Vec3i(x, y, z)

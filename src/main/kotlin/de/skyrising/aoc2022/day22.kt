@@ -5,16 +5,7 @@ import de.skyrising.aoc.*
 class BenchmarkDay22 : BenchmarkDayV1(22)
 
 private fun parseInput(input: PuzzleInput): Pair<CharGrid, List<String>> {
-    val gridLines = input.lines.subList(0, input.lines.size - 2)
-    val width = gridLines.maxOf { it.length }
-    val height = gridLines.size
-    val grid = CharGrid(width, height, CharArray(width * height))
-    for (row in 0 until height) {
-        val line = gridLines[row]
-        for (col in 0 until width) {
-            grid[col, row] = if (col < line.length) line[col] else ' '
-        }
-    }
+    val grid = CharGrid.parse(input.lines.subList(0, input.lines.size - 2))
     val path = Regex("\\d+|R|L").findAll(input.lines.last()).map { it.value }.toList()
     return grid to path
 }

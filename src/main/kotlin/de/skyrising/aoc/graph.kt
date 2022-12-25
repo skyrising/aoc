@@ -269,6 +269,34 @@ operator fun <V, E> Path<V, E>.plus(edge: Edge<V, E?>): Path<V, E> {
     return Path(newEdges)
 }
 
+inline fun <T> bfsPath(start: T, end: (T) -> Boolean, step: (T) -> Iterable<T>): List<T>? {
+    val visited = mutableSetOf(start)
+    var queue = mutableListOf(start)
+    val prev = mutableMapOf<T, T>()
+    while (queue.isNotEmpty()) {
+        val next = mutableListOf<T>()
+        for (v in queue) {
+            if (end(v)) {
+                val path = mutableListOf(v)
+                var p = v
+                while (true) {
+                    p = prev[p] ?: break
+                    path.add(p)
+                }
+                return path.reversed()
+            }
+            for (n in step(v)) {
+                if (visited.add(n)) {
+                    next.add(n)
+                    prev[n] = v
+                }
+            }
+        }
+        queue = next
+    }
+    return null
+}
+
 fun main() {
     val graph = Graph.build<String, Nothing?> {
         edge("A", "B", 7); edge("B", "A", 7)

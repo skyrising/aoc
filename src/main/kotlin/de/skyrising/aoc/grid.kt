@@ -124,4 +124,38 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
         }
         return sb.toString()
     }
+
+    fun translatedView(translation: Vec2i): CharGrid {
+        return CharGrid(width, height, data, offset + translation)
+    }
+
+    fun subGrid(start: Vec2i, endExclusive: Vec2i): CharGrid {
+        if (start.x < offset.x || start.y < offset.y || endExclusive.x > offset.x + width || endExclusive.y > offset.y + height) {
+            throw IndexOutOfBoundsException("[$start, $endExclusive) is not in [$offset, ${offset + size})")
+        }
+        val width = endExclusive.x - start.x
+        val height = endExclusive.y - start.y
+        val data = CharArray(width * height)
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                data[y * width + x] = this[x + start.x, y + start.y]
+            }
+        }
+        return CharGrid(width, height, data, start)
+    }
+
+    companion object {
+        fun parse(lines: List<String>): CharGrid {
+            val width = lines.maxOf { it.length }
+            val height = lines.size
+            val grid = CharGrid(width, height, CharArray(width * height))
+            for (row in 0 until height) {
+                val line = lines[row]
+                for (col in 0 until width) {
+                    grid[col, row] = if (col < line.length) line[col] else ' '
+                }
+            }
+            return grid
+        }
+    }
 }
