@@ -4,6 +4,7 @@ import de.skyrising.aoc2015.register2015
 import de.skyrising.aoc2020.register2020
 import de.skyrising.aoc2021.register2021
 import de.skyrising.aoc2022.register2022
+import de.skyrising.aoc2023.register2023
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
@@ -114,6 +115,7 @@ fun registerAll() {
     register2020()
     register2021()
     register2022()
+    register2023()
 }
 
 const val RUNS = 10
