@@ -12,58 +12,35 @@ fun registerDay2() {
         Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
         Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
     """)
-    puzzle(2, "Cube Conundrum") {
-        var possibleSum = 0
-        outer@for (game in lines) {
-            val (gameNum, gameData) = game.split(": ")
-            val rounds = gameData.split("; ")
-            for (round in rounds) {
-                var red = 12
-                var green = 13
-                var blue = 14
-                for (reveal in round.split(", ")) {
-                    val (count, color) = reveal.split(" ")
-                    when (color) {
-                        "red" -> red -= count.toInt()
-                        "green" -> green -= count.toInt()
-                        "blue" -> blue -= count.toInt()
-                        else -> error("Invalid color: $color")
-                    }
+    data class Round(val red: Int, val green: Int, val blue: Int)
+    data class Game(val num: Int, val rounds: List<Round>)
+    fun parse(game: String): Game {
+        val (gameNum, gameData) = game.split(": ")
+        return Game(gameNum.split(" ")[1].toInt(), gameData.split("; ").map {
+            var red = 0
+            var green = 0
+            var blue = 0
+            for (reveal in it.split(", ")) {
+                val (count, color) = reveal.split(" ")
+                when (color) {
+                    "red" -> red += count.toInt()
+                    "green" -> green += count.toInt()
+                    "blue" -> blue += count.toInt()
+                    else -> error("Invalid color: $color")
                 }
-                if (red < 0 || green < 0 || blue < 0) continue@outer
             }
-            possibleSum += gameNum.split(" ")[1].toInt()
+            Round(red, green, blue)
+        })
+    }
+    puzzle(2, "Cube Conundrum") {
+        lines.map(::parse).sumOf {
+            if (it.rounds.all { round -> round.red <= 12 && round.green <= 13 && round.blue <= 14 }) it.num else 0
         }
-        possibleSum
     }
     puzzle(2, "Part Two") {
-        var sumPowers = 0
-        outer@for (game in lines) {
-            val (gameNum, gameData) = game.split(": ")
-            val rounds = gameData.split("; ")
-            var maxRed = 0
-            var maxGreen = 0
-            var maxBlue = 0
-            for (round in rounds) {
-                var red = 0
-                var green = 0
-                var blue = 0
-                for (reveal in round.split(", ")) {
-                    val (count, color) = reveal.split(" ")
-                    when (color) {
-                        "red" -> red += count.toInt()
-                        "green" -> green += count.toInt()
-                        "blue" -> blue += count.toInt()
-                        else -> error("Invalid color: $color")
-                    }
-                }
-                maxRed = maxRed.coerceAtLeast(red)
-                maxGreen = maxGreen.coerceAtLeast(green)
-                maxBlue = maxBlue.coerceAtLeast(blue)
-            }
-            sumPowers += maxRed * maxGreen * maxBlue
+        lines.map(::parse).sumOf {
+            it.rounds.maxOf { round -> round.red } * it.rounds.maxOf { round -> round.green } * it.rounds.maxOf { round -> round.blue }
         }
-        sumPowers
     }
 }
         
