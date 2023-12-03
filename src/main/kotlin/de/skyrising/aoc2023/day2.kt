@@ -39,7 +39,7 @@ fun registerDay2() {
     }
     puzzle(2, "Part Two") {
         lines.map(::parse).sumOf {
-            it.rounds.maxOf { round -> round.red } * it.rounds.maxOf { round -> round.green } * it.rounds.maxOf { round -> round.blue }
+            it.rounds.maxOf(Round::red) * it.rounds.maxOf(Round::green) * it.rounds.maxOf(Round::blue)
         }
     }
 }
