@@ -9,4 +9,5 @@ inline fun <T> puzzle(day: Int, name: String, crossinline run: PuzzleInput.() ->
 fun register2023() {
     registerDay1()
     registerDay2()
+    registerDay3()
 }

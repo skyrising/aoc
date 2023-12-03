@@ -84,6 +84,7 @@ class IntGrid(width: Int, height: Int, val data: IntArray, offset: Vec2i = Vec2i
 class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec2i.ZERO) : Grid(offset, width, height) {
     operator fun get(point: Vec2i) = get(point.x, point.y)
     operator fun get(x: Int, y: Int) = data[index(x, y)]
+    operator fun get(x: IntRange, y: Int) = String(data, index(x.first, y), x.last - x.first + 1)
     operator fun set(point: Vec2i, value: Char) = set(point.x, point.y, value)
     operator fun set(x: Int, y: Int, value: Char) {
         data[index(x, y)] = value
