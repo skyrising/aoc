@@ -1,14 +1,18 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
+@Suppress("unused")
 class BenchmarkDay23 : BenchmarkDayV1(23)
 
 private const val DUMP_PATH = false
 
+@Suppress("unused")
 fun registerDay23() {
     val test = TestInput("""
         #############
@@ -17,11 +21,11 @@ fun registerDay23() {
           #A#D#C#A#
           #########
     """)
-    puzzle(23, "Amphipod") {
+    part1("Amphipod") {
         val layout = parseInput(lines)
         solve(layout, AmphipodLayout.SOLVED1)
     }
-    puzzle(23, "Part Two") {
+    part2 {
         val input = ArrayList(lines)
         input.addAll(3, listOf("  #D#C#B#A#", "  #D#B#A#C#"))
         val layout = parseInput(input)

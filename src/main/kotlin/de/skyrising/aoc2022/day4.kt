@@ -1,5 +1,9 @@
 package de.skyrising.aoc2022
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
+
+@Suppress("unused")
 class BenchmarkDay4 : BenchmarkDayV1(4)
 
 private fun parseRange(range: String): IntRange {
@@ -7,8 +11,9 @@ private fun parseRange(range: String): IntRange {
     return from.toInt()..to.toInt()
 }
 
+@Suppress("unused")
 fun registerDay4() {
-    puzzle(4, "Camp Cleanup") {
+    part1("Camp Cleanup") {
         var count = 0
         for (line in lines) {
             val (a, b) = line.split(",")
@@ -21,7 +26,7 @@ fun registerDay4() {
         count
     }
 
-    puzzle(4, "Part Two") {
+    part2 {
         var count = 0
         for (line in lines) {
             val (a, b) = line.split(",")

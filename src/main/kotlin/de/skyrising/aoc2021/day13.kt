@@ -1,13 +1,13 @@
 package de.skyrising.aoc2021
 
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.parseDisplay
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 
+@Suppress("unused")
 class BenchmarkDay13 : BenchmarkDayV1(13)
 
+@Suppress("unused")
 fun registerDay13() {
     val test = TestInput("""
         6,10
@@ -32,11 +32,11 @@ fun registerDay13() {
         fold along y=7
         fold along x=5
     """)
-    puzzle(13, "Transparent Origami") {
+    part1("Transparent Origami") {
         val (points, instructions) = readInput(this)
         fold(points, instructions.getInt(0)).size
     }
-    puzzle(13, "Part Two") {
+    part2 {
         val (points, instructions) = readInput(this)
         var folded = points
         for (i in instructions.indices) {

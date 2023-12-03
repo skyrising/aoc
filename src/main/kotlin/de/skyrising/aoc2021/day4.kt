@@ -2,9 +2,13 @@ package de.skyrising.aoc2021
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay4 : BenchmarkDayV1(4)
 
+@Suppress("unused")
 fun registerDay4() {
     val test = TestInput("""
             7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
@@ -44,7 +48,7 @@ fun registerDay4() {
         return numbers to boards
     }
 
-    puzzle(4, "Giant Squid") {
+    part1("Giant Squid") {
         val (numbers, boards) = readInput(this)
         val markedByRow = ByteArray(boards.size * 5)
         val markedByColumn = ByteArray(boards.size * 5)
@@ -81,12 +85,12 @@ fun registerDay4() {
                         }
                     }
                 }
-                return@puzzle sum * number
+                return@part1 sum * number
             }
         }
         -1
     }
-    puzzle(4, "Part Two") {
+    part2 {
         val (numbers, boards) = readInput(this)
         val markedByRow = ByteArray(boards.size * 5)
         val markedByColumn = ByteArray(boards.size * 5)
@@ -128,6 +132,6 @@ fun registerDay4() {
                 }
             }
         }
-        return@puzzle sum * wonNumbers.last()
+        return@part2 sum * wonNumbers.last()
     }
 }

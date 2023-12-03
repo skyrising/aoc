@@ -1,10 +1,8 @@
 package de.skyrising.aoc2022
 
-import de.skyrising.aoc.LongFraction
-import de.skyrising.aoc.LongPolynomial
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.*
 
+@Suppress("unused")
 class BenchmarkDay21 : BenchmarkDayV1(21)
 
 private interface MonkeyMath {
@@ -59,6 +57,7 @@ private fun parseInput(input: PuzzleInput): MutableMap<String, MonkeyMath> {
     return monkeys
 }
 
+@Suppress("unused")
 fun registerDay21() {
     val test = TestInput("""
         root: pppw + sjmn
@@ -77,11 +76,11 @@ fun registerDay21() {
         drzm: hmdt - zczc
         hmdt: 32
     """)
-    puzzle(21, "Monkey Math") {
+    part1("Monkey Math") {
         val monkeys = parseInput(this)
         monkeys["root"]!!.compute(monkeys)
     }
-    puzzle(21, "Part Two") {
+    part2 {
         val monkeys = parseInput(this)
         val root = monkeys["root"] as MonkeyOp
         MonkeyOp(root.lhs, root.rhs, '=').toPolynomial(monkeys).rootNear(LongFraction(0))

@@ -1,8 +1,11 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.ints.Int2IntMap
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 
+@Suppress("unused")
 class BenchmarkDay23 : BenchmarkDayV1(23)
 
 /*
@@ -65,9 +68,10 @@ private fun move(cups: Int2IntMap, current: Int) {
     cups[pickup[2]] = tmpLabel
 }
 
+@Suppress("unused")
 fun registerDay23() {
     val test = "389125467\n"
-    puzzle(23, "Crab Cups v1") {
+    part1("Crab Cups") {
         val base = IntArray(chars.length - 1) { i -> chars[i] - '0' }
         val cups = Int2IntOpenHashMap(base.size)
         for (i in 0 until base.size - 1) cups[base[i]] = base[i + 1]
@@ -87,7 +91,7 @@ fun registerDay23() {
         }
         sb.toString()
     }
-    puzzle(23, "Part 2 v1") {
+    part2 {
         val base = IntArray(chars.length - 1) { i -> chars[i] - '0' }
         //println(base.contentToString())
         val cups = Int2IntOpenHashMap(1_000_000)

@@ -1,10 +1,8 @@
 package de.skyrising.aoc2022
 
-import de.skyrising.aoc.Graph
-import de.skyrising.aoc.IntGrid
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.Vec2i
+import de.skyrising.aoc.*
 
+@Suppress("unused")
 class BenchmarkDay12 : BenchmarkDayV1(12)
 
 private fun parseInput(input: PuzzleInput): Triple<IntGrid, Vec2i, Vec2i> {
@@ -33,8 +31,9 @@ private fun parseInput(input: PuzzleInput): Triple<IntGrid, Vec2i, Vec2i> {
     return Triple(grid, start!!, end!!)
 }
 
+@Suppress("unused")
 fun registerDay12() {
-    puzzle(12, "Hill Climbing Algorithm") {
+    part1("Hill Climbing Algorithm") {
         val g = Graph<Vec2i, Nothing>()
         val (grid, start, end) = parseInput(this)
         grid.forEach { x, y, i ->
@@ -44,10 +43,10 @@ fun registerDay12() {
                 }
             }
         }
-        val path = g.dijkstra(g.vertex(start), g.vertex(end)) ?: return@puzzle -1
+        val path = g.dijkstra(g.vertex(start), g.vertex(end)) ?: return@part1 -1
         path.size
     }
-    puzzle(12, "Part Two") {
+    part2 {
         val g = Graph<Vec2i, Nothing>()
         val (grid, _, end) = parseInput(this)
         grid.forEach { x, y, i ->
@@ -58,7 +57,7 @@ fun registerDay12() {
             }
         }
         val ends = g.getVertexes().filterTo(mutableSetOf()) { v -> grid[v.value] == 0 }
-        val path = g.dijkstra(g.vertex(end), ends::contains) ?: return@puzzle -1
+        val path = g.dijkstra(g.vertex(end), ends::contains) ?: return@part2 -1
         path.size
     }
 }

@@ -1,11 +1,15 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet
 
+@Suppress("unused")
 class BenchmarkDay6 : BenchmarkDay(6)
 
+@Suppress("unused")
 fun registerDay6() {
-    puzzle(6, "Custom Customs v1") {
+    part1("Custom Customs") {
         var sum = 0
         val group = CharOpenHashSet()
         for (line in lines) {
@@ -18,7 +22,7 @@ fun registerDay6() {
         }
         sum + group.size
     }
-    puzzle(6, "Custom Customs v2") {
+    part1("Custom Customs") {
         var sum = 0
         var group = 0
         for (line in byteLines) {
@@ -28,13 +32,13 @@ fun registerDay6() {
                 group = 0
             } else {
                 for (i in 0 until len) {
-                    group = group or (1 shl (line[i] - 'a'.toByte()))
+                    group = group or (1 shl (line[i] - 'a'.code.toByte()))
                 }
             }
         }
         sum + Integer.bitCount(group)
     }
-    puzzle(6, "Part 2 v1") {
+    part2 {
         var sum = 0
         val group = CharOpenHashSet()
         var first = true
@@ -54,7 +58,7 @@ fun registerDay6() {
         }
         sum + group.size
     }
-    puzzle(6, "Part 2 v2") {
+    part2 {
         var sum = 0
         var group = 0
         var first = true
@@ -67,7 +71,7 @@ fun registerDay6() {
             } else {
                 var person = 0
                 for (i in 0 until len) {
-                    person = person or (1 shl (line[i] - 'a'.toByte()))
+                    person = person or (1 shl (line[i] - 'a'.code.toByte()))
                 }
                 if (first) {
                     group = person

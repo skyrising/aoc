@@ -1,10 +1,13 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.HashCommon
 import it.unimi.dsi.fastutil.ints.Int2IntMap
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 
+@Suppress("unused")
 class BenchmarkDay15 : BenchmarkDay(15)
 
 private fun day15next(mem: Int2IntMap, turn: Int, next: Int): Int {
@@ -85,21 +88,22 @@ private fun day15v2(starting: List<Int>, limit: Int): Int {
     return next
 }
 
+@Suppress("unused")
 fun registerDay15() {
     val test = TestInput("0,3,6")
-    puzzle(15, "Rambunctious Recitation v1") {
+    part1("Rambunctious Recitation") {
         val starting = chars.trim().split(",").map(String::toInt)
         day15(starting, 2020)
     }
-    puzzle(15, "Rambunctious Recitation v2") {
+    part1("Rambunctious Recitation") {
         val starting = chars.trim().split(",").map(String::toInt)
         day15v2(starting, 2020)
     }
-    puzzle(15, "Part 2 v1") {
+    part2 {
         val starting = chars.trim().split(",").map(String::toInt)
         day15(starting, 30000000)
     }
-    puzzle(15, "Part 2 v2") {
+    part2 {
         val starting = chars.trim().split(",").map(String::toInt)
         day15v2(starting, 30000000)
     }

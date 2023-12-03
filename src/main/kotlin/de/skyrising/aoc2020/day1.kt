@@ -1,54 +1,58 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.isBitSet
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import de.skyrising.aoc.setBit
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import java.nio.ByteBuffer
 
+@Suppress("unused")
 class BenchmarkDay1 : BenchmarkDay(1)
 
 private fun parseInt4(s: ByteBuffer) = when (s.remaining()) {
-    1 -> s[0] - '0'.toByte()
-    2 -> (s[1] - '0'.toByte()) + 10 * (s[0] - '0'.toByte())
-    3 -> (s[2] - '0'.toByte()) + 10 * ((s[1] - '0'.toByte()) + 10 * (s[0] - '0'.toByte()))
-    4 -> (s[3] - '0'.toByte()) + 10 * ((s[2] - '0'.toByte()) + 10 * ((s[1] - '0'.toByte()) + 10 * (s[0] - '0'.toByte())))
+    1 -> s[0] - '0'.code.toByte()
+    2 -> (s[1] - '0'.code.toByte()) + 10 * (s[0] - '0'.code.toByte())
+    3 -> (s[2] - '0'.code.toByte()) + 10 * ((s[1] - '0'.code.toByte()) + 10 * (s[0] - '0'.code.toByte()))
+    4 -> (s[3] - '0'.code.toByte()) + 10 * ((s[2] - '0'.code.toByte()) + 10 * ((s[1] - '0'.code.toByte()) + 10 * (s[0] - '0'.code.toByte())))
     else -> throw IllegalArgumentException()
 }
 
+@Suppress("unused")
 fun registerDay1() {
-    puzzle(1, "Report Repair v1") {
+    part1("Report Repair") {
         val numbers = IntOpenHashSet()
         for (line in lines) {
             val num = line.toInt()
             val other = 2020 - num
-            if (numbers.contains(other)) return@puzzle num * other
+            if (numbers.contains(other)) return@part1 num * other
             numbers.add(num)
         }
         0
     }
-    puzzle(1, "Report Repair v2") {
+    part1("Report Repair") {
         val numbers = LongArray(2048 shr 6)
         for (line in byteLines) {
             val num = parseInt4(line)
             val other = 2020 - num
-            if (isBitSet(numbers, other)) return@puzzle num * other
+            if (isBitSet(numbers, other)) return@part1 num * other
             setBit(numbers, num)
         }
         0
     }
-    puzzle(1, "Part Two v1") {
+    part2 {
         val numbers = IntOpenHashSet()
         for (line in lines) {
             val a = line.toInt()
             for (b in numbers.iterator()) {
                 val c = 2020 - a - b
-                if (numbers.contains(c)) return@puzzle a * b * c
+                if (numbers.contains(c)) return@part2 a * b * c
             }
             numbers.add(a)
         }
         0
     }
-    puzzle(1, "Part Two v2") {
+    part2 {
         val numbers = LongArray(2048 shr 6)
         for (line in byteLines) {
             val a = parseInt4(line)
@@ -56,7 +60,7 @@ fun registerDay1() {
                 if (!isBitSet(numbers, b)) continue
                 val c = 2020 - a - b
                 if (c < 0) break
-                if (isBitSet(numbers, c)) return@puzzle a * b * c
+                if (isBitSet(numbers, c)) return@part2 a * b * c
             }
             setBit(numbers, a)
         }

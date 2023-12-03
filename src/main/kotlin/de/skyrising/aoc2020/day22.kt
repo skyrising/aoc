@@ -2,8 +2,11 @@ package de.skyrising.aoc2020
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import java.util.*
 
+@Suppress("unused")
 class BenchmarkDay22 : BenchmarkDayV1(22)
 
 private fun readInput(input: PuzzleInput): Map<Int, LinkedList<Int>> {
@@ -80,6 +83,7 @@ private fun roundRecursive(p1: LinkedList<Int>, p2: LinkedList<Int>, previous: M
     return 0
 }
 
+@Suppress("unused")
 fun registerDay22() {
     val test = TestInput("""
         Player 1:
@@ -106,7 +110,7 @@ fun registerDay22() {
         29
         14
     """)
-    puzzle(22, "Crab Combat v1") {
+    part1("Crab Combat") {
         val (p1, p2) = ArrayList(readInput(this).values)
         while (!round(p1, p2)) {}
         var sum = 0
@@ -116,7 +120,7 @@ fun registerDay22() {
         }
         sum
     }
-    puzzle(22, "Part 2 v1") {
+    part2 {
         val (p1, p2) = ArrayList(readInput(this).values)
         gameRecursive(p1, p2)
         var sum = 0

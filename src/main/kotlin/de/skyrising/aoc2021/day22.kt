@@ -2,10 +2,14 @@ package de.skyrising.aoc2021
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import java.util.*
 
+@Suppress("unused")
 class BenchmarkDay22 : BenchmarkDayV1(22)
 
+@Suppress("unused")
 fun registerDay22() {
     val test = TestInput("""
         on x=10..12,y=10..12,z=10..12
@@ -99,7 +103,7 @@ fun registerDay22() {
         on x=-53470..21291,y=-120233..-33476,z=-44150..38147
         off x=-93533..-4276,y=-16170..68771,z=-104985..-24507
     """)
-    puzzle(22, "Reactor Reboot") {
+    part1("Reactor Reboot") {
         val instructions = parseInput(this)
         val clamp = Region3d(-50..50, -50..50, -50..50)
         val initRegion = Bitmap3d(-50, -50, -50, 51, 51, 51)
@@ -108,7 +112,7 @@ fun registerDay22() {
         }
         initRegion.count()
     }
-    puzzle(22, "Part Two") {
+    part2 {
         val instructions = parseInput(this)
         val maxRange = Int.MIN_VALUE..Int.MAX_VALUE
         countCubes(instructions, Region3d(maxRange, maxRange, maxRange))

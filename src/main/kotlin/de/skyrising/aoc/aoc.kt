@@ -1,13 +1,9 @@
 package de.skyrising.aoc
 
-import de.skyrising.aoc2015.register2015
-import de.skyrising.aoc2020.register2020
-import de.skyrising.aoc2021.register2021
-import de.skyrising.aoc2022.register2022
-import de.skyrising.aoc2023.register2023
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
+import java.time.LocalDate
 import java.util.*
 import kotlin.math.sqrt
 
@@ -15,19 +11,18 @@ interface Puzzle<T> : Comparable<Puzzle<T>> {
     val name: String
     val year: Int
     val day: Int
+    val part: Int
+    val index: Int
     fun getRealInput() = getInput(year, day)
     fun runPuzzle(input: PuzzleInput): T
 
-    override fun compareTo(other: Puzzle<T>): Int {
-        val yearCmp = year.compareTo(other.year)
-        if (yearCmp != 0) return yearCmp
-        val dayCmp = day.compareTo(other.day)
-        if (dayCmp != 0) return dayCmp
-        val part = if (name.startsWith("Part Two")) 2 else 1
-        val otherPart = if (other.name.startsWith("Part Two")) 2 else 1
-        if (part != otherPart) return part - otherPart
-        return name.compareTo(other.name)
-    }
+    override fun compareTo(other: Puzzle<T>) =
+        Comparator.comparing(Puzzle<*>::year)
+            .thenComparing(Puzzle<*>::day)
+            .thenComparing(Puzzle<*>::part)
+            .thenComparing(Puzzle<*>::name)
+            .thenComparing(Puzzle<*>::index)
+            .compare(this, other)
 }
 
 var lastInputLB = MutableBox<Pair<ByteBuffer, List<ByteBuffer>>?>(null)
@@ -82,7 +77,10 @@ class TestInput(str: String) : PuzzleInput {
     override val input: ByteBuffer by lazy { ByteBuffer.wrap(string.toByteArray()) }
 }
 
-val allPuzzles = TreeMap<Int, TreeMap<Int, MutableList<Puzzle<*>>>>()
+typealias DayPuzzles = MutableList<Puzzle<*>>
+typealias YearPuzzles = TreeMap<Int, DayPuzzles>
+
+val allPuzzles = TreeMap<Int, YearPuzzles>()
 
 fun register(puzzle: Puzzle<*>) {
     allPuzzles.computeIfAbsent(puzzle.year) { TreeMap() }.computeIfAbsent(puzzle.day) { mutableListOf() }.add(puzzle)
@@ -98,24 +96,52 @@ inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer
     return value.second
 }
 
-inline fun <T> puzzle(year: Int, day: Int, name: String, crossinline run: PuzzleInput.() -> T): Puzzle<T> {
+var currentYear = 0
+var currentDay = 0
+var lastPart = 0
+var currentIndex = 0
+
+inline fun <T> puzzle(name: String, part: Int = 0, crossinline run: PuzzleInput.() -> T): Puzzle<T> {
+    if (part != lastPart) {
+        currentIndex = 0
+        lastPart = part
+    }
     return object : Puzzle<T> {
-        override val name get() = name
-        override val year get() = year
-        override val day get() = day
+        override val name = name
+        override val year = currentYear
+        override val day = currentDay
+        override val part = part
+        override val index = currentIndex++
         override fun runPuzzle(input: PuzzleInput): T = run(input)
     }.also(::register)
+}
+
+inline fun <T> part1(name: String, crossinline run: PuzzleInput.() -> T) = puzzle(name, 1, run)
+inline fun <T> part2(name: String = "Part Two", crossinline run: PuzzleInput.() -> T) = puzzle(name, 2, run)
+
+fun registerYear(year: Int) {
+    val pkg = "de.skyrising.aoc$year"
+    currentYear = year
+    for (day in 1..25) {
+        currentDay = day
+        lastPart = 0
+        try {
+            val cls = Class.forName("$pkg.Day${day}Kt")
+            cls.getMethod("registerDay$day").invoke(null)
+        } catch (ignored: ClassNotFoundException) {}
+    }
+    currentYear = 0
+    currentDay = 0
+    currentIndex = 0
 }
 
 private var registeredAll = false
 fun registerAll() {
     if (registeredAll) return
     registeredAll = true
-    register2015()
-    register2020()
-    register2021()
-    register2022()
-    register2023()
+    for (year in 2015..LocalDate.now().year) {
+        registerYear(year)
+    }
 }
 
 const val RUNS = 10
@@ -146,18 +172,7 @@ fun main(args: Array<String>) {
             }
         }
     }
-    var year: Int? = null
-    var day: Int? = null
     for (puzzle in puzzlesToRun) {
-        if (puzzle.year != year) {
-            year = puzzle.year
-            day = null
-            println("$year:")
-        }
-        if (puzzle.day != day) {
-            day = puzzle.day
-            println("Day $day:")
-        }
         val input = puzzle.getRealInput()
         if (BENCHMARK) {
             input.benchmark = true
@@ -170,7 +185,11 @@ fun main(args: Array<String>) {
             input.benchmark = false
             val avg = times.average()
             val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
-            println(String.format(Locale.ROOT, "%-26s: %16s, %s ± %4.1f%%",
+            println(String.format(Locale.ROOT, "%d/%02d/%d.%d %-26s: %16s, %s ± %4.1f%%",
+                puzzle.year,
+                puzzle.day,
+                puzzle.part,
+                puzzle.index,
                 puzzle.name,
                 puzzle.runPuzzle(input),
                 formatTime(avg),
@@ -180,7 +199,11 @@ fun main(args: Array<String>) {
             val start = System.nanoTime()
             val result = puzzle.runPuzzle(input)
             val time = (System.nanoTime() - start) / 1000.0
-            println(String.format(Locale.ROOT, "%-26s: %16s, %s ± ?",
+            println(String.format(Locale.ROOT, "%d/%02d/%d.%d %-26s: %16s, %s ± ?",
+                puzzle.year,
+                puzzle.day,
+                puzzle.part,
+                puzzle.index,
                 puzzle.name,
                 result,
                 formatTime(time)

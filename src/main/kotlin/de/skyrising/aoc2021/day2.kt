@@ -1,9 +1,13 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay2 : BenchmarkDayV1(2)
 
+@Suppress("unused")
 fun registerDay2() {
     val test = TestInput("""
         forward 5
@@ -13,7 +17,7 @@ fun registerDay2() {
         down 8
         forward 2
     """)
-    puzzle(2, "Dive!") {
+    part1("Dive!") {
         var horizontal = 0
         var depth = 0
         for (line in lines) {
@@ -26,7 +30,7 @@ fun registerDay2() {
         }
         depth * horizontal
     }
-    puzzle(2, "Part Two") {
+    part2 {
         var horizontal = 0
         var depth = 0
         var aim = 0

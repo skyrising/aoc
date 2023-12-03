@@ -2,10 +2,14 @@ package de.skyrising.aoc2020
 
 import de.skyrising.aoc.Graph
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 
+@Suppress("unused")
 class BenchmarkDay8 : BenchmarkDayV1(8)
 
+@Suppress("unused")
 fun registerDay8() {
     val test = TestInput("""
         nop +0
@@ -18,7 +22,7 @@ fun registerDay8() {
         jmp -4
         acc +6
     """)
-    puzzle(8, "Handheld Halting v1") {
+    part1("Handheld Halting") {
         var acc = 0
         var pc = 0
         val counts = Int2IntOpenHashMap()
@@ -40,7 +44,7 @@ fun registerDay8() {
         }
         acc
     }
-    puzzle(8, "Part 2 v1") {
+    part2 {
         val instrs = mutableListOf<Pair<String, Int>>()
         var bbStart = 0
         val graph = Graph.build<Int, Nothing?> {
@@ -72,7 +76,7 @@ fun registerDay8() {
             }
         }
         val end = instrs.size
-        val path = graph.dijkstra(graph[0]!!, graph[end - 1]!!) ?: return@puzzle null
+        val path = graph.dijkstra(graph[0]!!, graph[end - 1]!!) ?: return@part2 null
         for (edge in path) {
             if (edge.weight <= 0) continue
             val i = edge.from.value

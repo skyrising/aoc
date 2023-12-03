@@ -1,10 +1,9 @@
 package de.skyrising.aoc2020
 
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.isBitSet
-import de.skyrising.aoc.setBit
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 
+@Suppress("unused")
 class BenchmarkDay17 : BenchmarkDay(17)
 
 interface StateDelegate {
@@ -15,7 +14,7 @@ interface StateDelegate {
 
 private class DenseState(size: Int) : StateDelegate {
     private val state = LongArray((size + 63) / 64)
-    override val activeCount get() = state.sumBy { it.countOneBits() }
+    override val activeCount get() = state.sumOf { it.countOneBits() }
     override fun get(index: Int) = isBitSet(state, index)
     override fun set(index: Int, value: Boolean) = setBit(state, index, value)
 }
@@ -199,22 +198,23 @@ private fun part2(input: List<String>, delegator: (Int) -> StateDelegate): Int {
     return state.activeCount
 }
 
+@Suppress("unused")
 fun registerDay17() {
     val test = TestInput("""
         .#.
         ..#
         ###
     """)
-    puzzle(17, "Conway Cubes v1") {
+    part1("Conway Cubes") {
         part1(lines, ::DenseState)
     }
-    puzzle(17, "Conway Cubes v2") {
+    part1("Conway Cubes") {
         part1(lines) { SparseState() }
     }
-    puzzle(17, "Part 2 v1") {
+    part2 {
         part2(lines, ::DenseState)
     }
-    puzzle(17, "Part 2 v2") {
+    part2 {
         part2(lines) { SparseState() }
     }
 }

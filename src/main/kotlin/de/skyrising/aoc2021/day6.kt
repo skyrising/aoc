@@ -1,13 +1,17 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.bytes.ByteArrayList
 
+@Suppress("unused")
 class BenchmarkDay6 : BenchmarkDayV1(6)
 
+@Suppress("unused")
 fun registerDay6() {
     val test = TestInput("3,4,3,1,2")
-    puzzle(6, "Lanternfish") {
+    part1("Lanternfish") {
         val fish = ByteArrayList(chars.trim().split(',').map(String::toByte))
         for (day in 1..80) {
             val newFish = ByteArrayList()
@@ -25,7 +29,7 @@ fun registerDay6() {
         }
         fish.size
     }
-    puzzle(6, "Part Two") {
+    part2 {
         val fish = chars.trim().split(',').map(String::toInt)
         val createCount = LongArray(280)
         for (f in fish) createCount[f + 1]++

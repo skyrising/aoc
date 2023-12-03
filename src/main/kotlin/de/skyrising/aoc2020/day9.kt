@@ -1,11 +1,15 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.HashCommon
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 
+@Suppress("unused")
 class BenchmarkDay9 : BenchmarkDay(9)
 
+@Suppress("unused")
 fun registerDay9() {
     val test = TestInput("""
         35
@@ -76,33 +80,33 @@ fun registerDay9() {
         }
         return null
     }
-    puzzle(9, "Encoding Error v1") {
+    part1("Encoding Error") {
         val numbers = lines.map(String::toLong)
         findInvalid(numbers)
     }
-    puzzle(9, "Encoding Error v2") {
+    part1("Encoding Error") {
         val numbers = longArrayOf(lines)
         findInvalid2(numbers)
     }
-    puzzle(9, "Part 2 v1") {
+    part2 {
         val numbers = lines.map(String::toLong)
-        val invalid = findInvalid(numbers) ?: return@puzzle null
+        val invalid = findInvalid(numbers) ?: return@part2 null
         for (i in numbers.indices) {
             var sum = 0L
             for (j in i until numbers.size) {
                 sum += numbers[j]
                 if (sum == invalid) {
                     val sorted = numbers.subList(i, j + 1).sorted()
-                    return@puzzle sorted[0] + sorted[sorted.size - 1]
+                    return@part2 sorted[0] + sorted[sorted.size - 1]
                 }
                 if (sum > invalid) break
             }
         }
-        return@puzzle null
+        return@part2 null
     }
-    puzzle(9, "Part 2 v2") {
+    part2 {
         val numbers = longArrayOf(lines)
-        val invalid = findInvalid2(numbers) ?: return@puzzle null
+        val invalid = findInvalid2(numbers) ?: return@part2 null
         for (i in numbers.lastIndex downTo 0) {
             var sum = numbers[i]
             var min = sum
@@ -112,10 +116,10 @@ fun registerDay9() {
                 min = minOf(min, n)
                 max = maxOf(max, n)
                 sum += n
-                if (sum == invalid && max != min) return@puzzle min + max
+                if (sum == invalid && max != min) return@part2 min + max
                 if (sum > invalid) break
             }
         }
-        return@puzzle null
+        return@part2 null
     }
 }

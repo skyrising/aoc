@@ -4,6 +4,7 @@ import de.skyrising.aoc.*
 import de.skyrising.aoc2021.pairs
 import it.unimi.dsi.fastutil.objects.*
 
+@Suppress("unused")
 class BenchmarkDay16 : BenchmarkDayV1(16)
 
 private fun parseInput(input: PuzzleInput): Triple<Object2IntMap<String>, Object2IntMap<Pair<String, String>>, Set<String>> {
@@ -36,6 +37,7 @@ private fun findBestValve(paths: Object2IntMap<Pair<String, String>>, flows: Obj
     } ?: 0
 }
 
+@Suppress("unused")
 fun registerDay16() {
     val test = TestInput("""
         Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
@@ -49,11 +51,11 @@ fun registerDay16() {
         Valve II has flow rate=0; tunnels lead to valves AA, JJ
         Valve JJ has flow rate=21; tunnel leads to valve II
     """)
-    puzzle(16, "Probosciedea Volcanium") {
+    part1("Probosciedea Volcanium") {
         val (flows, paths, closed) = parseInput(this)
         findBestValve(paths, flows, "AA", 0, closed, 30)
     }
-    puzzle(16, "Part Two") {
+    part2 {
         val (flows, paths, closed) = parseInput(this)
         closed.subsets().maxOf { subset ->
             val myResult = findBestValve(paths, flows, "AA", 0, subset, 26)

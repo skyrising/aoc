@@ -1,9 +1,13 @@
 package de.skyrising.aoc2023
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay2 : BenchmarkDayV1(2)
 
+@Suppress("unused")
 fun registerDay2() {
     val test = TestInput("""
         Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
@@ -32,12 +36,12 @@ fun registerDay2() {
             Round(red, green, blue)
         })
     }
-    puzzle(2, "Cube Conundrum") {
+    part1("Cube Conundrum") {
         lines.map(::parse).sumOf {
             if (it.rounds.all { round -> round.red <= 12 && round.green <= 13 && round.blue <= 14 }) it.num else 0
         }
     }
-    puzzle(2, "Part Two") {
+    part2 {
         lines.map(::parse).sumOf {
             it.rounds.maxOf(Round::red) * it.rounds.maxOf(Round::green) * it.rounds.maxOf(Round::blue)
         }

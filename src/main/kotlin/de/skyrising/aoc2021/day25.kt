@@ -3,11 +3,14 @@ package de.skyrising.aoc2021
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
 import de.skyrising.aoc.Vec2i
+import de.skyrising.aoc.part1
 import it.unimi.dsi.fastutil.objects.Object2CharMap
 import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
 
+@Suppress("unused")
 class BenchmarkDay25 : BenchmarkDayV1(25)
 
+@Suppress("unused")
 fun registerDay25() {
     val test = TestInput("""
         v...>>.vv>
@@ -20,7 +23,7 @@ fun registerDay25() {
         v.v..>>v.v
         ....v..v.>
     """)
-    puzzle(25, "Sea Cucumber") {
+    part1("Sea Cucumber") {
         val (map, size) = parseInput(this)
         var state = map
         var steps = 0

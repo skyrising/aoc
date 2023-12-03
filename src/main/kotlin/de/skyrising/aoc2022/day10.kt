@@ -2,8 +2,11 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.parseDisplay
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import kotlin.math.abs
 
+@Suppress("unused")
 class BenchmarkDay10 : BenchmarkDayV1(10)
 
 private inline fun runProgram(input: PuzzleInput, cycle: (x: Int) -> Unit) {
@@ -22,8 +25,9 @@ private inline fun runProgram(input: PuzzleInput, cycle: (x: Int) -> Unit) {
     }
 }
 
+@Suppress("unused")
 fun registerDay10() {
-    puzzle(10, "Cathode-Ray Tube") {
+    part1("Cathode-Ray Tube") {
         var result = 0
         var cycle = 0
         runProgram(this) { x ->
@@ -33,7 +37,7 @@ fun registerDay10() {
         }
         result
     }
-    puzzle(10, "Part Two") {
+    part2 {
         var cycle = 0
         val output = StringBuilder()
         runProgram(this) { x ->

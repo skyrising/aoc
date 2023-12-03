@@ -2,9 +2,13 @@ package de.skyrising.aoc2021
 
 import de.skyrising.aoc.Graph
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay15 : BenchmarkDayV1(15)
 
+@Suppress("unused")
 fun registerDay15() {
     val test = TestInput("""
         1163751742
@@ -18,7 +22,7 @@ fun registerDay15() {
         1293138521
         2311944581
     """)
-    puzzle(15, "Chiton") {
+    part1("Chiton") {
         val input = lines
         val g = Graph.build<Pair<Int, Int>, Int> {
             for (y in input.indices) {
@@ -33,7 +37,7 @@ fun registerDay15() {
         val path = g.dijkstra(g[Pair(0, 0)]!!, g[Pair(input.lastIndex, input.last().lastIndex)]!!)
         path?.sumOf { e -> e.weight }
     }
-    puzzle(15, "Part Two") {
+    part2 {
         val input = lines
         val width = input.last().length
         val height = input.size

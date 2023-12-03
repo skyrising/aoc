@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap
 import kotlin.math.max
 
+@Suppress("unused")
 class BenchmarkDay17 : BenchmarkDayV1(17)
 
 private fun collides(rock: List<Vec2i>, pos: Vec2i, landed: Set<Vec2i>): Boolean {
@@ -87,12 +88,13 @@ private fun dropRocks(input: PuzzleInput, rockCount: Long): Long {
     return height.max() + 1L
 }
 
+@Suppress("unused")
 fun registerDay17() {
     val test = TestInput(">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>")
-    puzzle(17, "Pyroclastic Flow") {
+    part1("Pyroclastic Flow") {
         dropRocks(this, 2022)
     }
-    puzzle(17, "Part Two") {
+    part2 {
         dropRocks(this, 1000000000000L)
     }
 }

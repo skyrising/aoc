@@ -1,9 +1,13 @@
 package de.skyrising.aoc2015
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay8 : BenchmarkDayV1(8)
 
+@Suppress("unused")
 fun registerDay8() {
     val test = TestInput("""
         ""
@@ -11,7 +15,7 @@ fun registerDay8() {
         "aaa\"aaa"
         "\x27"
     """)
-    puzzle(8, "Matchsticks") {
+    part1("Matchsticks") {
         var totalChars = 0
         var memChars = 0
         for (line in lines) {
@@ -33,7 +37,7 @@ fun registerDay8() {
         }
         totalChars - memChars
     }
-    puzzle(8, "Part Two") {
+    part2 {
         var totalChars = 0
         var origChars = 0
         for (line in lines) {

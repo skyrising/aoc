@@ -2,8 +2,11 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import java.util.*
 
+@Suppress("unused")
 class BenchmarkDay8 : BenchmarkDayV1(8)
 
 private fun parseInput(input: PuzzleInput): Array<IntArray> {
@@ -31,6 +34,7 @@ private fun viewingDistance(limit: Int, lookup: (k: Int) -> Int): Int {
     return count
 }
 
+@Suppress("unused")
 fun registerDay8() {
     val test = TestInput("""
         30373
@@ -39,7 +43,7 @@ fun registerDay8() {
         33549
         35390
     """)
-    puzzle(8, "Treetop Tree House") {
+    part1("Treetop Tree House") {
         val rows = parseInput(this)
         val width = rows[0].size
         val height = rows.size
@@ -78,7 +82,7 @@ fun registerDay8() {
         }*/
         visible.cardinality()
     }
-    puzzle(8, "Part Two") {
+    part2 {
         val rows = parseInput(this)
         val width = rows[0].size
         val height = rows.size

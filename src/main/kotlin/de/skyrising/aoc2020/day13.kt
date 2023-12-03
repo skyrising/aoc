@@ -1,11 +1,9 @@
 package de.skyrising.aoc2020
 
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.positionAfter
-import de.skyrising.aoc.splitToRanges
-import de.skyrising.aoc.until
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.longs.LongArrayList
 
+@Suppress("unused")
 class BenchmarkDay13 : BenchmarkDay(13)
 
 fun modInv(a: Long, b: Long): Long {
@@ -67,34 +65,35 @@ inline fun crt(n: Int, divisors: (Int) -> Long, remainders: (Int) -> Long): Long
     return sum % product
 }
 
+@Suppress("unused")
 fun registerDay13() {
     val test = TestInput("""
         939
         7,13,x,x,59,x,31,19
     """)
-    puzzle(13, "Shuttle Search v1") {
+    part1("Shuttle Search") {
         val earliest = lines[0].toInt()
         val buses = lines[1].split(",").stream().filter { it != "x" }.mapToInt(String::toInt).toArray()
         var i = earliest
         while (true) {
             for (bus in buses) {
-                if (i % bus == 0) return@puzzle (i - earliest) * bus
+                if (i % bus == 0) return@part1 (i - earliest) * bus
             }
             i++
         }
     }
-    puzzle(13, "Shuttle Search v2") {
+    part1("Shuttle Search") {
         val earliest = lines[0].toInt()
         val buses = lines[1].split(",").stream().filter { it != "x" }.mapToInt(String::toInt).toArray()
         var pair = Pair(0, Integer.MAX_VALUE)
         for (bus in buses) {
-            if (earliest % bus == 0) return@puzzle 0
+            if (earliest % bus == 0) return@part1 0
             val dist = bus * (earliest / bus + 1) - earliest
             if (dist < pair.second) pair = Pair(bus, dist)
         }
         pair.first * pair.second
     }
-    puzzle(13, "Part 2 v1") {
+    part2 {
         val split = lines[1].split(",")
         val buses = LongArrayList()
         val indexes = LongArrayList()
@@ -114,7 +113,7 @@ fun registerDay13() {
         )
     }
 
-    puzzle(13, "Part 2 v2") {
+    part2 {
         val remainders = LongArrayList()
         val divisors = LongArrayList()
         var i = 0

@@ -1,9 +1,13 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay1 : BenchmarkDayV1(1)
 
+@Suppress("unused")
 fun registerDay1() {
     val test = TestInput("""
         199
@@ -17,7 +21,7 @@ fun registerDay1() {
         260
         263
     """)
-    puzzle(1, "Sonar Sweep") {
+    part1("Sonar Sweep") {
         val numbers = lines.map(String::toInt)
         var increasing = 0
         for (i in 1 .. numbers.lastIndex) {
@@ -26,7 +30,7 @@ fun registerDay1() {
         increasing
     }
 
-    puzzle(1, "Part Two") {
+    part2 {
         val numbers = lines.map(String::toInt)
         val movingSum = IntArray(numbers.size + 1)
         for (i in numbers.indices) {

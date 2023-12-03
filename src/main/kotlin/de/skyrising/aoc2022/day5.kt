@@ -2,8 +2,11 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.ints
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.chars.CharArrayList
 
+@Suppress("unused")
 class BenchmarkDay5 : BenchmarkDayV1(5)
 
 private fun parseInput(input: PuzzleInput): Pair<List<String>, Array<CharArrayList>> {
@@ -30,8 +33,9 @@ private fun Array<CharArrayList>.toResult(): String {
     return result.toString()
 }
 
+@Suppress("unused")
 fun registerDay5() {
-    puzzle(5, "Supply Stacks") {
+    part1("Supply Stacks") {
         val (moves, stacks) = parseInput(this)
         for (move in moves) {
             val (count, from, to) = move.ints()
@@ -42,7 +46,7 @@ fun registerDay5() {
         stacks.toResult()
     }
 
-    puzzle(5, "Part Two") {
+    part2 {
         val (moves, stacks) = parseInput(this)
         for (move in moves) {
             val (count, from, to) = move.ints()

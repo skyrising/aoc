@@ -1,12 +1,16 @@
 package de.skyrising.aoc2015
 
 import de.skyrising.aoc.Vec2i
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import java.util.*
 
+@Suppress("unused")
 class BenchmarkDay6 : BenchmarkDayV1(6)
 
+@Suppress("unused")
 fun registerDay6() {
-    puzzle(6, "Probably a Fire Hazard") {
+    part1("Probably a Fire Hazard") {
         val lights = BitSet(1_000_000)
         for (line in lines) {
             val parts = line.split(' ')
@@ -30,7 +34,7 @@ fun registerDay6() {
         }
         lights.cardinality()
     }
-    puzzle(6, "Part Two") {
+    part2 {
         val lights = ShortArray(1_000_000)
         for (line in lines) {
             val parts = line.split(' ')

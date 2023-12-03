@@ -19,7 +19,7 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("it.unimi.dsi:fastutil:8.5.12")
-    implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.6")
+    implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.7")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 }
 
@@ -38,7 +38,7 @@ tasks.withType<KotlinCompile>().configureEach {
 benchmark {
     targets {
         register("main") {
-            (this as JvmBenchmarkTarget).jmhVersion = "1.27"
+            (this as JvmBenchmarkTarget).jmhVersion = "1.37"
         }
     }
 }

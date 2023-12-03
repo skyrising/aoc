@@ -1,11 +1,15 @@
 package de.skyrising.aoc2022
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet
 
+@Suppress("unused")
 class BenchmarkDay3 : BenchmarkDayV1(3)
 
+@Suppress("unused")
 fun registerDay3() {
-    puzzle(3, "Rucksack Reorganization") {
+    part1("Rucksack Reorganization") {
         var sum = 0
         for (line in lines) {
             val comp1 = line.slice(0 until line.length / 2)
@@ -23,7 +27,7 @@ fun registerDay3() {
         sum
     }
 
-    puzzle(3, "Part Two") {
+    part2 {
         var sum = 0
         for (i in lines.indices step 3) {
             val items1 = CharOpenHashSet(lines[i].toCharArray())

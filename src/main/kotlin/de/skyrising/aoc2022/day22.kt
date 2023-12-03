@@ -2,6 +2,7 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.*
 
+@Suppress("unused")
 class BenchmarkDay22 : BenchmarkDayV1(22)
 
 private fun parseInput(input: PuzzleInput): Pair<CharGrid, List<String>> {
@@ -115,6 +116,7 @@ private fun run(input: PuzzleInput, transitions: Map<VecState, VecState>? = null
     return pos.y * 1000 + pos.x * 4 + FACINGS.indexOf(state.second) + 1004
 }
 
+@Suppress("unused")
 fun registerDay22() {
     val test = TestInput("""
                 ...#
@@ -132,10 +134,10 @@ fun registerDay22() {
         
         10R5L5R10L4R5L5
     """)
-    puzzle(22, "Monkey Map") {
+    part1("Monkey Map") {
         run(this)
     }
-    puzzle(22, "Part Two") {
+    part2 {
         // run(test, buildTransitions(cubeNetTest(4)))
         run(this, buildTransitions(cubeNetReal(50)))
     }

@@ -1,9 +1,13 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay8 : BenchmarkDayV1(8)
 
+@Suppress("unused")
 fun registerDay8() {
     val test = TestInput("""
         be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
@@ -17,7 +21,7 @@ fun registerDay8() {
         egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
         gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagc
     """)
-    puzzle(8, "Seven Segment Search") {
+    part1("Seven Segment Search") {
         var count = 0
         for (line in lines) {
             val (_, output) = line.split(" | ", limit=2)
@@ -30,7 +34,7 @@ fun registerDay8() {
         }
         count
     }
-    puzzle(8, "Part Two") {
+    part2 {
         var sum = 0
         for (line in lines) {
             val signalToNumber = mutableMapOf<String, Int>()

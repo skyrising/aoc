@@ -1,11 +1,11 @@
 package de.skyrising.aoc2021
 
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.Vec3i
+import de.skyrising.aoc.*
 
+@Suppress("unused")
 class BenchmarkDay19 : BenchmarkDayV1(19)
 
+@Suppress("unused")
 fun registerDay19() {
     val test = TestInput("""
         --- scanner 0 ---
@@ -145,10 +145,10 @@ fun registerDay19() {
         -652,-548,-490
         30,-46,-14
     """)
-    puzzle(19, "Beacon Scanner") {
+    part1("Beacon Scanner") {
         solve(parseInput(this)).first.size
     }
-    puzzle(19, "Part Two") {
+    part2 {
         val (_, scanners) = solve(parseInput(this))
         scanners.toList().pairs().maxByOrNull { (a, b) -> a.manhattanDistance(b) }?.also(::println)?.let { (a, b) -> a.manhattanDistance(b) }
     }

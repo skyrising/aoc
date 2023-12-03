@@ -2,12 +2,16 @@ package de.skyrising.aoc2021
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay17 : BenchmarkDayV1(17)
 
+@Suppress("unused")
 fun registerDay17() {
     val test = TestInput("target area: x=20..30, y=-10..-5")
-    puzzle(17, "Trick Shot") {
+    part1("Trick Shot") {
         val target = parseInput(this)
         val x2 = target.first.last
         val y1 = target.second.first
@@ -23,12 +27,12 @@ fun registerDay17() {
         }
         maxY
     }
-    puzzle(17, "Trick Shot v2") {
+    part1("Trick Shot") {
         val target = parseInput(this)
         val vy = -target.second.first - 1
         vy * (vy + 1) / 2
     }
-    puzzle(17, "Part Two") {
+    part2 {
         val target = parseInput(this)
         val x2 = target.first.last
         val y1 = target.second.first

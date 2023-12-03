@@ -1,9 +1,14 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
+
+@Suppress("unused")
 class BenchmarkDay3 : BenchmarkDay(3)
 
+@Suppress("unused")
 fun registerDay3() {
-    puzzle(3, "Toboggan Trajectory v1") {
+    part1("Toboggan Trajectory") {
         var trees = 0
         var x = 0
         for (line in lines) {
@@ -13,18 +18,18 @@ fun registerDay3() {
         }
         trees
     }
-    puzzle(3, "Toboggan Trajectory v2") {
+    part1("Toboggan Trajectory") {
         var trees = 0
         var x = 0
         val len = byteLines[0].remaining()
         for (line in byteLines) {
-            val tree = line[x] == '#'.toByte()
+            val tree = line[x] == '#'.code.toByte()
             if (tree) trees++
             x = wrap(x + 3, len)
         }
         trees
     }
-    puzzle(3, "Part Two v1") {
+    part2 {
         val slopes = intArrayOf(1, 3, 5, 7, 1)
         val step = intArrayOf(1, 1, 1, 1, 2)
         val trees = LongArray(5)
@@ -41,7 +46,7 @@ fun registerDay3() {
         //trees.contentToString()
         trees.reduce {a, b -> a * b}
     }
-    puzzle(3, "Part Two v2") {
+    part2 {
         var t0 = 0
         var t1 = 0
         var t2 = 0
@@ -54,20 +59,20 @@ fun registerDay3() {
         var x4 = 0
         val len = byteLines[0].remaining()
         for ((lineCount, line) in byteLines.withIndex()) {
-            t0 += if (line[x0] == '#'.toByte()) 1 else 0
+            t0 += if (line[x0] == '#'.code.toByte()) 1 else 0
             x0 = wrap(x0 + 1, len)
             if (x0 >= len) x0 -= len
-            t1 += if (line[x1] == '#'.toByte()) 1 else 0
+            t1 += if (line[x1] == '#'.code.toByte()) 1 else 0
             x1 = wrap(x1 + 3, len)
             if (x1 >= len) x1 -= len
-            t2 += if (line[x2] == '#'.toByte()) 1 else 0
+            t2 += if (line[x2] == '#'.code.toByte()) 1 else 0
             x2 = wrap(x2 + 5, len)
             if (x2 >= len) x2 -= len
-            t3 += if (line[x3] == '#'.toByte()) 1 else 0
+            t3 += if (line[x3] == '#'.code.toByte()) 1 else 0
             x3 = wrap(x3 + 7, len)
             if (x3 >= len) x3 -= len
             if (lineCount % 2 == 0) {
-                t4 += if (line[x4] == '#'.toByte()) 1 else 0
+                t4 += if (line[x4] == '#'.code.toByte()) 1 else 0
                 x4 = wrap(x4 + 1, len)
                 if (x4 >= len) x4 -= len
             }

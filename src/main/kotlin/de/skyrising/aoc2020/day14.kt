@@ -1,12 +1,11 @@
 package de.skyrising.aoc2020
 
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.positionAfter
-import de.skyrising.aoc.until
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
 import java.nio.ByteBuffer
 
+@Suppress("unused")
 class BenchmarkDay14 : BenchmarkDay(14)
 
 private fun getMask(line: String): Pair<Long, Long> {
@@ -24,10 +23,10 @@ private fun getMask(line: ByteBuffer): Triple<Long, Long, IntArray> {
     for (i in 0 until bits) {
         val char = line[prefixBytes + i]
         val pos = bits - i - 1
-        if (char == 'X'.toByte()) {
+        if (char == 'X'.code.toByte()) {
             actualMask = actualMask or (1L shl pos)
             floating.add(pos)
-        } else if (char == '1'.toByte()) {
+        } else if (char == '1'.code.toByte()) {
             maskBits = maskBits or (1L shl pos)
         }
     }
@@ -50,12 +49,13 @@ private fun parseLong(buf: ByteBuffer): Long {
     var l = 0L
     val pos = buf.position()
     for (i in 0 until buf.remaining()) {
-        val digit = buf[pos + i] - '0'.toByte()
+        val digit = buf[pos + i] - '0'.code.toByte()
         l = 10 * l + digit
     }
     return l
 }
 
+@Suppress("unused")
 fun registerDay14() {
     val test = TestInput("""
         mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
@@ -69,7 +69,7 @@ fun registerDay14() {
         mask = 00000000000000000000000000000000X0XX
         mem[26] = 1
     """)
-    puzzle(14, "Docking Data v1") {
+    part1("Docking Data") {
         val mem = Long2LongOpenHashMap()
         var mask = -1L
         var maskBits = 0L
@@ -88,22 +88,22 @@ fun registerDay14() {
         // println(mem)
         mem.values.sum()
     }
-    puzzle(14, "Docking Data v2") {
+    part1("Docking Data") {
         val mem = Long2LongOpenHashMap()
         var mask = -1L
         var maskBits = 0L
         for (line in byteLines) {
-            if (line[1] == 'a'.toByte()) {
+            if (line[1] == 'a'.code.toByte()) {
                 val m = getMask(line)
                 mask = m.first
                 maskBits = m.second
             } else {
                 val buf = line.slice()
-                buf.positionAfter('['.toByte())
-                buf.until(']'.toByte())
+                buf.positionAfter('['.code.toByte())
+                buf.until(']'.code.toByte())
                 val addr = parseLong(buf)
                 buf.clear()
-                buf.positionAfter('='.toByte())
+                buf.positionAfter('='.code.toByte())
                 buf.position(buf.position() + 1)
                 val value = parseLong(buf)
                 // println("$addr, $value -> ${(value and mask) or maskBits}")
@@ -113,7 +113,7 @@ fun registerDay14() {
         // println(mem)
         mem.values.sum()
     }
-    puzzle(14, "Part 2 v1") {
+    part2 {
         val mem = Long2LongOpenHashMap()
         var mask = 0L
         var maskBits = 0L
@@ -144,24 +144,24 @@ fun registerDay14() {
         // println(mem)
         mem.values.sum()
     }
-    puzzle(14, "Part 2 v2") {
+    part2 {
         val mem = Long2LongOpenHashMap()
         var mask = 0L
         var maskBits = 0L
         var floatingPos = IntArray(0)
         for (line in byteLines) {
-            if (line[1] == 'a'.toByte()) {
+            if (line[1] == 'a'.code.toByte()) {
                 val m = getMask(line)
                 mask = m.first
                 maskBits = m.second
                 floatingPos = m.third
             } else {
                 val buf = line.slice()
-                buf.positionAfter('['.toByte())
-                buf.until(']'.toByte())
+                buf.positionAfter('['.code.toByte())
+                buf.until(']'.code.toByte())
                 val addr = parseLong(buf)
                 buf.clear()
-                buf.positionAfter('='.toByte())
+                buf.positionAfter('='.code.toByte())
                 buf.position(buf.position() + 1)
                 val value = parseLong(buf)
                 val fixed = (addr or maskBits) and mask.inv()

@@ -1,7 +1,10 @@
 package de.skyrising.aoc2022
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import kotlinx.serialization.json.*
 
+@Suppress("unused")
 class BenchmarkDay13 : BenchmarkDayV1(13)
 
 private fun compare(left: JsonElement, right: JsonElement): Int {
@@ -26,8 +29,9 @@ private fun compare(left: JsonElement, right: JsonElement): Int {
     return 0
 }
 
+@Suppress("unused")
 fun registerDay13() {
-    puzzle(13, "Distress Signal") {
+    part1("Distress Signal") {
         val values = lines.filter(String::isNotBlank).map(Json::parseToJsonElement).chunked(2)
         var result = 0
         for (i in values.indices) {
@@ -37,7 +41,7 @@ fun registerDay13() {
         }
         result
     }
-    puzzle(13, "Part Two") {
+    part2 {
         val values = lines.filter(String::isNotBlank).mapTo(mutableListOf(),  Json::parseToJsonElement)
         val div1 = JsonArray(listOf(JsonArray(listOf(JsonPrimitive(2)))))
         val div2 = JsonArray(listOf(JsonArray(listOf(JsonPrimitive(6)))))

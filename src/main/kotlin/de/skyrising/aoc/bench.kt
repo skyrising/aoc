@@ -11,10 +11,10 @@ abstract class BenchmarkDay(year: Int, day: Int) {
         registerAll()
     }
     private val input = getInput(year, day)
-    private val p1v1 = allPuzzles[year]!![day]!![0]
-    private val p1v2 = allPuzzles[year]!![day]!![1]
-    private val p2v1 = allPuzzles[year]!![day]!![2]
-    private val p2v2 = allPuzzles[year]!![day]!![3]
+    private val p1v1 = allPuzzles[year]!![day]!!.find { it.part == 1 && it.index == 0 }!!
+    private val p1v2 = allPuzzles[year]!![day]!!.find { it.part == 1 && it.index == 1 }!!
+    private val p2v1 = allPuzzles[year]!![day]!!.find { it.part == 2 && it.index == 0 }!!
+    private val p2v2 = allPuzzles[year]!![day]!!.find { it.part == 2 && it.index == 1 }!!
 
     @Benchmark
     fun part1v1() = p1v1.runPuzzle(input)
@@ -37,8 +37,8 @@ abstract class BenchmarkDayV1(year: Int, day: Int) {
         registerAll()
     }
     private val input = getInput(year, day)
-    private val p1v1 = allPuzzles[year]!![day]!![0]
-    private val p2v1 = allPuzzles[year]!![day]!![1]
+    private val p1v1 = allPuzzles[year]!![day]!!.find { it.part == 1 && it.index == 0 }!!
+    private val p2v1 = allPuzzles[year]!![day]!!.find { it.part == 2 && it.index == 0 }!!
 
     @Benchmark
     fun part1v1() = p1v1.runPuzzle(input)

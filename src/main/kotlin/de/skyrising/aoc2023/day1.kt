@@ -1,7 +1,10 @@
 package de.skyrising.aoc2023
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay1 : BenchmarkDayV1(1)
 
 fun digitToInt(s: String) = when (s) {
@@ -18,6 +21,7 @@ fun digitToInt(s: String) = when (s) {
     else -> error("Invalid digit: $s")
 }
 
+@Suppress("unused")
 fun registerDay1() {
     val test = TestInput(
         """
@@ -38,7 +42,7 @@ fun registerDay1() {
         7pqrstsixteen
     """.trimIndent()
     )
-    puzzle(1, "Trebuchet?!") {
+    part1("Trebuchet?!") {
         lines.sumOf {
             val digits = it.filter(Char::isDigit)
             digits[0].digitToInt() * 10 + digits.last().digitToInt()
@@ -46,7 +50,7 @@ fun registerDay1() {
     }
     val regexStart = Regex("\\d|one|two|three|four|five|six|seven|eight|nine")
     val regexEnd = Regex(".*(\\d|one|two|three|four|five|six|seven|eight|nine)")
-    puzzle(1, "Part Two") {
+    part2 {
         lines.sumOf {
             val first = regexStart.find(it)?.value ?: error("No first digit")
             val last = regexEnd.find(it)?.groups?.get(1)?.value ?: error("No last digit")

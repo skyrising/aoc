@@ -1,7 +1,6 @@
 package de.skyrising.aoc2021
 
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap
 import it.unimi.dsi.fastutil.chars.Char2LongMap
 import it.unimi.dsi.fastutil.chars.Char2LongOpenHashMap
@@ -10,8 +9,10 @@ import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2CharMap
 import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
 
+@Suppress("unused")
 class BenchmarkDay14 : BenchmarkDayV1(14)
 
+@Suppress("unused")
 fun registerDay14() {
     val test = TestInput("""
         NNCB
@@ -33,7 +34,7 @@ fun registerDay14() {
         CC -> N
         CN -> C
     """)
-    puzzle(14, "Extended Polymerization") {
+    part1("Extended Polymerization") {
         val (start, rules) = parseInput(this)
         var current = start
         for (step in 1..10) {
@@ -54,11 +55,11 @@ fun registerDay14() {
         val min = counts.minOf(Map.Entry<Char, Int>::value)
         max - min
     }
-    puzzle(14, "Extended Polymerization v2") {
+    part1("Extended Polymerization") {
         val (start, rules) = parseInput(this)
         solveDay14Fast(start, rules, 10)
     }
-    puzzle(14, "Part Two") {
+    part2 {
         val (start, rules) = parseInput(this)
         solveDay14Fast(start, rules, 40)
     }

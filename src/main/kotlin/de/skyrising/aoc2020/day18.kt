@@ -1,8 +1,11 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import java.util.*
 
+@Suppress("unused")
 class BenchmarkDay18 : BenchmarkDay(18)
 
 private interface Expr {
@@ -172,9 +175,10 @@ private fun parseBinOp(tokens: List<Token>, lhs: Expr, minPrecedence: Int, prece
     return Pair(mutLhs, pos)
 }
 
+@Suppress("unused")
 fun registerDay18() {
     val test = TestInput("2 * 3 + (4 * 5)")
-    puzzle(18, "Operation Order v1") {
+    part1("Operation Order") {
         var sum = 0L
         for (line in lines) {
             val expr = parse(lex(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 1)))
@@ -183,7 +187,7 @@ fun registerDay18() {
         }
         sum
     }
-    puzzle(18, "Operation Order v2") {
+    part1("Operation Order") {
         var sum = 0L
         for (line in lines) {
             val expr = parse(lex2(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 1)))
@@ -192,7 +196,7 @@ fun registerDay18() {
         }
         sum
     }
-    puzzle(18, "Part 2 v1") {
+    part2 {
         var sum = 0L
         for (line in lines) {
             val expr = parse(lex(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 2)))
@@ -201,7 +205,7 @@ fun registerDay18() {
         }
         sum
     }
-    puzzle(18, "Part 2 v2") {
+    part2 {
         var sum = 0L
         for (line in lines) {
             val expr = parse(lex2(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 2)))

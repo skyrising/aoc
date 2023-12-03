@@ -2,16 +2,20 @@ package de.skyrising.aoc2015
 
 import de.skyrising.aoc.Graph
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay9 : BenchmarkDayV1(9)
 
+@Suppress("unused")
 fun registerDay9() {
     val test = TestInput("""
         London to Dublin = 464
         London to Belfast = 518
         Dublin to Belfast = 141
     """)
-    puzzle(9, "All in a Single Night") {
+    part1("All in a Single Night") {
         val g = Graph<String, Nothing>()
         for (line in lines) {
             val (from, _, to, _, dist) = line.split(' ')
@@ -26,7 +30,7 @@ fun registerDay9() {
         }
         g.tsp()?.sumOf { e -> e.weight }
     }
-    puzzle(9, "Part Two") {
+    part2 {
         val g = Graph<String, Nothing>()
         for (line in lines) {
             val (from, _, to, _, dist) = line.split(' ')

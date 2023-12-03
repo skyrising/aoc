@@ -3,6 +3,7 @@ package de.skyrising.aoc2022
 import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
+@Suppress("unused")
 class BenchmarkDay23 : BenchmarkDayV1(23)
 
 private fun parseInput(input: PuzzleInput): MutableSet<Vec2i> {
@@ -55,6 +56,7 @@ private fun round(elves: MutableSet<Vec2i>, roundCount: Int): Boolean {
     return moved > 0
 }
 
+@Suppress("unused")
 fun registerDay23() {
     val test = TestInput("""
         ....#..
@@ -73,14 +75,14 @@ fun registerDay23() {
         ..##.
         ..... 
     """)
-    puzzle(23, "Unstable Diffusion") {
+    part1("Unstable Diffusion") {
         val elves = parseInput(this)
         repeat(10) {
             round(elves, it)
         }
         elves.boundingBox().area - elves.size
     }
-    puzzle(23, "Part Two") {
+    part2 {
         val elves = parseInput(this)
         1 + countWhile { round(elves, it) }
     }

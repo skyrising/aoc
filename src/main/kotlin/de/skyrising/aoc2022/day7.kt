@@ -1,10 +1,13 @@
 package de.skyrising.aoc2022
 
 import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.objects.Object2LongMap
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap
 import java.nio.file.Path
 
+@Suppress("unused")
 class BenchmarkDay7 : BenchmarkDayV1(7)
 
 private fun parseInput(input: PuzzleInput): Object2LongMap<Path> {
@@ -46,8 +49,9 @@ private fun parseInput(input: PuzzleInput): Object2LongMap<Path> {
     return spaceUsed
 }
 
+@Suppress("unused")
 fun registerDay7() {
-    puzzle(7, "No Space Left On Device") {
+    part1("No Space Left On Device") {
         val spaceUsed = parseInput(this)
         var sum = 0L
         for (v in spaceUsed.values) {
@@ -56,7 +60,7 @@ fun registerDay7() {
         sum
     }
 
-    puzzle(7, "Part Two") {
+    part2 {
         val spaceUsed = parseInput(this)
         var smallestMatching = Long.MAX_VALUE
         val used = spaceUsed.getLong(Path.of("/"))

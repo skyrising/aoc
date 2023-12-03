@@ -1,11 +1,11 @@
 package de.skyrising.aoc2023
 
-import de.skyrising.aoc.CharGrid
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.Vec2i
+import de.skyrising.aoc.*
 
+@Suppress("unused")
 class BenchmarkDay3 : BenchmarkDayV1(3)
 
+@Suppress("unused")
 fun registerDay3() {
     val test = TestInput("""
         467..114..
@@ -28,13 +28,13 @@ fun registerDay3() {
                 grid[start..maxOf(n.x, end), n.y].toInt()
             }
         }
-    puzzle(3, "Gear Ratios") {
+    part1("Gear Ratios") {
         val grid = charGrid
         val numbers = mutableMapOf<Vec2i, Int>()
         grid.where { !it.isDigit() && it != '.' }.forEach { findNumbers(grid, it, numbers) }
         numbers.values.sum()
     }
-    puzzle(3, "Part Two") {
+    part2 {
         val grid = charGrid
         val numbers = mutableMapOf<Vec2i, Int>()
         grid.where { it == '*' }.map { findNumbers(grid, it, numbers) }.filter { it.size == 2 }.sumOf { it.reduce(Int::times) }

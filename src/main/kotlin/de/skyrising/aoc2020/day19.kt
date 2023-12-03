@@ -1,9 +1,12 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
+@Suppress("unused")
 class BenchmarkDay19 : BenchmarkDay(19)
 
 private interface PreRule {
@@ -48,6 +51,7 @@ private fun readPreRules(lines: List<String>): Triple<Int, Int2ObjectMap<String>
     return Triple(rules.size, cache, ::buildRule)
 }
 
+@Suppress("unused")
 fun registerDay19() {
     val test = TestInput("""
         0: 4 1 5
@@ -112,7 +116,7 @@ fun registerDay19() {
         babaaabbbaaabaababbaabababaaab
         aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
     """)
-    puzzle(19, "Monster Messages v1") {
+    part1("Monster Messages") {
         val (rulesCount, _, buildRule) = readPreRules(lines)
         val rule0 = Regex(buildRule(0))
         var count = 0
@@ -122,7 +126,7 @@ fun registerDay19() {
         }
         count
     }
-    puzzle(19, "Part 2 v1") {
+    part2 {
         // 0: 8 11
         // 8: 42 | 42 8 -> 42+
         // 11: 42 31 | 42 11 31 -> (42(?-1)?31)

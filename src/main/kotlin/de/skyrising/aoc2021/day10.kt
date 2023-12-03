@@ -1,10 +1,14 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.longs.LongArrayList
 
+@Suppress("unused")
 class BenchmarkDay10 : BenchmarkDayV1(10)
 
+@Suppress("unused")
 fun registerDay10() {
     val test = TestInput("""
         [({(<(())[]>[[{[]{<()<>>
@@ -18,7 +22,7 @@ fun registerDay10() {
         <{([([[(<>()){}]>(<<{{
         <{([{{}}[<[[[<>{}]]]>[]]
     """)
-    puzzle(10, "Syntax Scoring") {
+    part1("Syntax Scoring") {
         var score = 0
         for (line in lines) {
             val stack = ArrayDeque<Char>()
@@ -45,7 +49,7 @@ fun registerDay10() {
         }
         score
     }
-    puzzle(10, "Part Two") {
+    part2 {
         val scores = LongArrayList()
         outer@for (line in lines) {
             val stack = ArrayDeque<Char>()

@@ -2,7 +2,10 @@ package de.skyrising.aoc2020
 
 import de.skyrising.aoc.Graph
 import de.skyrising.aoc.Vertex
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay7 : BenchmarkDay(7)
 
 private fun readMap(lines: List<String>): Map<String, Set<Pair<String, Int>>> {
@@ -36,8 +39,9 @@ private fun readGraph(lines: List<String>) = Graph.build<String, Nothing?> {
     }
 }
 
+@Suppress("unused")
 fun registerDay7() {
-    puzzle(7, "Handy Haversacks v1") {
+    part1("Handy Haversacks") {
         val set = mutableSetOf<String>()
         var count = 0
         var lastCount = -1
@@ -60,7 +64,7 @@ fun registerDay7() {
         }
         count
     }
-    puzzle(7, "Handy Haversacks v2") {
+    part1("Handy Haversacks") {
         val graph = readGraph(lines)
         val set = mutableSetOf("shiny gold")
         var count = 0
@@ -76,7 +80,7 @@ fun registerDay7() {
         }
         count - 1
     }
-    puzzle(7, "Part 2 v1") {
+    part2 {
         val map = readMap(lines)
         fun getContained(type: String): Int {
             val set = map[type] ?: return 1
@@ -88,7 +92,7 @@ fun registerDay7() {
         }
         getContained("shiny gold") - 1
     }
-    puzzle(7, "Part 2 v2") {
+    part2 {
         val graph = readGraph(lines)
         fun getContained(type: Vertex<String>): Int {
             var sum = 1

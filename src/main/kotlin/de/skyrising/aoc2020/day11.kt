@@ -1,7 +1,10 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay11 : BenchmarkDayV1(11)
 
 private inline fun scanQueenMove(row: Int, column: Int, grid: List<CharArray>, width: Int, fn: (Char, Int, Int) -> Boolean) {
@@ -15,6 +18,7 @@ private inline fun scanQueenMove(row: Int, column: Int, grid: List<CharArray>, w
     for (i in 1 .. column) if(fn(grid[row][column - i], row, column - i)) break // W
 }
 
+@Suppress("unused")
 fun registerDay11() {
     val test = TestInput("""
         L.LL.LL.LL
@@ -39,7 +43,7 @@ fun registerDay11() {
         #........
         ...#.....
     """)
-    puzzle(11, "Seating System v1") {
+    part1("Seating System") {
         var grid = mutableListOf<CharArray>()
         for (line in lines) {
             grid.add(line.toCharArray())
@@ -90,11 +94,11 @@ fun registerDay11() {
                         if (seat == '#') count++
                     }
                 }
-                return@puzzle count
+                return@part1 count
             }
         }
     }
-    puzzle(11, "Part 2 v1") {
+    part2 {
         var grid = mutableListOf<CharArray>()
         var width = 0
         for (line in lines) {
@@ -152,7 +156,7 @@ fun registerDay11() {
                         if (seat == '#') count++
                     }
                 }
-                return@puzzle count
+                return@part2 count
             }
         }
     }

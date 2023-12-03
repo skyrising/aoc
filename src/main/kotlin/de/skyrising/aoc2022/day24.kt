@@ -2,6 +2,7 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.*
 
+@Suppress("unused")
 class BenchmarkDay24 : BenchmarkDayV1(24)
 
 private class Day24Setup(val start: Vec2i, val end: Vec2i, val grid: CharGrid, val blizzardsX: Array<Set<Vec2i>>, val blizzardsY: Array<Set<Vec2i>>) {
@@ -37,6 +38,7 @@ private fun parseInput(input: PuzzleInput): Day24Setup {
     return Day24Setup(start, end, innerGrid, blizzardsX, blizzardsY)
 }
 
+@Suppress("unused")
 fun registerDay24() {
     val test = TestInput("""
         #.######
@@ -46,12 +48,12 @@ fun registerDay24() {
         #<^v^^>#
         ######.#
     """)
-    puzzle(24, "Blizzard Basin") {
+    part1("Blizzard Basin") {
         parseInput(this).run {
             dist(start, end, 0)
         }
     }
-    puzzle(24, "Part Two") {
+    part2 {
         parseInput(this).run {
             val a = dist(start, end, 0)
             val b = dist(end, start, a)

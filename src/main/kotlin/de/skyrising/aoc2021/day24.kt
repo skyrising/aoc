@@ -1,18 +1,22 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.util.function.IntFunction
 
 
+@Suppress("unused")
 class BenchmarkDay24 : BenchmarkDayV1(24)
 
+@Suppress("unused")
 fun registerDay24() {
-    puzzle(24, "Arithmetic Logic Unit") {
+    part1("Arithmetic Logic Unit") {
         solve(this, intArrayOf(9, 8, 7, 6, 5, 4, 3, 2, 1))
     }
-    puzzle(24, "Part Two") {
+    part2 {
         solve(this, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))
     }
 }

@@ -1,11 +1,15 @@
 package de.skyrising.aoc2022
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.ints.IntArrayList
 
+@Suppress("unused")
 class BenchmarkDay1 : BenchmarkDayV1(1)
 
+@Suppress("unused")
 fun registerDay1() {
-    puzzle(1, "Calorie Counting") {
+    part1("Calorie Counting") {
         var most = 0
         var current = 0
         for (line in lines) {
@@ -19,7 +23,7 @@ fun registerDay1() {
         most
     }
 
-    puzzle(1, "Part Two") {
+    part2 {
         val elves = IntArrayList()
         var current = 0
         for (line in lines) {

@@ -1,18 +1,18 @@
 package de.skyrising.aoc2021
 
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.ints
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap
 
+@Suppress("unused")
 class BenchmarkDay21 : BenchmarkDayV1(21)
 
+@Suppress("unused")
 fun registerDay21() {
     val test = TestInput("""
         Player 1 starting position: 4
         Player 2 starting position: 8
     """)
-    puzzle(21, "Dirac Dice") {
+    part1("Dirac Dice") {
         var (p1, p2) = parseInput(this)
         val dice = Dice()
         var score1 = 0
@@ -29,7 +29,7 @@ fun registerDay21() {
         }
         minOf(score1, score2) * rolls
     }
-    puzzle(21, "Part Two") {
+    part2 {
         val (i1, i2) = parseInput(this)
         var wins1 = 0L
         var wins2 = 0L

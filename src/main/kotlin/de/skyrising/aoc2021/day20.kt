@@ -2,10 +2,14 @@ package de.skyrising.aoc2021
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import java.util.*
 
+@Suppress("unused")
 class BenchmarkDay20 : BenchmarkDayV1(20)
 
+@Suppress("unused")
 fun registerDay20() {
     val test = TestInput("""
         ..#.#..#####.#.#.#.###.##.....###.##.#..###.####..#####..#....#..#..##..###..######.###...####..#..#####..##..#.#####...##.#.#..#.##..#.#......#.###.######.###.####...#.##.##..#..#..#####.....#.#....###..#.##......#.....#..#..#..##..#...##.######.####.####.#.#...#.......#..#.#.#...####.##.#......#..#...##.#.##..#...##.#.##..###.#......#.#.......#.#.#.####.###.##...#.....####.#..#..#.##.#....##..#.####....##...##..#...#......#.#.......#.......##..####..#...#.#.#...##..#.#..###..#####........#..####......#..#
@@ -16,7 +20,7 @@ fun registerDay20() {
         ..#..
         ..###
     """)
-    puzzle(20, "Trench Map") {
+    part1("Trench Map") {
         val (algorithm, image) = parseInput(this)
         var img = InfiniteBitImage(image, 0, 0, false)
         repeat(2) {
@@ -24,7 +28,7 @@ fun registerDay20() {
         }
         img.count()
     }
-    puzzle(20, "Part Two") {
+    part2 {
         val (algorithm, image) = parseInput(this)
         var img = InfiniteBitImage(image, 0, 0, false)
         repeat(50) {

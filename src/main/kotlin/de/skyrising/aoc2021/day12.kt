@@ -1,12 +1,11 @@
 package de.skyrising.aoc2021
 
-import de.skyrising.aoc.Graph
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.Vertex
+import de.skyrising.aoc.*
 
+@Suppress("unused")
 class BenchmarkDay12 : BenchmarkDay(12)
 
+@Suppress("unused")
 fun registerDay12() {
     val test = TestInput("""
         start-A
@@ -49,7 +48,7 @@ fun registerDay12() {
         pj-fs
         start-RW
     """)
-    puzzle(12, "Passage Pathing") {
+    part1("Passage Pathing") {
         val g = readInput(this) { s -> s }
         g.getPathsV1(g["start"]!!, g["end"]!!) { p ->
             val caves = p.getVertexes().map(Vertex<String>::value)
@@ -62,7 +61,7 @@ fun registerDay12() {
             true
         }.size
     }
-    puzzle(12, "Passage Pathing V2") {
+    part1("Passage Pathing") {
         val caves = mutableMapOf<String, Cave>()
         val g = readInput(this) { s -> caves.computeIfAbsent(s, ::Cave) }
         g.getPaths(g[caves["start"]!!]!!, g[caves["end"]!!]!!) { p ->
@@ -74,7 +73,7 @@ fun registerDay12() {
             true
         }.size
     }
-    puzzle(12, "Part Two") {
+    part2 {
         val g = readInput(this) { s -> s }
         g.getPathsV1(g["start"]!!, g["end"]!!) { p ->
             val caves = p.getVertexes().map(Vertex<String>::value)
@@ -94,7 +93,7 @@ fun registerDay12() {
             true
         }.size
     }
-    puzzle(12, "Part Two V2") {
+    part2 {
         val caves = mutableMapOf<String, Cave>()
         val g = readInput(this) { s -> caves.computeIfAbsent(s, ::Cave) }
         g.getPaths(g[caves["start"]!!]!!, g[caves["end"]!!]!!) { p ->

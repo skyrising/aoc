@@ -2,10 +2,14 @@ package de.skyrising.aoc2021
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.ints.IntArrayList
 
+@Suppress("unused")
 class BenchmarkDay9 : BenchmarkDayV1(9)
 
+@Suppress("unused")
 fun registerDay9() {
     val test = TestInput("""
         2199943210
@@ -14,7 +18,7 @@ fun registerDay9() {
         8767896789
         9899965678
     """)
-    puzzle(9, "Smoke Basin") {
+    part1("Smoke Basin") {
         val (points, width, height) = parseInput(this)
         var risk = 0
         forEachLowPoint(points, width, height) { _, _, value ->
@@ -23,7 +27,7 @@ fun registerDay9() {
         }
         risk
     }
-    puzzle(9, "Part Two") {
+    part2 {
         val (points, width, height) = parseInput(this)
         val basins = IntArrayList()
         forEachLowPoint(points, width, height) { x, y, _ ->

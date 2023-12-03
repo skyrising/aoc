@@ -1,9 +1,12 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.isBitSet
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import de.skyrising.aoc.setBit
 import java.nio.ByteBuffer
 
+@Suppress("unused")
 class BenchmarkDay5 : BenchmarkDay(5)
 
 private fun seatId(s: String): Int {
@@ -47,16 +50,17 @@ fun seatIdVector(b: ByteBuffer, offset: Int): Int {
 }
 */
 
+@Suppress("unused")
 fun registerDay5() {
     //println(seatId(ByteBuffer.wrap("BFFFBBFRRR".toByteArray()), 0))
-    puzzle(5, "Binary Boarding v1") {
+    part1("Binary Boarding") {
         var highest = 0
         for (line in lines) {
             highest = maxOf(highest, seatId(line))
         }
         highest
     }
-    puzzle(5, "Binary Boarding v2") {
+    part1("Binary Boarding") {
         var highest = 0
         for (i in 0 until input.remaining() step 11) {
             highest = maxOf(highest, seatId(input, i))
@@ -72,7 +76,7 @@ fun registerDay5() {
         highest
     }
     */
-    puzzle(5, "Part Two v1") {
+    part2 {
         var highest = 0
         var lowest = 1 shl 10
         val seats = LongArray(lowest shr 6)
@@ -83,11 +87,11 @@ fun registerDay5() {
             setBit(seats, id)
         }
         for (i in lowest + 1 until highest) {
-            if (!isBitSet(seats, i)) return@puzzle i
+            if (!isBitSet(seats, i)) return@part2 i
         }
         -1
     }
-    puzzle(5, "Part Two v2") {
+    part2 {
         var highest = 0
         var lowest = 1 shl 10
         val seats = LongArray(lowest shr 6)
@@ -98,12 +102,12 @@ fun registerDay5() {
             setBit(seats, id)
         }
         for (i in lowest + 1 until highest) {
-            if (!isBitSet(seats, i)) return@puzzle i
+            if (!isBitSet(seats, i)) return@part2 i
         }
         -1
     }
     /*
-    puzzle(5, "Part Two v3") {
+    part2 {
         var highest = 0
         var lowest = 1 shl 10
         val seats = LongArray(lowest shr 6)
@@ -114,7 +118,7 @@ fun registerDay5() {
             setBit(seats, id)
         }
         for (i in lowest + 1 until highest) {
-            if (!isBitSet(seats, i)) return@puzzle i
+            if (!isBitSet(seats, i)) return@part2 i
         }
         -1
     }

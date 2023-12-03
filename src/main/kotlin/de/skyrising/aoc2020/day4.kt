@@ -1,9 +1,14 @@
 package de.skyrising.aoc2020
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
+
+@Suppress("unused")
 class BenchmarkDay4 : BenchmarkDay(4)
 
+@Suppress("unused")
 fun registerDay4() {
-    puzzle(4, "Passport Processing v1") {
+    part1("Passport Processing") {
         val fields = mutableSetOf<String>()
         val required = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
         var valid = 0
@@ -21,7 +26,7 @@ fun registerDay4() {
         if (fields.containsAll(required)) valid++
         valid
     }
-    puzzle(4, "Passport Processing v2") {
+    part1("Passport Processing") {
         val fields = mutableSetOf<String>()
         val required = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
         var valid = 0
@@ -40,7 +45,7 @@ fun registerDay4() {
         if (fields.size == 7) valid++
         valid
     }
-    puzzle(4, "Part Two v1") {
+    part2 {
         val fields = mutableSetOf<String>()
         var valid = 0
         val yearRegex = Regex("^\\d{4}$")
@@ -84,7 +89,7 @@ fun registerDay4() {
         if (fields.size == 7) valid++
         valid
     }
-    puzzle(4, "Part Two v2") {
+    part2 {
         val fields = mutableSetOf<String>()
         var valid = 0
         val hclRegex = Regex("^#[0-9a-f]{6}$")

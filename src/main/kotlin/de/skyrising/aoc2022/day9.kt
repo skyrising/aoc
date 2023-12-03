@@ -2,9 +2,12 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.Vec2i
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
+@Suppress("unused")
 class BenchmarkDay9 : BenchmarkDayV1(9)
 
 private fun simulateRope(input: PuzzleInput, knots: Int): Int {
@@ -27,11 +30,12 @@ private fun simulateRope(input: PuzzleInput, knots: Int): Int {
     return path.size
 }
 
+@Suppress("unused")
 fun registerDay9() {
-    puzzle(9, "Rope Bridge") {
+    part1("Rope Bridge") {
         simulateRope(this, 2)
     }
-    puzzle(9, "Part Two") {
+    part2 {
         simulateRope(this, 10)
     }
 }

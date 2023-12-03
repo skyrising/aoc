@@ -1,10 +1,14 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import kotlin.math.*
 
+@Suppress("unused")
 class BenchmarkDay12 : BenchmarkDayV1(12)
 
+@Suppress("unused")
 fun registerDay12() {
     val test = TestInput("""
         F10
@@ -13,7 +17,7 @@ fun registerDay12() {
         R90
         F11
     """)
-    puzzle(12, "Rain Risk v1") {
+    part1("Rain Risk") {
         var x = 0
         var y = 0
         var angle = 0
@@ -36,7 +40,7 @@ fun registerDay12() {
         }
         abs(x) + abs(y)
     }
-    puzzle(12, "Part 2 v1") {
+    part2 {
         var x = 0
         var y = 0
         var wx = 10

@@ -1,9 +1,13 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay3 : BenchmarkDayV1(3)
 
+@Suppress("unused")
 fun registerDay3() {
     val test = TestInput("""
         00100
@@ -19,7 +23,7 @@ fun registerDay3() {
         00010
         01010
     """)
-    puzzle(3, "Binary Diagnostic") {
+    part1("Binary Diagnostic") {
         val input = lines
         val count = IntArray(input[0].length)
         for (line in input) {
@@ -47,7 +51,7 @@ fun registerDay3() {
         return list[0]
     }
 
-    puzzle(3, "Part Two") {
+    part2 {
         val input = lines
         val list = input.mapTo(ArrayList()) { line -> line.toInt(2) }
         val bits = input[0].length

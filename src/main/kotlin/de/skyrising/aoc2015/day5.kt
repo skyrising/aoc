@@ -1,5 +1,9 @@
 package de.skyrising.aoc2015
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
+
+@Suppress("unused")
 class BenchmarkDay5 : BenchmarkDayV1(5)
 
 private fun isNice1(s: String): Boolean {
@@ -29,11 +33,12 @@ private fun isNice2(s: String): Boolean {
     return false
 }
 
+@Suppress("unused")
 fun registerDay5() {
-    puzzle(5, "Doesn't He Have Intern-Elves For This?") {
+    part1("Doesn't He Have Intern-Elves For This?") {
         lines.count(::isNice1)
     }
-    puzzle(5, "Part Two") {
+    part2 {
         lines.count(::isNice2)
     }
 }

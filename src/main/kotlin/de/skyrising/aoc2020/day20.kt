@@ -1,6 +1,8 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
@@ -8,6 +10,7 @@ import it.unimi.dsi.fastutil.ints.IntSet
 import java.util.*
 import kotlin.math.sqrt
 
+@Suppress("unused")
 class BenchmarkDay20 : BenchmarkDayV1(20)
 
 private class Tile(val id: Int, val width: Int, val height: Int, val flipped: Boolean = false, val rotated: Int = 0) {
@@ -296,6 +299,7 @@ private class Tile(val id: Int, val width: Int, val height: Int, val flipped: Bo
     }
 }
 
+@Suppress("unused")
 fun registerDay20() {
     val test = TestInput("""
         Tile 2311:
@@ -406,7 +410,7 @@ fun registerDay20() {
         ..#.......
         ..#.###...
     """)
-    puzzle(20, "Jurassic Jigsaw v1") {
+    part1("Jurassic Jigsaw") {
         val tiles = Tile.parseTiles(lines)
         val variants = Tile.getVariants(tiles)
         val size = sqrt(tiles.size.toDouble()).toInt()
@@ -419,10 +423,10 @@ fun registerDay20() {
                 bordersDedup.add(sBorder)
             }
         }
-        if (dedup.size == 1) return@puzzle dedup.single().map(Int::toLong).reduceRight(Long::times)
+        if (dedup.size == 1) return@part1 dedup.single().map(Int::toLong).reduceRight(Long::times)
         0
     }
-    puzzle(20, "Part 2 v1") {
+    part2 {
         val seaMonster = Tile.parseTiles("""
             |Tile 1:
             |                  # 
@@ -448,7 +452,7 @@ fun registerDay20() {
                     }
                 }
             }
-            return@puzzle solution.count()
+            return@part2 solution.count()
         }
         0
     }

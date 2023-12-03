@@ -1,9 +1,13 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay18 : BenchmarkDayV1(18)
 
+@Suppress("unused")
 fun registerDay18() {
     val test = TestInput("""
         [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
@@ -24,10 +28,10 @@ fun registerDay18() {
         [4,4]
         [5,5]
     """)
-    puzzle(18, "Snailfish") {
+    part1("Snailfish") {
         lines.map(SnailfishNumber::parse).reduce(SnailfishNumber::plus).magnitude()
     }
-    puzzle(18, "Part Two") {
+    part2 {
         lines.map(SnailfishNumber::parse).pairs().map { (a, b) -> a + b }.maxOf(SnailfishNumber::magnitude)
     }
 }

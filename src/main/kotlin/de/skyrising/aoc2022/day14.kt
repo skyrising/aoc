@@ -2,6 +2,7 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.*
 
+@Suppress("unused")
 class BenchmarkDay14 : BenchmarkDayV1(14)
 
 private fun parseInput(input: PuzzleInput, floor: Boolean = false): CharGrid {
@@ -24,18 +25,19 @@ private fun CharGrid.dropSand(pos: Vec2i) = pos.iterate {
     null
 }.also { if (it in this) this[it] = 'o' }
 
+@Suppress("unused")
 fun registerDay14() {
     val test = TestInput("""
         498,4 -> 498,6 -> 496,6
         503,4 -> 502,4 -> 502,9 -> 494,9
     """)
-    puzzle(14, "Regolith Reservoir") {
+    part1("Regolith Reservoir") {
         val grid = parseInput(this)
         countWhile {
             grid.dropSand(Vec2i(500, 0)) in grid
         }
     }
-    puzzle(14, "Part Two") {
+    part2 {
         val grid = parseInput(this, true)
         1 + countWhile {
             grid.dropSand(Vec2i(500, 0)).y != 0

@@ -1,8 +1,10 @@
 package de.skyrising.aoc2022
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
 import it.unimi.dsi.fastutil.ints.IntArrayList
 
+@Suppress("unused")
 class BenchmarkDay25 : BenchmarkDayV1(25)
 
 private fun snafuDecode(number: String): Long {
@@ -52,6 +54,7 @@ private fun snafuEncode(number: Long): String {
     return sb.toString()
 }
 
+@Suppress("unused")
 fun registerDay25() {
     val test = TestInput("""
         1=-0-2
@@ -68,7 +71,7 @@ fun registerDay25() {
         1=
         122
     """)
-    puzzle(25, "Full of Hot Air") {
+    part1("Full of Hot Air") {
         snafuEncode(lines.map(::snafuDecode).sum())
     }
 }

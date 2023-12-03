@@ -2,7 +2,10 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay20 : BenchmarkDayV1(20)
 
 class CircularLongListItem(val value: Long) {
@@ -67,6 +70,7 @@ private fun groveCoordinates(input: PuzzleInput, multiplier: Long, mixes: Int): 
     return a.value + b.value + c.value
 }
 
+@Suppress("unused")
 fun registerDay20() {
     val test = TestInput("""
         1
@@ -77,10 +81,10 @@ fun registerDay20() {
         0
         4
     """)
-    puzzle(20, "Grove Positioning System") {
+    part1("Grove Positioning System") {
         groveCoordinates(this, 1, 1)
     }
-    puzzle(20, "Part Two") {
+    part2 {
         groveCoordinates(this, 811589153, 10)
     }
 }

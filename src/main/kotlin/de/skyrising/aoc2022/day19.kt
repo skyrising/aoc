@@ -2,6 +2,7 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.*
 
+@Suppress("unused")
 class BenchmarkDay19 : BenchmarkDayV1(19)
 
 private data class RobotState(val time: Int, val oreBots: Int, val ore: Int, val clayBots: Int, val clay: Int, val obsidianBots: Int, val obsidian: Int, val geodeBots: Int, val geode: Int) {
@@ -54,15 +55,16 @@ private data class RobotBlueprint(val id: Int, val oreOre: Int, val clayOre: Int
 
 private fun parseInput(input: PuzzleInput) = input.lines.map { val (a, b, c, d, e, f, g) = it.ints(); RobotBlueprint(a, b, c, d, e, f, g) }
 
+@Suppress("unused")
 fun registerDay19() {
     val test = TestInput("""
         Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
         Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.
     """)
-    puzzle(19, "Not Enough Minerals") {
+    part1("Not Enough Minerals") {
         parseInput(this).sumOf(RobotBlueprint::qualityLevel)
     }
-    puzzle(19, "Part Two") {
+    part2 {
         val (a, b, c) = parseInput(this).take(3).map { it.getStates(32).maxOf(RobotState::geode) }
         a * b * c
     }

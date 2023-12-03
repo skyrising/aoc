@@ -1,7 +1,10 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay5 : BenchmarkDayV1(5)
 
 fun coord(s: String): Pair<Int, Int> {
@@ -9,6 +12,7 @@ fun coord(s: String): Pair<Int, Int> {
     return x.toInt() to y.toInt()
 }
 
+@Suppress("unused")
 fun registerDay5() {
     val test = TestInput("""
         0,9 -> 5,9
@@ -22,7 +26,7 @@ fun registerDay5() {
         0,0 -> 8,8
         5,5 -> 8,2
     """)
-    puzzle(5, "Hydrothermal Venture") {
+    part1("Hydrothermal Venture") {
         val width = 1000
         val height = 1000
         val vents = ShortArray(width * height)
@@ -42,7 +46,7 @@ fun registerDay5() {
         }
         vents.count { n -> n > 1 }
     }
-    puzzle(5, "Part Two") {
+    part2 {
         val width = 1000
         val height = 1000
         val vents = ShortArray(width * height)

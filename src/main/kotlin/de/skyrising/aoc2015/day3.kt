@@ -1,9 +1,14 @@
 package de.skyrising.aoc2015
 
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
+
+@Suppress("unused")
 class BenchmarkDay3 : BenchmarkDayV1(3)
 
+@Suppress("unused")
 fun registerDay3() {
-    puzzle(3, "Perfectly Spherical Houses in a Vacuum") {
+    part1("Perfectly Spherical Houses in a Vacuum") {
         val houses = mutableSetOf<Pair<Int, Int>>()
         var x = 0
         var y = 0
@@ -19,7 +24,7 @@ fun registerDay3() {
         }
         houses.size
     }
-    puzzle(3, "Part Two") {
+    part2 {
         val houses = mutableSetOf<Pair<Int, Int>>()
         val x = arrayOf(0, 0)
         val y = arrayOf(0, 0)

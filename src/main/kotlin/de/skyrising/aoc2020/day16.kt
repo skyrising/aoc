@@ -2,11 +2,14 @@ package de.skyrising.aoc2020
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.ObjectArraySet
 import java.util.*
 
+@Suppress("unused")
 class BenchmarkDay16 : BenchmarkDay(16)
 
 private fun parseInput(input: PuzzleInput, v2: Boolean = false): Triple<Map<String, Set<IntRange>>, IntList, MutableList<IntList>> {
@@ -117,6 +120,7 @@ fun mergeRanges(ranges: Collection<IntRange>): Set<IntRange> {
     return set
 }
 
+@Suppress("unused")
 fun registerDay16() {
     val test = TestInput("""
         class: 1-3 or 5-7
@@ -145,7 +149,7 @@ fun registerDay16() {
         15,1,5
         5,14,9
     """)
-    puzzle(16, "Ticket Translation v1") {
+    part1("Ticket Translation") {
         val (classes, _, nearby) = parseInput(this)
         var sum = 0
         for (ticket in nearby) {
@@ -164,7 +168,7 @@ fun registerDay16() {
         }
         sum
     }
-    puzzle(16, "Ticket Translation v2") {
+    part1("Ticket Translation") {
         val (classes, _, nearby) = parseInput(this, true)
         val ranges = mutableSetOf<IntRange>()
         for ((_, r) in classes) ranges.addAll(r)
@@ -186,7 +190,7 @@ fun registerDay16() {
         }
         sum
     }
-    puzzle(16, "Part 2 v1") {
+    part2 {
         val (classes, yourTicket, nearby) = parseInput(this)
         val candidates = Array<MutableSet<String>>(yourTicket.size) { HashSet(classes.keys) }
         ticketLoop@ for (ticket in nearby) {
@@ -239,7 +243,7 @@ fun registerDay16() {
         }
         product
     }
-    puzzle(16, "Part 2 v2") {
+    part2 {
         val (classes, yourTicket, nearby) = parseInput(this, true)
         val ranges = mutableSetOf<IntRange>()
         for ((_, r) in classes) ranges.addAll(r)

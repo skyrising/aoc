@@ -1,11 +1,14 @@
 package de.skyrising.aoc2020
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongSet
 
+@Suppress("unused")
 class BenchmarkDay24 : BenchmarkDayV1(24)
 
 private enum class HexNeighbor(val xOff: Int, val yOff: Int) {
@@ -73,6 +76,7 @@ private fun stepDay(grid: LongSet): LongSet {
     return newGrid
 }
 
+@Suppress("unused")
 fun registerDay24() {
     val test = TestInput("""
         sesenwnenenewseeswwswswwnenewsewsw
@@ -96,7 +100,7 @@ fun registerDay24() {
         neswnwewnwnwseenwseesewsenwsweewe
         wseweeenwnesenwwwswnew
     """)
-    puzzle(24, "Lobby Layout v1") {
+    part1("Lobby Layout") {
         val grid = Long2BooleanOpenHashMap()
         for (line in lines) {
             val tile = tileFromPath(0, line)
@@ -104,7 +108,7 @@ fun registerDay24() {
         }
         grid.values.sumOf { if (it) 1L else 0 }
     }
-    puzzle(24, "Part 2 v1") {
+    part2 {
         val tiles = LongArrayList()
         for (line in lines) tiles.add(tileFromPath(0, line))
         var grid: LongSet = LongOpenHashSet()

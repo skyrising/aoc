@@ -1,9 +1,13 @@
 package de.skyrising.aoc2021
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay11 : BenchmarkDayV1(11)
 
+@Suppress("unused")
 fun registerDay11() {
     val test = TestInput("""
         5483143223
@@ -24,7 +28,7 @@ fun registerDay11() {
         19991
         11111
     """)
-    puzzle(11, "Dumbo Octopus") {
+    part1("Dumbo Octopus") {
         val octopuses = Array<IntArray>(lines.size) { line -> lines[line].chars().map { n -> n - '0'.code }.toArray() }
         val width = octopuses[0].size
         val height = octopuses.size
@@ -46,7 +50,7 @@ fun registerDay11() {
         }
         flashes
     }
-    puzzle(11, "Part Two") {
+    part2 {
         val octopuses = Array<IntArray>(lines.size) { line -> lines[line].chars().map { n -> n - '0'.code }.toArray() }
         val width = octopuses[0].size
         val height = octopuses.size
@@ -64,7 +68,7 @@ fun registerDay11() {
             for ((x, y) in flashesThisStep) {
                 octopuses[y][x] = 0
             }
-            if (flashesThisStep.size == width * height) return@puzzle step
+            if (flashesThisStep.size == width * height) return@part2 step
             step++
         }
     }

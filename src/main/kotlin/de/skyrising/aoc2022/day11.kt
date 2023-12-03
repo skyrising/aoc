@@ -2,10 +2,13 @@ package de.skyrising.aoc2022
 
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.ints
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongList
 import java.util.function.LongConsumer
 
+@Suppress("unused")
 class BenchmarkDay11 : BenchmarkDayV1(11)
 
 data class Monkey(val items: LongList, val op: (Long) -> Long, val divisor: Int, val trueMonkey: Int, val falseMonkey: Int) {
@@ -61,11 +64,12 @@ private fun parseInput(input: PuzzleInput): List<Monkey> {
     }
 }
 
+@Suppress("unused")
 fun registerDay11() {
-    puzzle(11, "Monkey in the Middle") {
+    part1("Monkey in the Middle") {
         monkeyBusiness(this, 20, true)
     }
-    puzzle(11, "Part Two") {
+    part2 {
         monkeyBusiness(this, 10000, false)
     }
 }

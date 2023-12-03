@@ -1,16 +1,20 @@
 package de.skyrising.aoc2022
 
 import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
+@Suppress("unused")
 class BenchmarkDay2 : BenchmarkDayV1(2)
 
+@Suppress("unused")
 fun registerDay2() {
     val test = TestInput("""
         A Y
         B X
         C Z
     """)
-    puzzle(2, "Rock Paper Scissors") {
+    part1("Rock Paper Scissors") {
         var total = 0
         for (line in lines) {
             if (line.isBlank()) continue
@@ -29,7 +33,7 @@ fun registerDay2() {
         total
     }
 
-    puzzle(2, "Part Two") {
+    part2 {
         var total = 0
         for (line in lines) {
             if (line.isBlank()) continue
