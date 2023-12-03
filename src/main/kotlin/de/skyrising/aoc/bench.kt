@@ -8,13 +8,13 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 abstract class BenchmarkDay(year: Int, day: Int) {
     init {
-        registerAll()
+        registerFiltered(PuzzleFilter(sortedSetOf(PuzzleDay(year, day))))
     }
     private val input = getInput(year, day)
-    private val p1v1 = allPuzzles[year]!![day]!!.find { it.part == 1 && it.index == 0 }!!
-    private val p1v2 = allPuzzles[year]!![day]!!.find { it.part == 1 && it.index == 1 }!!
-    private val p2v1 = allPuzzles[year]!![day]!!.find { it.part == 2 && it.index == 0 }!!
-    private val p2v2 = allPuzzles[year]!![day]!!.find { it.part == 2 && it.index == 1 }!!
+    private val p1v1 = allPuzzles[year, day].find { it.part == 1 && it.index == 0 }!!
+    private val p1v2 = allPuzzles[year, day].find { it.part == 1 && it.index == 1 }!!
+    private val p2v1 = allPuzzles[year, day].find { it.part == 2 && it.index == 0 }!!
+    private val p2v2 = allPuzzles[year, day].find { it.part == 2 && it.index == 1 }!!
 
     @Benchmark
     fun part1v1() = p1v1.runPuzzle(input)
@@ -34,11 +34,11 @@ abstract class BenchmarkDay(year: Int, day: Int) {
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 abstract class BenchmarkDayV1(year: Int, day: Int) {
     init {
-        registerAll()
+        registerFiltered(PuzzleFilter(sortedSetOf(PuzzleDay(year, day))))
     }
     private val input = getInput(year, day)
-    private val p1v1 = allPuzzles[year]!![day]!!.find { it.part == 1 && it.index == 0 }!!
-    private val p2v1 = allPuzzles[year]!![day]!!.find { it.part == 2 && it.index == 0 }!!
+    private val p1v1 = allPuzzles[year, day].find { it.part == 1 && it.index == 0 }!!
+    private val p2v1 = allPuzzles[year, day].find { it.part == 2 && it.index == 0 }!!
 
     @Benchmark
     fun part1v1() = p1v1.runPuzzle(input)
