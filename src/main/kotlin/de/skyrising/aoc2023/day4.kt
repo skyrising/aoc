@@ -1,9 +1,7 @@
 package de.skyrising.aoc2023
 
 import de.skyrising.aoc.*
-import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.ints.IntSet
 
 @Suppress("unused")
@@ -19,27 +17,18 @@ fun registerDay4() {
         Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
         Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
     """)
-    data class Card(val index: Int, val winning: IntSet, val have: IntList)
     fun parse(input: PuzzleInput) = input.lines.map { line ->
-        val (name, cards) = line.split(": ")
-        val (winning, numbers) = cards.split(" | ")
-        Card(name.substringAfterLast(' ').toInt(), IntOpenHashSet(winning.ints()), IntArrayList(numbers.ints()))
+        val (winning, have) = line.substringAfter(": ").split(" | ")
+        have.ints().intersect(winning.ints()).size
     }
     part1("") {
-        val cards = parse(this)
-        cards.sumOf { card ->
-            val haveWinning = card.have.filter { it in card.winning }
-            if (haveWinning.isEmpty()) 0 else (1 shl (haveWinning.size - 1))
-        }
+        parse(this).sumOf { if (it == 0) 0 else (1 shl (it - 1)) }
     }
     part2 {
-        val cards = parse(this)
-        val deck = IntArray(cards.size) { 1 }
-        for ((i, count) in deck.withIndex()) {
-            if (count == 0) continue
-            val card = cards[i]
-            val winning = card.have.filter { it in card.winning }.size
-            for (j in i+1..i+winning) deck[j] += count
+        val wins = parse(this)
+        val deck = IntArray(wins.size) { 1 }
+        deck.forEachIndexed { i, count ->
+            for (j in i+1..i+wins[i]) deck[j] += count
         }
         deck.sum()
     }
