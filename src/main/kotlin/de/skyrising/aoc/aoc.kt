@@ -35,7 +35,7 @@ fun main(args: Array<String>) {
             input.benchmark = false
             val avg = times.average()
             val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
-            println(String.format(Locale.ROOT, "%d/%02d/%d.%d %-26s: %16s, %s ± %4.1f%%",
+            println(String.format(Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s ± %4.1f%%",
                 puzzle.day.year,
                 puzzle.day.day,
                 puzzle.part,
@@ -49,7 +49,7 @@ fun main(args: Array<String>) {
             val start = System.nanoTime()
             val result = puzzle.runPuzzle(input)
             val time = (System.nanoTime() - start) / 1000.0
-            println(String.format(Locale.ROOT, "%d/%02d/%d.%d %-26s: %16s, %s ± ?",
+            println(String.format(Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s ± ?",
                 puzzle.day.year,
                 puzzle.day.day,
                 puzzle.part,

@@ -2,6 +2,8 @@ package de.skyrising.aoc
 
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
+import it.unimi.dsi.fastutil.longs.LongArrayList
+import it.unimi.dsi.fastutil.longs.LongList
 import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
@@ -150,6 +152,19 @@ fun String.ints(): IntList {
     return ints
 }
 
+fun String.longs(): LongList {
+    val parts = split(Regex("[^0-9-]"))
+    val ints = LongArrayList()
+    for (part in parts) {
+        if (part.isEmpty()) continue
+        try {
+            val i = part.toLong()
+            ints.add(i)
+        } catch (_: NumberFormatException) {}
+    }
+    return ints
+}
+
 fun <T> T.iterate(step: T.() -> T?): T {
     var current = this
     while (true) {
@@ -185,6 +200,11 @@ inline fun <T, C: MutableCollection<T>> Collection<T>.mergeTo(collection: C, mer
 }
 
 fun joinRanges(ranges: Collection<IntRange>) = ranges.sortedBy { it.first }.mergeTo(mutableSetOf()) {
+        a, b -> if (b.first <= a.last + 1) a.first..kotlin.math.max(a.last, b.last) else null
+}
+
+@JvmName("joinLongRanges")
+fun joinRanges(ranges: Collection<LongRange>) = ranges.sortedBy { it.first }.mergeTo(mutableSetOf()) {
         a, b -> if (b.first <= a.last + 1) a.first..kotlin.math.max(a.last, b.last) else null
 }
 
