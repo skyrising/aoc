@@ -3,6 +3,7 @@ package de.skyrising.aoc
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.longs.LongArrayList
+import it.unimi.dsi.fastutil.longs.LongCollection
 import it.unimi.dsi.fastutil.longs.LongList
 import java.nio.Buffer
 import java.nio.ByteBuffer
@@ -208,6 +209,21 @@ fun joinRanges(ranges: Collection<LongRange>) = ranges.sortedBy { it.first }.mer
         a, b -> if (b.first <= a.last + 1) a.first..kotlin.math.max(a.last, b.last) else null
 }
 
+fun LongRange.splitAt(points: LongCollection) = sequence {
+    val start = first
+    val end = last
+    var last = start
+    val iter = points.longIterator()
+    while (iter.hasNext()) {
+        val point = iter.nextLong()
+        if (point <= last) continue
+        if (point > end) break
+        yield(last..<point)
+        last = point
+    }
+    if (last <= end) yield(last..end)
+}
+
 fun <T> Collection<T>.subsets(): Iterable<Set<T>> {
     val list = toList()
     return object : Iterable<Set<T>> {
@@ -244,6 +260,20 @@ inline fun <T> floodFill(origin: T, step: (T) -> Collection<T>): Set<T> {
     return result
 }
 
+fun <T> List<T>.splitOn(predicate: (T) -> Boolean): List<List<T>> {
+    val result = mutableListOf<List<T>>()
+    var start = 0
+    for (i in indices) {
+        if (predicate(this[i])) {
+            result.add(subList(start, i))
+            start = i + 1
+        }
+    }
+    result.add(subList(start, size))
+    return result
+}
+
+fun List<String>.splitOnEmpty() = splitOn { it.isEmpty() }
 
 operator fun <E> List<E>.component6() = this[5]
 operator fun <E> List<E>.component7() = this[6]
