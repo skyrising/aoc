@@ -11,6 +11,12 @@ plugins {
 group = "de.skyrising"
 version = "1.0"
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -24,11 +30,15 @@ dependencies {
 }
 
 application {
-    mainClassName = "de.skyrising.aoc.AocKt"
+    mainClass.set("de.skyrising.aoc.AocKt")
 }
 
 allOpen {
     annotation("org.openjdk.jmh.annotations.State")
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(21)
 }
 
 tasks.withType<KotlinCompile>().configureEach {

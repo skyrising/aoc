@@ -140,29 +140,34 @@ fun ByteBuffer.toString(charset: Charset) = charset.decode(slice()).toString()
 
 class MutableBox<T>(var value: T)
 
-fun String.ints(): IntList {
-    val parts = split(Regex("[^0-9-]"))
-    val ints = IntArrayList()
-    for (part in parts) {
-        if (part.isEmpty()) continue
-        try {
-            val i = part.toInt()
-            ints.add(i)
-        } catch (_: NumberFormatException) {}
+inline fun CharSequence.splitRanges(predicate: (Char) -> Boolean): List<IntRange> {
+    val result = mutableListOf<IntRange>()
+    val len = length
+    var start = 0
+    for (i in 0 until len) {
+        if (predicate(this[i])) {
+            result.add(start..<i)
+            start = i + 1
+        }
     }
+    result.add(start..<len)
+    return result
+}
+
+inline fun CharSequence.toInt(range: IntRange, radix: Int = 10) = Integer.parseInt(this, range.first, range.last + 1, radix)
+inline fun CharSequence.toLong(range: IntRange, radix: Int = 10) = java.lang.Long.parseLong(this, range.first, range.last + 1, radix)
+
+fun CharSequence.ints(): IntList {
+    val parts = splitRanges { it !in '0'..'9' && it != '-' }
+    val ints = IntArrayList()
+    for (part in parts) if (!part.isEmpty()) ints.add(toInt(part))
     return ints
 }
 
-fun String.longs(): LongList {
-    val parts = split(Regex("[^0-9-]"))
+fun CharSequence.longs(): LongList {
+    val parts = splitRanges { it !in '0'..'9' && it != '-' }
     val ints = LongArrayList()
-    for (part in parts) {
-        if (part.isEmpty()) continue
-        try {
-            val i = part.toLong()
-            ints.add(i)
-        } catch (_: NumberFormatException) {}
-    }
+    for (part in parts) if (!part.isEmpty()) ints.add(toLong(part))
     return ints
 }
 
@@ -209,19 +214,21 @@ fun joinRanges(ranges: Collection<LongRange>) = ranges.sortedBy { it.first }.mer
         a, b -> if (b.first <= a.last + 1) a.first..kotlin.math.max(a.last, b.last) else null
 }
 
-fun LongRange.splitAt(points: LongCollection) = sequence {
+fun LongRange.splitAt(points: LongCollection): List<LongRange> {
     val start = first
     val end = last
     var last = start
     val iter = points.longIterator()
+    val result = mutableListOf<LongRange>()
     while (iter.hasNext()) {
         val point = iter.nextLong()
         if (point <= last) continue
         if (point > end) break
-        yield(last..<point)
+        result.add(last..<point)
         last = point
     }
-    if (last <= end) yield(last..end)
+    if (last <= end) result.add(last..end)
+    return result
 }
 
 fun <T> Collection<T>.subsets(): Iterable<Set<T>> {
