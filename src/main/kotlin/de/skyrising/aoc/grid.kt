@@ -160,3 +160,11 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
         }
     }
 }
+
+fun Collection<Vec2i>.charGrid(bg: Char = ' ', init: (Vec2i) -> Char): CharGrid {
+    val grid = boundingBox().charGrid { bg }
+    for (point in this) {
+        grid[point] = init(point)
+    }
+    return grid
+}
