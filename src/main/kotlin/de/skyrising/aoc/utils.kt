@@ -2,12 +2,15 @@ package de.skyrising.aoc
 
 import it.unimi.dsi.fastutil.bytes.Byte2IntMap
 import it.unimi.dsi.fastutil.bytes.Byte2IntOpenHashMap
+import it.unimi.dsi.fastutil.bytes.ByteIterable
 import it.unimi.dsi.fastutil.chars.Char2IntMap
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntArrayList
+import it.unimi.dsi.fastutil.ints.IntIterable
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongCollection
+import it.unimi.dsi.fastutil.longs.LongIterable
 import it.unimi.dsi.fastutil.longs.LongList
 import java.nio.Buffer
 import java.nio.ByteBuffer
@@ -326,3 +329,32 @@ operator fun <E> List<E>.component13() = this[12]
 operator fun <E> List<E>.component14() = this[13]
 operator fun <E> List<E>.component15() = this[14]
 operator fun <E> List<E>.component16() = this[15]
+
+inline fun <reified T, TI : Iterator<T>, R : Comparable<R>> maxBy(iterator: TI, next: (TI)->T, selector: (T) -> R): T {
+    if (!iterator.hasNext()) throw NoSuchElementException()
+    var maxElem = next(iterator)
+    if (!iterator.hasNext()) return maxElem
+    var maxValue = selector(maxElem)
+    do {
+        val e = next(iterator)
+        val v = selector(e)
+        if (maxValue < v) {
+            maxElem = e
+            maxValue = v
+        }
+    } while (iterator.hasNext())
+    return maxElem
+}
+
+inline fun <R : Comparable<R>> ByteIterable.maxBy(selector: (Byte) -> R) = maxBy(iterator(), it.unimi.dsi.fastutil.bytes.ByteIterator::nextByte, selector)
+inline fun <R : Comparable<R>> IntIterable.maxBy(selector: (Int) -> R) = maxBy(iterator(), it.unimi.dsi.fastutil.ints.IntIterator::nextInt, selector)
+inline fun <R : Comparable<R>> LongIterable.maxBy(selector: (Long) -> R) = maxBy(iterator(), it.unimi.dsi.fastutil.longs.LongIterator::nextLong, selector)
+
+inline fun <T> Iterable<T>.sumOfWithIndex(selector: (Int,T) -> Int): Int {
+    var sum = 0
+    var index = 0
+    for (element in this) {
+        sum += selector(index++, element)
+    }
+    return sum
+}
