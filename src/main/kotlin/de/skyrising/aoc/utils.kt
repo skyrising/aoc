@@ -1,5 +1,7 @@
 package de.skyrising.aoc
 
+import it.unimi.dsi.fastutil.bytes.Byte2IntMap
+import it.unimi.dsi.fastutil.bytes.Byte2IntOpenHashMap
 import it.unimi.dsi.fastutil.chars.Char2IntMap
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntArrayList
@@ -156,6 +158,19 @@ inline fun CharSequence.splitRanges(predicate: (Char) -> Boolean): List<IntRange
     return result
 }
 
+fun ByteBuffer.toInt(): Int {
+    var result = 0
+    var pow = 1
+    for (i in remaining() - 1 downTo 0) {
+        val c = this[i].toInt().toChar()
+        if (c == '-') return -result
+        if (c !in '0'..'9') return result
+        result += (c - '0') * pow
+        pow *= 10
+    }
+    return result
+}
+
 inline fun CharSequence.toInt(range: IntRange, radix: Int = 10) = Integer.parseInt(this, range.first, range.last + 1, radix)
 inline fun CharSequence.toLong(range: IntRange, radix: Int = 10) = java.lang.Long.parseLong(this, range.first, range.last + 1, radix)
 
@@ -177,6 +192,14 @@ fun String.histogram(): Char2IntMap {
     val map = Char2IntOpenHashMap()
     for (c in this) {
         map.addTo(c, 1)
+    }
+    return map
+}
+
+fun ByteBuffer.histogram(): Byte2IntMap {
+    val map = Byte2IntOpenHashMap()
+    for (i in 0..<remaining()) {
+        map.addTo(this[i], 1)
     }
     return map
 }

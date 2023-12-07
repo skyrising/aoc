@@ -1,18 +1,20 @@
 package de.skyrising.aoc2023
 
 import de.skyrising.aoc.*
+import it.unimi.dsi.fastutil.bytes.Byte2IntMap
+import java.nio.ByteBuffer
 
 @Suppress("unused")
 class BenchmarkDay7 : BenchmarkDayV1(7)
 
 enum class HandType {
-    FIVE_OF_A_KIND,
-    FOUR_OF_A_KIND,
-    FULL_HOUSE,
-    THREE_OF_A_KIND,
-    TWO_PAIR,
+    HIGH_CARD,
     ONE_PAIR,
-    HIGH_CARD
+    TWO_PAIR,
+    THREE_OF_A_KIND,
+    FULL_HOUSE,
+    FOUR_OF_A_KIND,
+    FIVE_OF_A_KIND,
 }
 
 @Suppress("unused")
@@ -24,62 +26,62 @@ fun registerDay7() {
         KTJJT 220
         QQQJA 483
     """)
-    open class Hand(val cards: String) : Comparable<Hand> {
-        open val order get() = "AKQJT98765432"
 
-        open fun type(): HandType {
-            val c = cards.histogram()
-            return when(c.size) {
-                1 -> HandType.FIVE_OF_A_KIND
-                2 -> if (c.values.any { it == 3 }) HandType.FULL_HOUSE else HandType.FOUR_OF_A_KIND
-                3 -> if (c.values.any { it == 3 }) HandType.THREE_OF_A_KIND else HandType.TWO_PAIR
-                4 -> HandType.ONE_PAIR
-                else -> HandType.HIGH_CARD
-            }
+    fun type(histogram: Byte2IntMap) = when(histogram.size) {
+        1 -> HandType.FIVE_OF_A_KIND
+        2 -> if (3 in histogram.values) HandType.FULL_HOUSE else HandType.FOUR_OF_A_KIND
+        3 -> if (3 in histogram.values) HandType.THREE_OF_A_KIND else HandType.TWO_PAIR
+        4 -> HandType.ONE_PAIR
+        else -> HandType.HIGH_CARD
+    }
+
+    val lut = byteArrayOf(6, 15, 4, 13, 2, 0, 9, 0, 0, 7, 14, 5, 0, 3, 12, 8)
+
+    open class Hand(val cards: ByteBuffer) : Comparable<Hand> {
+        private val type = type()
+        private val cardValues = ByteArray(cards.remaining()) { order(cards[it]) }
+
+        protected open fun order(c: Byte) = when (c.toInt()) {
+            'J'.code -> 11
+            else -> lut[((c * 9) xor (c.toInt() shr 3)) and 0xf]
         }
 
+        protected open fun type() = type(cards.histogram())
+
         override fun compareTo(other: Hand): Int {
-            val bestKindCmp = type().compareTo(other.type())
-            if (bestKindCmp != 0) return -bestKindCmp
+            val bestKindCmp = type.compareTo(other.type)
+            if (bestKindCmp != 0) return bestKindCmp
             for (i in 0..<5) {
-                val cmp = order.indexOf(cards[i]).compareTo(order.indexOf(other.cards[i]))
-                if (cmp != 0) return -cmp
+                val cmp = cardValues[i].compareTo(other.cardValues[i])
+                if (cmp != 0) return cmp
             }
             return 0
         }
-
-        override fun toString() = cards
     }
 
-    class Hand2(cards: String) : Hand(cards) {
-        override val order get() = "AKQT98765432J"
+    class Hand2(cards: ByteBuffer) : Hand(cards) {
+        override fun order(c: Byte) = when (c.toInt()) {
+            'J'.code -> 1
+            else -> lut[((c * 9) xor (c.toInt() shr 3)) and 0xf]
+        }
 
         override fun type(): HandType {
-            val c = cards.histogram()
-            val j = c.remove('J')
-            if (j == 0) return super.type()
-            return when(c.size) {
-                0, 1 -> HandType.FIVE_OF_A_KIND
-                2 -> {
-                    if (j == 1) {
-                        if (c.values.all { it == 2 }) return HandType.FULL_HOUSE
-                        if (c.values.any { it == 2 }) return HandType.THREE_OF_A_KIND
-                    }
-                    HandType.FOUR_OF_A_KIND
-                }
-                3 -> HandType.THREE_OF_A_KIND
-                else -> HandType.ONE_PAIR
-            }
+            val hist = cards.histogram()
+            val jokers = hist.remove('J'.code.toByte())
+            if (jokers == 5) return HandType.FIVE_OF_A_KIND
+            hist[hist.keys.maxBy { hist[it] }] += jokers
+            return type(hist)
         }
     }
 
-    fun parse(input: PuzzleInput, part1: Boolean = true) = input.lines.map {
-        Pair(if (part1) Hand(it.substring(0, 5)) else Hand2(it.substring(0, 5)), it.substring(6).toInt())
-    }
+    fun run(input: PuzzleInput, ctor: (ByteBuffer)->Hand) = input.byteLines.map {
+        Pair(ctor(it.slice(0, 5)), it.slice(6, it.remaining() - 6).toInt())
+    }.sortedBy { it.first }.withIndex().sumOf { (i, it) -> it.second * (i + 1) }
+
     part1("Camel Cards") {
-        parse(this, true).sortedBy { it.first }.withIndex().sumOf { (i, it) -> it.second * (i + 1) }
+        run(this, ::Hand)
     }
     part2 {
-        parse(this, false).sortedBy { it.first }.withIndex().sumOf { (i, it) -> it.second * (i + 1) }
+        run(this, ::Hand2)
     }
 }
