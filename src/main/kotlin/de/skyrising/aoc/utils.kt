@@ -1,5 +1,7 @@
 package de.skyrising.aoc
 
+import it.unimi.dsi.fastutil.chars.Char2IntMap
+import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.longs.LongArrayList
@@ -169,6 +171,14 @@ fun CharSequence.longs(): LongList {
     val ints = LongArrayList()
     for (part in parts) if (!part.isEmpty()) ints.add(toLong(part))
     return ints
+}
+
+fun String.histogram(): Char2IntMap {
+    val map = Char2IntOpenHashMap()
+    for (c in this) {
+        map.addTo(c, 1)
+    }
+    return map
 }
 
 fun <T> T.iterate(step: T.() -> T?): T {
