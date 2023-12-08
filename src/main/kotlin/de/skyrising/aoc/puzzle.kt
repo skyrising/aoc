@@ -42,11 +42,11 @@ value class PuzzleCollection(private val puzzles: SortedMap<PuzzleDay, MutableLi
     operator fun get(year: Int) = this[PuzzleDay(year, 1)..PuzzleDay(year, 25)]
 
     fun add(puzzle: Puzzle<*>) {
-        computeIfAbsent(puzzle.day) { mutableListOf() }.add(puzzle)
+        puzzles.computeIfAbsent(puzzle.day) { mutableListOf() }.add(puzzle)
     }
 
     fun filter(filter: PuzzleFilter) = if (filter.latestOnly) {
-        reversed().entries.find { it.key in filter.days && it.key.released }?.value ?: emptyList()
+        puzzles.reversed().entries.find { it.key in filter.days && it.key.released }?.value ?: emptyList()
     } else {
         puzzles.filterKeys { it in filter.days }.values.flatten()
     }
@@ -58,22 +58,26 @@ var currentDay = PuzzleDay(0, 0)
 var lastPart = 0
 var currentIndex = 0
 
-inline fun <T> puzzle(name: String, part: Int = 0, crossinline run: PuzzleInput.() -> T): Puzzle<T> {
+data class DefaultPuzzle<T>(
+    override val name: String,
+    override val day: PuzzleDay,
+    override val part: Int,
+    override val index: Int,
+    val run: PuzzleInput.() -> T
+) : Puzzle<T> {
+    override fun runPuzzle(input: PuzzleInput): T = run(input)
+}
+
+inline fun <T> puzzle(name: String, part: Int = 0, noinline run: PuzzleInput.() -> T): Puzzle<T> {
     if (part != lastPart) {
         currentIndex = 0
         lastPart = part
     }
-    return object : Puzzle<T> {
-        override val name = name
-        override val day = currentDay
-        override val part = part
-        override val index = currentIndex++
-        override fun runPuzzle(input: PuzzleInput): T = run(input)
-    }.also(allPuzzles::add)
+    return DefaultPuzzle(name, currentDay, part, currentIndex++, run).also(allPuzzles::add)
 }
 
-inline fun <T> part1(name: String, crossinline run: PuzzleInput.() -> T) = puzzle(name, 1, run)
-inline fun <T> part2(name: String = "Part Two", crossinline run: PuzzleInput.() -> T) = puzzle(name, 2, run)
+inline fun <T> part1(name: String, noinline run: PuzzleInput.() -> T) = puzzle(name, 1, run)
+inline fun <T> part2(name: String = "Part Two", noinline run: PuzzleInput.() -> T) = puzzle(name, 2, run)
 
 fun registerDay(day: PuzzleDay) {
     lastPart = 0

@@ -208,12 +208,21 @@ fun ByteBuffer.histogram(): Byte2IntMap {
     return map
 }
 
-fun <T> T.iterate(step: T.() -> T?): T {
+inline fun <T> T.iterate(step: T.() -> T?): T {
     var current = this
     while (true) {
         val next = step(current) ?: return current
         current = next
     }
+}
+
+inline fun <T> T.stepsUntil(predicate: (T)->Boolean, step: T.(Int) -> T): Int {
+    var current = this
+    var steps = 0
+    while (!predicate(current)) {
+        current = step(current, steps++)
+    }
+    return steps
 }
 
 inline fun countWhile(predicate: (Int) -> Boolean): Int {
@@ -360,8 +369,29 @@ inline fun <T> Iterable<T>.sumOfWithIndex(selector: (Int,T) -> Int): Int {
     return sum
 }
 
-infix fun Int.gcd(other: Int) = ArithmeticUtils.gcd(this, other)
-infix fun Long.gcd(other: Long) = ArithmeticUtils.gcd(this, other)
+inline infix fun Int.gcd(other: Int) = ArithmeticUtils.gcd(this, other)
+inline infix fun Long.gcd(other: Long) = ArithmeticUtils.gcd(this, other)
 
-infix fun Int.lcm(other: Int) = ArithmeticUtils.lcm(this, other)
-infix fun Long.lcm(other: Long) = ArithmeticUtils.lcm(this, other)
+inline infix fun Int.lcm(other: Int) = ArithmeticUtils.lcm(this, other)
+inline infix fun Long.lcm(other: Long) = ArithmeticUtils.lcm(this, other)
+
+operator fun <T> Pair<T,T>.get(index: Int) = when(index) {
+    0 -> first
+    1 -> second
+    else -> throw IndexOutOfBoundsException()
+}
+
+@JvmInline
+value class PackedIntPair(val longValue: Long) {
+    constructor(first: Int, second: Int) : this((first.toLong() shl 32) or (second.toLong() and 0xffffffffL))
+    inline val first get() = (longValue shr 32).toInt()
+    inline val second get() = longValue.toInt()
+
+    operator fun get(index: Int) = when(index) {
+        0 -> first
+        1 -> second
+        else -> throw IndexOutOfBoundsException()
+    }
+
+    operator fun get(first: Boolean) = if (first) this.first else second
+}
