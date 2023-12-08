@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongCollection
 import it.unimi.dsi.fastutil.longs.LongIterable
 import it.unimi.dsi.fastutil.longs.LongList
+import org.apache.commons.math3.util.ArithmeticUtils
 import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
@@ -358,3 +359,9 @@ inline fun <T> Iterable<T>.sumOfWithIndex(selector: (Int,T) -> Int): Int {
     }
     return sum
 }
+
+infix fun Int.gcd(other: Int) = ArithmeticUtils.gcd(this, other)
+infix fun Long.gcd(other: Long) = ArithmeticUtils.gcd(this, other)
+
+infix fun Int.lcm(other: Int) = ArithmeticUtils.lcm(this, other)
+infix fun Long.lcm(other: Long) = ArithmeticUtils.lcm(this, other)
