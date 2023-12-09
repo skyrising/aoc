@@ -17,6 +17,8 @@ import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.Charset
+import java.util.*
+import kotlin.collections.ArrayDeque
 
 fun lineList(buf: ByteBuffer): List<ByteBuffer> {
     var lineStart = 0
@@ -148,17 +150,21 @@ fun ByteBuffer.toString(charset: Charset) = charset.decode(slice()).toString()
 
 class MutableBox<T>(var value: T)
 
-inline fun CharSequence.splitRanges(predicate: (Char) -> Boolean): List<IntRange> {
-    val result = mutableListOf<IntRange>()
+inline fun CharSequence.splitRanges(predicate: (Char) -> Boolean, consumer: (Int,Int)->Unit) {
     val len = length
     var start = 0
     for (i in 0 until len) {
         if (predicate(this[i])) {
-            result.add(start..<i)
+            consumer(start, i)
             start = i + 1
         }
     }
-    result.add(start..<len)
+    consumer(start, len)
+}
+
+inline fun CharSequence.splitRanges(predicate: (Char) -> Boolean): List<IntRange> {
+    val result = mutableListOf<IntRange>()
+    splitRanges(predicate) { a, b -> result.add(a..<b)}
     return result
 }
 
@@ -175,20 +181,104 @@ fun ByteBuffer.toInt(): Int {
     return result
 }
 
-inline fun CharSequence.toInt(range: IntRange, radix: Int = 10) = Integer.parseInt(this, range.first, range.last + 1, radix)
-inline fun CharSequence.toLong(range: IntRange, radix: Int = 10) = java.lang.Long.parseLong(this, range.first, range.last + 1, radix)
+inline fun CharSequence.numberFormatException(beginIndex: Int, endIndex: Int, errorIndex: Int) =
+    NumberFormatException("Error at index ${errorIndex - beginIndex} in: \"${subSequence(beginIndex, endIndex)}\"")
+
+inline fun charToDigit(c: Char, radix: Int) = when (c) {
+    in '0'..'9' -> c - '0'
+    in 'a'..'z' -> c - 'a' + 10
+    in 'A'..'Z' -> c - 'A' + 10
+    else -> -1
+}.let { if (it < radix) it else -1 }
+
+@Throws(NumberFormatException::class)
+inline fun CharSequence.toInt(beginIndex: Int, endIndex: Int, radix: Int = 10): Int {
+    Objects.checkFromToIndex(beginIndex, endIndex, length)
+    if (radix < Character.MIN_RADIX) throw NumberFormatException("radix $radix less than Character.MIN_RADIX")
+    if (radix > Character.MAX_RADIX) throw NumberFormatException("radix $radix greater than Character.MAX_RADIX")
+
+    var negative = false
+    var i = beginIndex
+    var limit = -Int.MAX_VALUE
+
+    if (i >= endIndex)
+        throw NumberFormatException("For input string: \"$this\"${if (radix == 10) "" else " under radix $radix"}")
+    val firstChar = this[i]
+    if (firstChar < '0') {
+        if (firstChar == '-') {
+            negative = true
+            limit = Int.MIN_VALUE
+        } else if (firstChar != '+') {
+            throw numberFormatException(beginIndex, endIndex, i)
+        }
+        i++
+        if (i == endIndex) throw numberFormatException(beginIndex, endIndex, i)
+    }
+    val multmin = limit / radix
+    var result = 0
+    while (i < endIndex) {
+        val digit = charToDigit(this[i], radix)
+        if (digit < 0 || result < multmin) throw numberFormatException(beginIndex, endIndex, i)
+        result *= radix
+        if (result < limit + digit) throw numberFormatException(beginIndex, endIndex, i)
+        i++
+        result -= digit
+    }
+    return if (negative) result else -result
+}
+
+@Throws(NumberFormatException::class)
+inline fun CharSequence.toLong(beginIndex: Int, endIndex: Int, radix: Int = 10): Long {
+    Objects.checkFromToIndex(beginIndex, endIndex, length)
+    if (radix < Character.MIN_RADIX) throw NumberFormatException("radix $radix less than Character.MIN_RADIX")
+    if (radix > Character.MAX_RADIX) throw NumberFormatException("radix $radix greater than Character.MAX_RADIX")
+
+    var negative = false
+    var i = beginIndex
+    var limit = -Long.MAX_VALUE
+
+    if (i >= endIndex)
+        throw NumberFormatException("For input string: \"$this\"${if (radix == 10) "" else " under radix $radix"}")
+    val firstChar = this[i]
+    if (firstChar < '0') { // Possible leading "+" or "-"
+        if (firstChar == '-') {
+            negative = true
+            limit = Long.MIN_VALUE
+        } else if (firstChar != '+') {
+            throw numberFormatException(beginIndex, endIndex, i)
+        }
+        i++
+        if (i == endIndex) throw numberFormatException(beginIndex, endIndex, i)
+    }
+    val multmin = limit / radix
+    var result = 0L
+    while (i < endIndex) {
+        val digit = charToDigit(this[i], radix)
+        if (digit < 0 || result < multmin) throw numberFormatException(beginIndex, endIndex, i)
+        result *= radix
+        if (result < limit + digit) throw numberFormatException(beginIndex, endIndex, i)
+        i++
+        result -= digit
+    }
+    return if (negative) result else -result
+}
+
+inline fun CharSequence.toInt(range: IntRange, radix: Int = 10) = toInt(range.first, range.last + 1, radix)
+inline fun CharSequence.toLong(range: IntRange, radix: Int = 10) = toLong(range.first, range.last + 1, radix)
 
 fun CharSequence.ints(): IntList {
-    val parts = splitRanges { it !in '0'..'9' && it != '-' }
     val ints = IntArrayList()
-    for (part in parts) if (!part.isEmpty()) ints.add(toInt(part))
+    splitRanges({ it !in '0'..'9' && it != '-' }) { a, b ->
+        if (a <= b) ints.add(toInt(a, b))
+    }
     return ints
 }
 
 fun CharSequence.longs(): LongList {
-    val parts = splitRanges { it !in '0'..'9' && it != '-' }
     val ints = LongArrayList()
-    for (part in parts) if (!part.isEmpty()) ints.add(toLong(part))
+    splitRanges({ it !in '0'..'9' && it != '-' }) { a, b ->
+        if (a <= b) ints.add(toLong(a, b))
+    }
     return ints
 }
 
@@ -394,4 +484,16 @@ value class PackedIntPair(val longValue: Long) {
     }
 
     operator fun get(first: Boolean) = if (first) this.first else second
+}
+
+inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.zipWithNextTo(destination: C, transform: (a: T, b: T) -> R): C {
+    val iterator = iterator()
+    if (!iterator.hasNext()) return destination
+    var current = iterator.next()
+    while (iterator.hasNext()) {
+        val next = iterator.next()
+        destination.add(transform(current, next))
+        current = next
+    }
+    return destination
 }
