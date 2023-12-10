@@ -8,15 +8,15 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
     override val boundingBox get() = BoundingBox2i(this, this)
 
     override fun toString() = "[$x, $y]"
-    operator fun plus(other: Vec2i) = Vec2i(x + other.x, y + other.y)
-    operator fun plus(offset: Int) = Vec2i(x + offset, y + offset)
-    operator fun minus(other: Vec2i) = Vec2i(x - other.x, y - other.y)
-    operator fun minus(offset: Int) = Vec2i(x - offset, y - offset)
-    operator fun times(other: Vec2i) = Vec2i(x * other.x, y * other.y)
-    operator fun times(other: Int) = Vec2i(x * other, y * other)
-    operator fun div(other: Vec2i) = Vec2i(x / other.x, y / other.y)
-    operator fun div(other: Int) = Vec2i(x / other, y / other)
-    operator fun unaryMinus() = Vec2i(-x, -y)
+    inline operator fun plus(other: Vec2i) = Vec2i(x + other.x, y + other.y)
+    inline operator fun plus(offset: Int) = Vec2i(x + offset, y + offset)
+    inline operator fun minus(other: Vec2i) = Vec2i(x - other.x, y - other.y)
+    inline operator fun minus(offset: Int) = Vec2i(x - offset, y - offset)
+    inline operator fun times(other: Vec2i) = Vec2i(x * other.x, y * other.y)
+    inline operator fun times(other: Int) = Vec2i(x * other, y * other)
+    inline operator fun div(other: Vec2i) = Vec2i(x / other.x, y / other.y)
+    inline operator fun div(other: Int) = Vec2i(x / other, y / other)
+    inline operator fun unaryMinus() = Vec2i(-x, -y)
     operator fun get(i: Int) = when (i) {
         0 -> x
         1 -> y

@@ -125,6 +125,10 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
         return result
     }
 
+    inline fun indexOfFirst(predicate: (Char) -> Boolean): Vec2i {
+        val index = data.indexOfFirst(predicate)
+        return Vec2i(offset.x + index % width, offset.y + index / width)
+    }
     inline fun count(predicate: (Char) -> Boolean) = data.count(predicate)
 
     override fun toString(): String {
@@ -157,22 +161,42 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
         return CharGrid(width, height, data, start)
     }
 
-    fun floodFill(start: Vec2i, fill: Char): Int {
-        val c = this[start]
-        if (c == fill) return 0
-        val queue = ArrayDeque<Vec2i>()
-        queue.add(start)
+    data class FloodFillSpan(val x1: Int, val x2: Int, val y: Int, val dy: Int)
+
+    inline fun floodFill(start: Vec2i, fill: Char, inside: (Int, Int) -> Boolean): Int {
+        if (!inside(start.x, start.y)) return 0
+        val s = ArrayDeque<FloodFillSpan>()
+        s.add(FloodFillSpan(start.x, start.x, start.y, 1))
+        s.add(FloodFillSpan(start.x, start.x, start.y - 1, -1))
         var count = 0
-        while (queue.isNotEmpty()) {
-            val p = queue.removeFirst()
-            if (this[p] != c) continue
-            this[p] = fill
-            count++
-            for (n in p.fourNeighbors()) {
-                if (n in this) queue.add(n)
+        while (s.isNotEmpty()) {
+            var (x1, x2, y, dy) = s.removeFirst()
+            if (y < offset.y || y >= offset.y + height) continue
+            var x = x1
+            while (x - 1 >= offset.x && inside(x - 1, y)) {
+                this[x--, y] = fill
+                count++
+            }
+            if (x < x1)
+                s.add(FloodFillSpan(x, x1 - 1, y - dy, -dy))
+            while (x1 <= x2) {
+                while (x1 < offset.x + width && inside(x1, y)) {
+                    this[x1++, y] = fill
+                    count++
+                }
+                if (x1 > x) s.add(FloodFillSpan(x, x1 - 1, y + dy, dy))
+                if (x1 - 1 > x2) s.add(FloodFillSpan(x2 + 1, x1 - 1, y - dy, -dy))
+                x1++
+                while (x1 <= x2 && !inside(x1, y)) x1++
+                x = x1
             }
         }
         return count
+    }
+
+    fun floodFill(start: Vec2i, fill: Char): Int {
+        val c = this[start]
+        return floodFill(start, fill) { x, y -> this[x, y] == c }
     }
 
     companion object {
