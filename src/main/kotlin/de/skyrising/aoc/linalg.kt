@@ -9,7 +9,9 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
 
     override fun toString() = "[$x, $y]"
     operator fun plus(other: Vec2i) = Vec2i(x + other.x, y + other.y)
+    operator fun plus(offset: Int) = Vec2i(x + offset, y + offset)
     operator fun minus(other: Vec2i) = Vec2i(x - other.x, y - other.y)
+    operator fun minus(offset: Int) = Vec2i(x - offset, y - offset)
     operator fun times(other: Vec2i) = Vec2i(x * other.x, y * other.y)
     operator fun times(other: Int) = Vec2i(x * other, y * other)
     operator fun div(other: Vec2i) = Vec2i(x / other.x, y / other.y)
@@ -90,6 +92,8 @@ data class BoundingBox2i(val min: Vec2i, val max: Vec2i): HasBoundingBox2i {
         val box = other.boundingBox
         return BoundingBox2i(min(min, box.min), max(max, box.max))
     }
+
+    fun expand(amount: Int) = BoundingBox2i(min - Vec2i(amount, amount), max + Vec2i(amount, amount))
 }
 
 interface HasBoundingBox2i {

@@ -1,6 +1,8 @@
 package de.skyrising.aoc
 
 import it.unimi.dsi.fastutil.ints.Int2CharOpenHashMap
+import it.unimi.dsi.fastutil.objects.AbstractObject2CharMap
+import it.unimi.dsi.fastutil.objects.Object2CharMap
 
 val characters = mapDisplayToInts("""
  ██  ███   ██  ███  ████ ████  ██  █  █ ███    ██ █  █ █    █   ██   █ ██  ███   ██  ███   ███ ██████  █ █   ██   ██  █ █   █████
@@ -81,7 +83,7 @@ class IntGrid(width: Int, height: Int, val data: IntArray, offset: Vec2i = Vec2i
     }
 }
 
-class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec2i.ZERO) : Grid(offset, width, height) {
+class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec2i.ZERO) : Grid(offset, width, height), Sequence<Object2CharMap.Entry<Vec2i>> {
     operator fun get(point: Vec2i) = get(point.x, point.y)
     operator fun get(x: Int, y: Int) = data[index(x, y)]
     operator fun get(x: IntRange, y: Int) = String(data, index(x.first, y), x.last - x.first + 1)
@@ -95,6 +97,20 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
         }
     }
 
+    override fun iterator() = iterator {
+        forEach { x, y, c -> yield(AbstractObject2CharMap.BasicEntry(Vec2i(x, y), c)) }
+    }
+
+    val positions get() = sequence { forEachPosition { x, y -> yield(Vec2i(x, y)) } }
+
+    inline fun forEachPosition(action: (Int, Int) -> Unit) {
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                action(x + offset.x, y + offset.y)
+            }
+        }
+    }
+
     inline fun forEach(action: (Int, Int, Char) -> Unit) {
         for (y in 0 until height) {
             for (x in 0 until width) {
@@ -105,15 +121,11 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
 
     inline fun where(predicate: (Char) -> Boolean): List<Vec2i> {
         val result = mutableListOf<Vec2i>()
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                if (predicate(data[localIndex(x, y)])) {
-                    result.add(Vec2i(x + offset.x, y + offset.y))
-                }
-            }
-        }
+        forEach { x, y, c -> if (predicate(c)) result.add(Vec2i(x, y)) }
         return result
     }
+
+    inline fun count(predicate: (Char) -> Boolean) = data.count(predicate)
 
     override fun toString(): String {
         val sb = StringBuilder((width + 1) * height)
@@ -143,6 +155,24 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
             }
         }
         return CharGrid(width, height, data, start)
+    }
+
+    fun floodFill(start: Vec2i, fill: Char): Int {
+        val c = this[start]
+        if (c == fill) return 0
+        val queue = ArrayDeque<Vec2i>()
+        queue.add(start)
+        var count = 0
+        while (queue.isNotEmpty()) {
+            val p = queue.removeFirst()
+            if (this[p] != c) continue
+            this[p] = fill
+            count++
+            for (n in p.fourNeighbors()) {
+                if (n in this) queue.add(n)
+            }
+        }
+        return count
     }
 
     companion object {
