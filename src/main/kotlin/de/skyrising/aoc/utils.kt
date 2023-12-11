@@ -497,3 +497,5 @@ inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.zipWithNextTo(destina
     }
     return destination
 }
+
+infix fun Int.minUntilMax(other: Int) = minOf(this, other) until maxOf(this, other)
