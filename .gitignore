@@ -1,7 +1,7 @@
 /log*.txt
-/.gradle/
-/build/
+**/.gradle/
+**/build/
 /.idea/
-/out/
+**/out/
 /inputs/
 /COOKIE.txt

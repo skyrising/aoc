@@ -1,9 +1,6 @@
 package de.skyrising.aoc2021.day18
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 
 @Suppress("unused")
 class BenchmarkDay : BenchmarkBaseV1(2021, 18)
@@ -35,18 +32,6 @@ fun register() {
     part2 {
         lines.map(SnailfishNumber::parse).pairs().map { (a, b) -> a + b }.maxOf(SnailfishNumber::magnitude)
     }
-}
-
-fun <T> List<T>.pairs(): Set<Pair<T, T>> {
-    val pairs = HashSet<Pair<T, T>>(size * (size - 1))
-    for (i in indices) {
-        for (j in indices) {
-            if (i != j) {
-                pairs.add(this[i] to this[j])
-            }
-        }
-    }
-    return pairs
 }
 
 class SnailfishNumber(var a: Any, var b: Any) {

@@ -1,7 +1,6 @@
 package de.skyrising.aoc2022.day16
 
 import de.skyrising.aoc.*
-import de.skyrising.aoc2021.day18.pairs
 import it.unimi.dsi.fastutil.objects.*
 
 @Suppress("unused")

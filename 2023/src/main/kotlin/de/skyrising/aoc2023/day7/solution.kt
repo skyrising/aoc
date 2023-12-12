@@ -66,7 +66,7 @@ private class Hand(val type: HandType, val cardValues: Long, val bid: Int) : Com
     }
 }
 
-private inline fun run(input: PuzzleInput, ctor: (ByteBuffer,Int)->Hand) = input.byteLines.map {
+private inline fun run(input: PuzzleInput, ctor: (ByteBuffer,Int)-> Hand) = input.byteLines.map {
     ctor(it.slice(0, 5), it.slice(6, it.remaining() - 6).toInt())
 }.sorted().sumOfWithIndex { i, it -> it.bid * (i + 1) }
 
@@ -80,9 +80,9 @@ fun register() {
         QQQJA 483
     """)
     part1("Camel Cards") {
-        run(this, Hand::part1)
+        run(this, Hand.Companion::part1)
     }
     part2 {
-        run(this, Hand::part2)
+        run(this, Hand.Companion::part2)
     }
 }

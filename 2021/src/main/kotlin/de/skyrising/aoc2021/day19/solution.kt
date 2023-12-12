@@ -1,7 +1,6 @@
 package de.skyrising.aoc2021.day19
 
 import de.skyrising.aoc.*
-import de.skyrising.aoc2021.day18.pairs
 
 @Suppress("unused")
 class BenchmarkDay : BenchmarkBaseV1(2021, 19)
