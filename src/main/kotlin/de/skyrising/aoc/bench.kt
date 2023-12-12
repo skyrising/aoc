@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-abstract class BenchmarkDay(year: Int, day: Int) {
+abstract class BenchmarkBase(year: Int, day: Int) {
     init {
         registerFiltered(PuzzleFilter(sortedSetOf(PuzzleDay(year, day))))
     }
@@ -32,7 +32,7 @@ abstract class BenchmarkDay(year: Int, day: Int) {
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-abstract class BenchmarkDayV1(year: Int, day: Int) {
+abstract class BenchmarkBaseV1(year: Int, day: Int) {
     init {
         registerFiltered(PuzzleFilter(sortedSetOf(PuzzleDay(year, day))))
     }

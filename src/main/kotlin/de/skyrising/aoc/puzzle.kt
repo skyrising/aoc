@@ -83,8 +83,8 @@ fun registerDay(day: PuzzleDay) {
     lastPart = 0
     currentDay = day
     try {
-        val cls = Class.forName("de.skyrising.aoc${day.year}.Day${day.day}Kt")
-        cls.getMethod("registerDay${day.day}").invoke(null)
+        val cls = Class.forName("de.skyrising.aoc${day.year}.day${day.day}.SolutionKt")
+        cls.getMethod("register").invoke(null)
     } catch (ignored: ClassNotFoundException) {}
 }
 
