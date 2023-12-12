@@ -49,10 +49,10 @@ fun blackhole(o: Any?) {
     blackhole = if (o == null || o != blackhole) Unit else blackhole
 }
 
-fun <T> measure(runs: Int, fn: () -> T?): Double {
+fun <T> measure(runs: Int, fn: (Int) -> T?): Double {
     val start = System.nanoTime()
     repeat(runs) {
-        blackhole(fn())
+        blackhole(fn(it))
     }
     return (System.nanoTime() - start) / (1000.0 * runs)
 }
@@ -499,3 +499,6 @@ inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.zipWithNextTo(destina
 }
 
 infix fun Int.minUntilMax(other: Int) = minOf(this, other) until maxOf(this, other)
+
+inline fun Boolean.toInt() = if (this) 1 else 0
+inline fun Boolean.toLong() = if (this) 1L else 0L

@@ -26,13 +26,14 @@ fun main(args: Array<String>) {
         val input = puzzle.getRealInput()
         if (BENCHMARK) {
             input.benchmark = true
-            repeat(WARMUP) {
-                measure(RUNS) { puzzle.runPuzzle(input) }
+            var result: Any? = null
+            val allTimes = DoubleArray(WARMUP + MEASURE_ITERS) { a ->
+                measure(RUNS) { b ->
+                    if (a == WARMUP + MEASURE_ITERS - 1 && b == RUNS - 1) input.benchmark = false
+                    puzzle.runPuzzle(input).also { result = it }
+                }
             }
-            val times = DoubleArray(MEASURE_ITERS) {
-                measure(RUNS) { puzzle.runPuzzle(input) }
-            }
-            input.benchmark = false
+            val times = allTimes.copyOfRange(WARMUP, allTimes.size)
             val avg = times.average()
             val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
             println(String.format(Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s ± %4.1f%%",
@@ -41,7 +42,7 @@ fun main(args: Array<String>) {
                 puzzle.part,
                 puzzle.index,
                 puzzle.name,
-                puzzle.runPuzzle(input),
+                result,
                 formatTime(avg),
                 stddev * 100 / avg
             ))
@@ -60,6 +61,7 @@ fun main(args: Array<String>) {
             ))
         }
     }
+    println("Done")
 }
 
 private fun formatTime(us: Double): String {
