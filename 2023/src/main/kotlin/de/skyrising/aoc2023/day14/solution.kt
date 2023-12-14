@@ -17,7 +17,7 @@ inline fun CharGrid.shift(i: Int, range: IntProgression, rocks: Int, sett: CharG
     }
 }
 
-inline fun CharGrid.slide(iterI: IntProgression, iterJ: IntProgression, gett: CharGrid.(Int, Int)->Char, crossinline sett: CharGrid.(Int, Int, Char)->Unit) {
+inline fun CharGrid.slide(iterI: IntProgression, iterJ: IntProgression, gett: CharGrid.(Int, Int)->Char, sett: CharGrid.(Int, Int, Char)->Unit) {
     for (i in iterI) {
         var start = iterJ.first
         var rocks = 0
@@ -79,9 +79,7 @@ fun register() {
         val grid = charGrid
         val limit = 1_000_000_000
         val grids = IntArrayList()
-        val indexes = Object2IntOpenHashMap<String>()
-        indexes.defaultReturnValue(-1)
-        indexes[String(grid.data)] = 0
+        val indexes = Object2IntOpenHashMap<String>().apply { defaultReturnValue(-1) }
         for (i in 1  .. limit) {
             var sum = 0
             grid.forEach { _, y, c -> if (c == 'O') sum += grid.height - y }
@@ -92,12 +90,7 @@ fun register() {
             grid.slideEast()
 
             val previous = indexes.putIfAbsent(String(grid.data), i)
-            if (previous >= 0) {
-                val diff = i - previous
-                val remaining = limit - i
-                val offset = previous + (remaining % diff)
-                return@part2 grids.getInt(offset)
-            }
+            if (previous >= 0) return@part2 grids.getInt( previous + (limit - i) % (i - previous))
         }
         error("Expected cycle")
     }
