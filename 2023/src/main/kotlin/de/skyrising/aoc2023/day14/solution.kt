@@ -1,6 +1,7 @@
 package de.skyrising.aoc2023.day14
 
 import de.skyrising.aoc.*
+import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
 @Suppress("unused")
@@ -50,13 +51,6 @@ fun CharGrid.slideEast() {
     slide(0 until height, (0 until width).reversed(), CharGrid::getT, CharGrid::setT)
 }
 
-fun CharGrid.cycle() {
-    slideNorth()
-    slideWest()
-    slideSouth()
-    slideEast()
-}
-
 @Suppress("unused")
 fun register() {
     val test = TestInput("""
@@ -82,21 +76,27 @@ fun register() {
         grid.sumOf { if (it.charValue == 'O') grid.height - it.key.y else 0 }
     }
     part2 {
-        var grid = charGrid
+        val grid = charGrid
         val limit = 1_000_000_000
-        val grids = ArrayList<CharGrid>()
-        val indexes = Object2IntOpenHashMap<CharGrid>()
-        for (i in 0  until limit) {
-            indexes[grid] = i
-            grids.add(grid)
-            grid = grid.subGrid(Vec2i.ZERO, Vec2i(grid.width, grid.height))
-            grid.cycle()
-            val previous = indexes.getOrDefault(grid as Any, -1)
+        val grids = IntArrayList()
+        val indexes = Object2IntOpenHashMap<String>()
+        indexes.defaultReturnValue(-1)
+        indexes[String(grid.data)] = 0
+        for (i in 1  .. limit) {
+            var sum = 0
+            grid.forEach { _, y, c -> if (c == 'O') sum += grid.height - y }
+            grids.add(sum)
+            grid.slideNorth()
+            grid.slideWest()
+            grid.slideSouth()
+            grid.slideEast()
+
+            val previous = indexes.putIfAbsent(String(grid.data), i)
             if (previous >= 0) {
-                val diff = i + 1 - previous
-                val remaining = limit - i - 1
+                val diff = i - previous
+                val remaining = limit - i
                 val offset = previous + (remaining % diff)
-                return@part2 grids[offset].sumOf { if (it.charValue == 'O') grid.height - it.key.y else 0 }
+                return@part2 grids.getInt(offset)
             }
         }
         error("Expected cycle")
