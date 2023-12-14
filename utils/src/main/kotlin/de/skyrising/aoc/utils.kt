@@ -269,7 +269,7 @@ inline fun CharSequence.toLong(range: IntRange, radix: Int = 10) = toLong(range.
 fun CharSequence.ints(): IntList {
     val ints = IntArrayList()
     splitRanges({ it !in '0'..'9' && it != '-' }) { a, b ->
-        if (a <= b) ints.add(toInt(a, b))
+        if (a < b) ints.add(toInt(a, b))
     }
     return ints
 }
@@ -277,7 +277,7 @@ fun CharSequence.ints(): IntList {
 fun CharSequence.longs(): LongList {
     val ints = LongArrayList()
     splitRanges({ it !in '0'..'9' && it != '-' }) { a, b ->
-        if (a <= b) ints.add(toLong(a, b))
+        if (a < b) ints.add(toLong(a, b))
     }
     return ints
 }
