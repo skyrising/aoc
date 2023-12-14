@@ -42,6 +42,8 @@ interface PuzzleInput {
             else -> println(value.toString())
         }
     }
+
+    fun copy(): PuzzleInput
 }
 
 class RealInput(override val input: ByteBuffer, override var benchmark: Boolean = false) : PuzzleInput {
@@ -50,6 +52,7 @@ class RealInput(override val input: ByteBuffer, override var benchmark: Boolean 
     override val chars by lazy { getInput(input, lastInputS, ::calcInputS) }
     override val charGrid: CharGrid by lazy { CharGrid.parse(lines) }
     override val string by lazy { chars.toString() }
+    override fun copy() = RealInput(input.duplicate(), benchmark)
 }
 
 class TestInput(str: String) : PuzzleInput {
@@ -60,6 +63,7 @@ class TestInput(str: String) : PuzzleInput {
     override val chars: CharBuffer by lazy { CharBuffer.wrap(string) }
     override val charGrid: CharGrid by lazy { CharGrid.parse(lines) }
     override val input: ByteBuffer by lazy { ByteBuffer.wrap(string.toByteArray()) }
+    override fun copy() = TestInput(string)
 }
 
 inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer, T>?>, noinline fn: (ByteBuffer) -> T): T {

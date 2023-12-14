@@ -24,41 +24,62 @@ fun main(args: Array<String>) {
     val puzzlesToRun = allPuzzles.filter(filter)
     for (puzzle in puzzlesToRun) {
         val input = puzzle.getRealInput()
-        if (BENCHMARK) {
-            input.benchmark = true
-            var result: Any? = null
-            val allTimes = DoubleArray(WARMUP + MEASURE_ITERS) { a ->
-                measure(RUNS) { b ->
-                    if (a == WARMUP + MEASURE_ITERS - 1 && b == RUNS - 1) input.benchmark = false
-                    puzzle.runPuzzle(input).also { result = it }
+        try {
+            if (BENCHMARK) {
+                input.benchmark = true
+                var result: Any? = null
+                val allTimes = DoubleArray(WARMUP + MEASURE_ITERS) { a ->
+                    measure(RUNS) { b ->
+                        if (a == WARMUP + MEASURE_ITERS - 1 && b == RUNS - 1) input.benchmark = false
+                        puzzle.runPuzzle(input.copy()).also { result = it }
+                    }
                 }
+                val times = allTimes.copyOfRange(WARMUP, allTimes.size)
+                val avg = times.average()
+                val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
+                println(
+                    String.format(
+                        Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s ± %4.1f%%",
+                        puzzle.day.year,
+                        puzzle.day.day,
+                        puzzle.part,
+                        puzzle.index,
+                        puzzle.name,
+                        result,
+                        formatTime(avg),
+                        stddev * 100 / avg
+                    )
+                )
+            } else {
+                val start = System.nanoTime()
+                val result = puzzle.runPuzzle(input)
+                val time = (System.nanoTime() - start) / 1000.0
+                println(
+                    String.format(
+                        Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s ± ?",
+                        puzzle.day.year,
+                        puzzle.day.day,
+                        puzzle.part,
+                        puzzle.index,
+                        puzzle.name,
+                        result,
+                        formatTime(time)
+                    )
+                )
             }
-            val times = allTimes.copyOfRange(WARMUP, allTimes.size)
-            val avg = times.average()
-            val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
-            println(String.format(Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s ± %4.1f%%",
-                puzzle.day.year,
-                puzzle.day.day,
-                puzzle.part,
-                puzzle.index,
-                puzzle.name,
-                result,
-                formatTime(avg),
-                stddev * 100 / avg
-            ))
-        } else {
-            val start = System.nanoTime()
-            val result = puzzle.runPuzzle(input)
-            val time = (System.nanoTime() - start) / 1000.0
-            println(String.format(Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s ± ?",
-                puzzle.day.year,
-                puzzle.day.day,
-                puzzle.part,
-                puzzle.index,
-                puzzle.name,
-                result,
-                formatTime(time)
-            ))
+        } catch (e: Exception) {
+            println(
+                String.format(
+                    Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s",
+                    puzzle.day.year,
+                    puzzle.day.day,
+                    puzzle.part,
+                    puzzle.index,
+                    puzzle.name,
+                    e.javaClass.simpleName,
+                    e.message
+                )
+            )
         }
     }
     println("Done")
