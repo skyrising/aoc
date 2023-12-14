@@ -131,6 +131,21 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
     }
     inline fun count(predicate: (Char) -> Boolean) = data.count(predicate)
 
+    override fun hashCode(): Int {
+        var result = offset.hashCode()
+        result = 31 * result + width
+        result = 31 * result + height
+        result = 31 * result + data.contentHashCode()
+        return result
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CharGrid) return false
+        if (width != other.width || height != other.height || offset != other.offset) return false
+        return data.contentEquals(other.data)
+    }
+
     override fun toString(): String {
         val sb = StringBuilder((width + 1) * height)
         for (y in 0 until height) {
@@ -198,6 +213,9 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
         val c = this[start]
         return floodFill(start, fill) { x, y -> this[x, y] == c }
     }
+
+    fun getT(y: Int, x: Int) = this[x, y]
+    fun setT(y: Int, x: Int, c: Char) { this[x, y] = c }
 
     companion object {
         fun parse(lines: List<String>): CharGrid {
