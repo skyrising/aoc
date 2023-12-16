@@ -474,8 +474,8 @@ operator fun <T> Pair<T,T>.get(index: Int) = when(index) {
 @JvmInline
 value class PackedIntPair(val longValue: Long) {
     constructor(first: Int, second: Int) : this((first.toLong() shl 32) or (second.toLong() and 0xffffffffL))
-    inline val first get() = (longValue shr 32).toInt()
-    inline val second get() = longValue.toInt()
+    inline val first get() = unpackFirst(longValue)
+    inline val second get() = unpackSecond(longValue)
 
     operator fun get(index: Int) = when(index) {
         0 -> first
@@ -484,6 +484,11 @@ value class PackedIntPair(val longValue: Long) {
     }
 
     operator fun get(first: Boolean) = if (first) this.first else second
+
+    companion object {
+        inline fun unpackFirst(value: Long) = (value shr 32).toInt()
+        inline fun unpackSecond(value: Long) = value.toInt()
+    }
 }
 
 inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.zipWithNextTo(destination: C, transform: (a: T, b: T) -> R): C {

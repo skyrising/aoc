@@ -4,14 +4,36 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+@JvmInline
+value class Direction(val ordinal: Int) {
+    val x inline get() = if (ordinal and 1 != 0) 2 - ordinal else 0
+    val y inline get() = if (ordinal and 1 == 0) ordinal - 1 else 0
+    val vec inline get() = Vec2i(x, y)
+
+    fun rotateCW() = Direction((ordinal + 1) and 3)
+    fun rotateCCW() = Direction((ordinal + 3) and 3)
+    operator fun unaryMinus() = Direction((ordinal + 2) and 3)
+    operator fun inc() = rotateCW()
+    operator fun dec() = rotateCCW()
+
+    companion object {
+        val N = Direction(0)
+        val E = Direction(1)
+        val S = Direction(2)
+        val W = Direction(3)
+    }
+}
+
 data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
     override val boundingBox get() = BoundingBox2i(this, this)
 
     override fun toString() = "[$x, $y]"
     inline operator fun plus(other: Vec2i) = Vec2i(x + other.x, y + other.y)
     inline operator fun plus(offset: Int) = Vec2i(x + offset, y + offset)
+    inline operator fun plus(direction: Direction) = Vec2i(x + direction.x, y + direction.y)
     inline operator fun minus(other: Vec2i) = Vec2i(x - other.x, y - other.y)
     inline operator fun minus(offset: Int) = Vec2i(x - offset, y - offset)
+    inline operator fun minus(direction: Direction) = Vec2i(x - direction.x, y - direction.y)
     inline operator fun times(other: Vec2i) = Vec2i(x * other.x, y * other.y)
     inline operator fun times(other: Int) = Vec2i(x * other, y * other)
     inline operator fun div(other: Vec2i) = Vec2i(x / other.x, y / other.y)
@@ -85,7 +107,7 @@ data class BoundingBox2i(val min: Vec2i, val max: Vec2i): HasBoundingBox2i {
     inline fun charGrid(init: (Int) -> Char): CharGrid {
         val width = max.x - min.x + 1
         val height = max.y - min.y + 1
-        return CharGrid(width, height, CharArray(width * height) { init(it) }, min)
+        return CharGrid(width, height, CharArray(width * height) { init(it) }, min.x, min.y)
     }
 
     fun expand(other: HasBoundingBox2i): BoundingBox2i {

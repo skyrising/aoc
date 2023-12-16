@@ -44,12 +44,15 @@ fun parseDisplay(display: String, litChar: Char = '█'): String {
     return sb.toString()
 }
 
-abstract class Grid(val offset: Vec2i, val width: Int, val height: Int) {
+abstract class Grid(val offsetX: Int, val offsetY: Int, val width: Int, val height: Int) {
+    val offset get() = Vec2i(offsetX, offsetY)
     val size get() = Vec2i(width, height)
 
     protected fun index(x: Int, y: Int): Int {
-        if (!contains(x, y)) throw IndexOutOfBoundsException("($x, $y) is not in [$offset,${offset + Vec2i(width, height)})")
-        return (y - offset.y) * width + (x - offset.x)
+        val lx = x - offsetX
+        val ly = y - offsetY
+        if (lx < 0 || ly < 0 || lx >= width || ly >= height) throw IndexOutOfBoundsException("($x, $y) is not in [($offsetX,$offsetY),${Vec2i(offsetX, offsetY) + Vec2i(width, height)})")
+        return ly * width + lx
     }
 
     fun localIndex(x: Int, y: Int): Int {
@@ -57,11 +60,11 @@ abstract class Grid(val offset: Vec2i, val width: Int, val height: Int) {
         return y * width + x
     }
 
-    fun contains(x: Int, y: Int) = x >= offset.x && y >= offset.y && x < offset.x + width && y < offset.y + height
+    fun contains(x: Int, y: Int) = (x - offsetX) in 0 ..< width && (y - offsetX) in 0 ..< height
     operator fun contains(point: Vec2i) = contains(point.x, point.y)
 }
 
-class IntGrid(width: Int, height: Int, val data: IntArray, offset: Vec2i = Vec2i.ZERO) : Grid(offset, width, height) {
+class IntGrid(width: Int, height: Int, val data: IntArray, offsetX: Int = 0, offsetY: Int = 0) : Grid(offsetX, offsetY, width, height) {
     operator fun get(point: Vec2i) = get(point.x, point.y)
     operator fun get(x: Int, y: Int) = data[index(x, y)]
     operator fun set(point: Vec2i, value: Int) = set(point.x, point.y, value)
@@ -77,13 +80,13 @@ class IntGrid(width: Int, height: Int, val data: IntArray, offset: Vec2i = Vec2i
     inline fun forEach(action: (Int, Int, Int) -> Unit) {
         for (y in 0 until height) {
             for (x in 0 until width) {
-                action(x + offset.x, y + offset.y, data[y * width + x])
+                action(x + offsetX, y + offsetY, data[y * width + x])
             }
         }
     }
 }
 
-class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec2i.ZERO) : Grid(offset, width, height), Sequence<Object2CharMap.Entry<Vec2i>> {
+class CharGrid(width: Int, height: Int, val data: CharArray, offsetX: Int = 0, offsetY: Int = 0) : Grid(offsetX, offsetY, width, height), Sequence<Object2CharMap.Entry<Vec2i>> {
     operator fun get(point: Vec2i) = get(point.x, point.y)
     operator fun get(x: Int, y: Int) = data[index(x, y)]
     operator fun get(x: IntRange, y: Int) = String(data, index(x.first, y), x.last - x.first + 1)
@@ -106,7 +109,7 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
     inline fun forEachPosition(action: (Int, Int) -> Unit) {
         for (y in 0 until height) {
             for (x in 0 until width) {
-                action(x + offset.x, y + offset.y)
+                action(x + offsetX, y + offsetY)
             }
         }
     }
@@ -114,7 +117,7 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
     inline fun forEach(action: (Int, Int, Char) -> Unit) {
         for (y in 0 until height) {
             for (x in 0 until width) {
-                action(x + offset.x, y + offset.y, data[localIndex(x, y)])
+                action(x + offsetX, y + offsetY, data[localIndex(x, y)])
             }
         }
     }
@@ -127,12 +130,13 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
 
     inline fun indexOfFirst(predicate: (Char) -> Boolean): Vec2i {
         val index = data.indexOfFirst(predicate)
-        return Vec2i(offset.x + index % width, offset.y + index / width)
+        return Vec2i(offsetX + index % width, offsetY + index / width)
     }
     inline fun count(predicate: (Char) -> Boolean) = data.count(predicate)
 
     override fun hashCode(): Int {
-        var result = offset.hashCode()
+        var result = offsetX
+        result = 31 * result + offsetY
         result = 31 * result + width
         result = 31 * result + height
         result = 31 * result + data.contentHashCode()
@@ -142,7 +146,7 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is CharGrid) return false
-        if (width != other.width || height != other.height || offset != other.offset) return false
+        if (width != other.width || height != other.height || offsetX != other.offsetX || offsetY != other.offsetY) return false
         return data.contentEquals(other.data)
     }
 
@@ -158,12 +162,12 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
     }
 
     fun translatedView(translation: Vec2i): CharGrid {
-        return CharGrid(width, height, data, offset + translation)
+        return CharGrid(width, height, data, offsetX + translation.x, offsetY + translation.y)
     }
 
     fun subGrid(start: Vec2i, endExclusive: Vec2i): CharGrid {
-        if (start.x < offset.x || start.y < offset.y || endExclusive.x > offset.x + width || endExclusive.y > offset.y + height) {
-            throw IndexOutOfBoundsException("[$start, $endExclusive) is not in [$offset, ${offset + size})")
+        if (start.x < offsetX || start.y < offsetY || endExclusive.x > offsetX + width || endExclusive.y > offsetY + height) {
+            throw IndexOutOfBoundsException("[$start, $endExclusive) is not in [($offsetX,$offsetY), ${Vec2i(offsetX, offsetY) + size})")
         }
         val width = endExclusive.x - start.x
         val height = endExclusive.y - start.y
@@ -173,7 +177,7 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
                 data[y * width + x] = this[x + start.x, y + start.y]
             }
         }
-        return CharGrid(width, height, data, start)
+        return CharGrid(width, height, data, start.x, start.y)
     }
 
     data class FloodFillSpan(val x1: Int, val x2: Int, val y: Int, val dy: Int)
@@ -186,16 +190,16 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offset: Vec2i = Vec
         var count = 0
         while (s.isNotEmpty()) {
             var (x1, x2, y, dy) = s.removeFirst()
-            if (y < offset.y || y >= offset.y + height) continue
+            if (y < offsetY || y >= offsetY + height) continue
             var x = x1
-            while (x - 1 >= offset.x && inside(x - 1, y)) {
+            while (x - 1 >= offsetX && inside(x - 1, y)) {
                 this[x--, y] = fill
                 count++
             }
             if (x < x1)
                 s.add(FloodFillSpan(x, x1 - 1, y - dy, -dy))
             while (x1 <= x2) {
-                while (x1 < offset.x + width && inside(x1, y)) {
+                while (x1 < offsetX + width && inside(x1, y)) {
                     this[x1++, y] = fill
                     count++
                 }
