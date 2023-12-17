@@ -1,5 +1,7 @@
 package de.skyrising.aoc
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import java.util.*
 
 class Graph<V, E> {
@@ -43,33 +45,7 @@ class Graph<V, E> {
     fun dijkstra(from: Vertex<V>, to: Vertex<V>) = dijkstra(from) {
         it == to
     }
-    fun dijkstra(from: Vertex<V>, to: (Vertex<V>) -> Boolean): Path<V, E>? {
-        val unvisited = mutableSetOf(from)
-        val visited = mutableSetOf<Vertex<V>>()
-        val inc = mutableMapOf<Vertex<V>, Edge<V, E?>>()
-        val dist = mutableMapOf<Vertex<V>, Int>()
-        dist[from] = 0
-        while (unvisited.isNotEmpty()) {
-            val current = lowest(unvisited, dist)!!
-            if (to(current) || current !in unvisited) {
-                return buildPath(from, current, inc)
-            }
-            val curDist = dist[current] ?: return null
-            unvisited.remove(current)
-            visited.add(current)
-            for (e in getOutgoing(current)) {
-                val v = e.to
-                if (v in visited) continue
-                val alt = curDist + e.weight
-                if (alt < (dist[v] ?: Integer.MAX_VALUE)) {
-                    dist[v] = alt
-                    inc[v] = e
-                    unvisited.add(v)
-                }
-            }
-        }
-        return null
-    }
+    inline fun dijkstra(from: Vertex<V>, to: (Vertex<V>) -> Boolean) = dijkstra(from, to, this::getOutgoing)
 
     fun astar(from: Vertex<V>, to: Vertex<V>, h: (Vertex<V>) -> Int) = astar(from, h) {
         it == to
@@ -78,8 +54,8 @@ class Graph<V, E> {
         val unvisited = mutableSetOf(from)
         val visited = mutableSetOf<Vertex<V>>()
         val inc = mutableMapOf<Vertex<V>, Edge<V, E?>>()
-        val distG = mutableMapOf<Vertex<V>, Int>()
-        val distF = mutableMapOf<Vertex<V>, Int>()
+        val distG = Object2IntOpenHashMap<Vertex<V>>()
+        val distF = Object2IntOpenHashMap<Vertex<V>>()
         distG[from] = 0
         distF[from] = h(from)
         while (unvisited.isNotEmpty()) {
@@ -206,17 +182,20 @@ class Graph<V, E> {
     }
 }
 
-private fun <V> lowest(unvisited: Collection<Vertex<V>>, map: Map<Vertex<V>, Int>): Vertex<V>? {
+fun <V> lowest(unvisited: Collection<Vertex<V>>, map: Object2IntMap<Vertex<V>>): Vertex<V>? {
     var lowest: Vertex<V>? = null
+    var lowestDist = Int.MAX_VALUE
     for (v in unvisited) {
-        if (lowest == null || (map[v] ?: Integer.MAX_VALUE) < (map[lowest] ?: Integer.MAX_VALUE)) {
+        val d = map.getOrDefault(v as Any, Int.MAX_VALUE)
+        if (lowest == null || d < lowestDist) {
             lowest = v
+            lowestDist = d
         }
     }
     return lowest
 }
 
-private fun <V, E> buildPath(from: Vertex<V>, to: Vertex<V>, inc: Map<Vertex<V>, Edge<V, E?>>): Path<V, E>? {
+fun <V, E> buildPath(from: Vertex<V>, to: Vertex<V>, inc: Map<Vertex<V>, Edge<V, E?>>): Path<V, E>? {
     val first = inc[to] ?: return null
     val path = LinkedList<Edge<V, E?>>()
     path.add(first)
@@ -293,6 +272,35 @@ inline fun <T> bfsPath(start: T, end: (T) -> Boolean, step: (T) -> Iterable<T>):
             }
         }
         queue = next
+    }
+    return null
+}
+
+inline fun <V, E> dijkstra(from: Vertex<V>, to: (Vertex<V>) -> Boolean, getOutgoing: (Vertex<V>)->Set<Edge<V, E?>>): Path<V, E>? {
+    val unvisited = mutableSetOf(from)
+    val visited = mutableSetOf<Vertex<V>>()
+    val inc = mutableMapOf<Vertex<V>, Edge<V, E?>>()
+    val dist = Object2IntOpenHashMap<Vertex<V>>()
+    dist[from] = 0
+    while (unvisited.isNotEmpty()) {
+        val current = lowest(unvisited, dist)!!
+        if (to(current) || current !in unvisited) {
+            return buildPath(from, current, inc)
+        }
+        val curDist = dist.getOrDefault(current as Any, -1)
+        if (curDist < 0) return null
+        unvisited.remove(current)
+        visited.add(current)
+        for (e in getOutgoing(current)) {
+            val v = e.to
+            if (v in visited) continue
+            val alt = curDist + e.weight
+            if (alt < dist.getOrDefault(v as Any, Int.MAX_VALUE)) {
+                dist[v] = alt
+                inc[v] = e
+                unvisited.add(v)
+            }
+        }
     }
     return null
 }

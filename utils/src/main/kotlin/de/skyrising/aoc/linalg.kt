@@ -16,6 +16,8 @@ value class Direction(val ordinal: Int) {
     operator fun inc() = rotateCW()
     operator fun dec() = rotateCCW()
 
+    override fun toString() = "NESW"[ordinal].toString()
+
     companion object {
         val N = Direction(0)
         val E = Direction(1)
