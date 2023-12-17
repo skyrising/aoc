@@ -1,7 +1,6 @@
 package de.skyrising.aoc2023.day16
 
 import de.skyrising.aoc.*
-import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue
 import java.util.*
 
 @Suppress("unused")
@@ -9,7 +8,7 @@ class BenchmarkDay : BenchmarkBaseV1(2023, 16)
 
 @JvmInline
 value class State(val intValue: Int) {
-    constructor(x: Int, y: Int, dir: Direction): this(((x and 0x7fff) shl 15) or (y and 0x7ffff) or (dir.ordinal shl 30))
+    constructor(x: Int, y: Int, dir: Direction): this(((x and 0x7fff) shl 15) or (y and 0x7fff) or (dir.ordinal shl 30))
 
     val x inline get() = intValue shl 2 shr 17
     val y inline get() = intValue shl 17 shr 17
@@ -19,16 +18,16 @@ value class State(val intValue: Int) {
     inline operator fun component3() = dir
 }
 
-fun CharGrid.traverseBeam(state: State, beam: BitSet, positions: BitSet) {
-    val deque = IntArrayFIFOQueue()
+fun CharGrid.traverseBeam(state: State, beam: BitSet, positions: BitSet, deque: IntArrayDeque) {
     deque.enqueue(state.intValue)
     while (!deque.isEmpty) {
         var (x, y, dir) = State(deque.dequeueLastInt())
         while (true) {
             if (x >= 0 && y >= 0 && x < width && y < height) {
                 val beamIndex = localIndex(x, y) shl 2 or dir.ordinal
-                if (beam.get(beamIndex)) break
+                val seen = beam.get(beamIndex)
                 beam.set(beamIndex)
+                if (seen) break
             }
             x += dir.x
             y += dir.y
@@ -50,18 +49,18 @@ fun CharGrid.traverseBeam(state: State, beam: BitSet, positions: BitSet) {
                 } else {
                     dir
                 }
-
                 else -> error("Invalid character: ${this[x, y]}")
             }
         }
     }
 }
 
-inline fun CharGrid.maxBeam(pos: Vec2i, dir: Direction, max: Int, beam: BitSet, positions: BitSet): Int {
+inline fun CharGrid.maxBeam(posX: Int, posY: Int, dir: Direction, beam: BitSet, positions: BitSet, deque: IntArrayDeque): Int {
     beam.clear()
     positions.clear()
-    traverseBeam(State(pos.x, pos.y, dir), beam, positions)
-    return maxOf(max, positions.cardinality())
+    deque.clear()
+    traverseBeam(State(posX, posY, dir), beam, positions, deque)
+    return positions.cardinality()
 }
 
 @Suppress("unused")
@@ -79,20 +78,29 @@ fun register() {
         ..//.|....
     """)
     part1("The Floor Will Be Lava") {
-        charGrid.maxBeam(Vec2i(-1, 0), Direction.E, 0, BitSet(), BitSet())
+        val grid = charGrid
+        grid.maxBeam(
+            -1,
+            0,
+            Direction.E,
+            BitSet(grid.width * grid.height * 4),
+            BitSet(grid.width * grid.height),
+            IntArrayDeque(128)
+        )
     }
     part2 {
         val grid = charGrid
         var max = 0
-        val beam = BitSet()
-        val positions = BitSet()
+        val beam = BitSet(grid.width * grid.height * 4)
+        val positions = BitSet(grid.width * grid.height)
+        val deque = IntArrayDeque(128)
         for (x in 0 until grid.width) {
-            max = grid.maxBeam(Vec2i(x, -1), Direction.S, max, beam, positions)
-            max = grid.maxBeam(Vec2i(x, grid.height), Direction.N, max, beam, positions)
+            max = maxOf(max, grid.maxBeam(x, -1, Direction.S, beam, positions, deque))
+            max = maxOf(max, grid.maxBeam(x, grid.height, Direction.N, beam, positions, deque))
         }
         for (y in 0 until grid.height) {
-            max = grid.maxBeam(Vec2i(-1, y), Direction.E, max, beam, positions)
-            max = grid.maxBeam(Vec2i(grid.width, y), Direction.W, max, beam, positions)
+            max = maxOf(max, grid.maxBeam(-1, y, Direction.E, beam, positions, deque))
+            max = maxOf(max, grid.maxBeam(grid.width, y, Direction.W, beam, positions, deque))
         }
         max
     }
