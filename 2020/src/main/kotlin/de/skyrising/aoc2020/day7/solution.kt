@@ -1,6 +1,9 @@
 package de.skyrising.aoc2020.day7
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.BenchmarkBase
+import de.skyrising.aoc.Graph
+import de.skyrising.aoc.part1
+import de.skyrising.aoc.part2
 
 @Suppress("unused")
 class BenchmarkDay : BenchmarkBase(2020, 7)
@@ -70,7 +73,7 @@ fun register() {
             val newSet = mutableSetOf<String>()
             for (v in set) {
                 for ((from, _, weight, _) in graph.getIncoming(v)) {
-                    newSet.add(from.value)
+                    newSet.add(from)
                 }
             }
             set.addAll(newSet)
@@ -91,13 +94,13 @@ fun register() {
     }
     part2 {
         val graph = readGraph(lines)
-        fun getContained(type: Vertex<String>): Int {
+        fun getContained(type: String): Int {
             var sum = 1
             for ((_, contained, num, _) in graph.getOutgoing(type)) {
                 sum += num * getContained(contained)
             }
             return sum
         }
-        getContained(Vertex("shiny gold")) - 1
+        getContained("shiny gold") - 1
     }
 }

@@ -31,7 +31,7 @@ fun register() {
                 }
             }
         }
-        val path = g.dijkstra(g[Pair(0, 0)]!!, g[Pair(input.lastIndex, input.last().lastIndex)]!!)
+        val path = g.dijkstra(Pair(0, 0), Pair(input.lastIndex, input.last().lastIndex))
         path?.sumOf { e -> e.weight }
     }
     part2 {

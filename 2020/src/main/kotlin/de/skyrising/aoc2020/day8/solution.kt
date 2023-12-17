@@ -73,10 +73,10 @@ fun register() {
             }
         }
         val end = instrs.size
-        val path = graph.dijkstra(graph[0]!!, graph[end - 1]!!) ?: return@part2 null
+        val path = graph.dijkstra(0, end - 1) ?: return@part2 null
         for (edge in path) {
             if (edge.weight <= 0) continue
-            val i = edge.from.value
+            val i = edge.from
             // println("Patching $i ${instrs[i]}")
             val instr = instrs[i]
             instrs[i] = Pair(if (instr.first == "nop") "jmp" else "nop", instr.second)

@@ -7,9 +7,8 @@ class BenchmarkDay : BenchmarkBaseV1(2023, 17)
 
 data class Node(val posX: Int, val posY: Int, val dir: Direction, val dirCount: Int)
 
-fun IntGrid.getOutgoing(v: Vertex<Node>): Set<Edge<Node, Unit?>> {
+fun IntGrid.getOutgoing(node: Node): Set<Edge<Node, Unit?>> {
     val edges = mutableSetOf<Edge<Node, Unit?>>()
-    val node = v.value
     for (i in 0..3) {
         val dir = Direction(i)
         if (dir == -node.dir) continue
@@ -18,14 +17,13 @@ fun IntGrid.getOutgoing(v: Vertex<Node>): Set<Edge<Node, Unit?>> {
         val posY = node.posY + dir.y
         if (!contains(posX, posY)) continue
         val loss = this[posX, posY]
-        edges.add(Edge(v, Vertex(Node(posX, posY, dir, if (dir == node.dir) node.dirCount + 1 else 1)), loss, Unit))
+        edges.add(Edge(node, Node(posX, posY, dir, if (dir == node.dir) node.dirCount + 1 else 1), loss, Unit))
     }
     return edges
 }
 
-fun IntGrid.getOutgoing2(v: Vertex<Node>): Set<Edge<Node, Unit?>> {
+fun IntGrid.getOutgoing2(node: Node): Set<Edge<Node, Unit?>> {
     val edges = mutableSetOf<Edge<Node, Unit?>>()
-    val node = v.value
     for (i in 0..3) {
         val dir = Direction(i)
         if (dir == -node.dir) continue
@@ -35,7 +33,7 @@ fun IntGrid.getOutgoing2(v: Vertex<Node>): Set<Edge<Node, Unit?>> {
         val posY = node.posY + dir.y
         if (!contains(posX, posY)) continue
         val loss = this[posX, posY]
-        edges.add(Edge(v, Vertex(Node(posX, posY, dir, if (dir == node.dir) node.dirCount + 1 else 1)), loss, Unit))
+        edges.add(Edge(node, Node(posX, posY, dir, if (dir == node.dir) node.dirCount + 1 else 1), loss, Unit))
     }
     return edges
 }
@@ -57,19 +55,19 @@ fun register() {
         2546548887735
         4322674655533
     """)
-    fun PuzzleInput.run(out: IntGrid.(Vertex<Node>) -> Set<Edge<Node, Unit?>>, isEnd: (Vertex<Node>,Vec2i)->Boolean): Int {
+    fun PuzzleInput.run(out: IntGrid.(Node) -> Set<Edge<Node, Unit?>>, isEnd: (Node,Vec2i)->Boolean): Int {
         val cg = charGrid
         val grid = IntGrid(cg.width, cg.height, IntArray(cg.width * cg.height) {
             cg.data[it].digitToInt()
         })
         val end = Vec2i(cg.width - 1, cg.height - 1)
-        val path = dijkstra(Vertex(Node(0, 0, Direction.E, 0)), { isEnd(it, end) }, { grid.out(it) })!!
+        val path = dijkstra(Node(0, 0, Direction.E, 0), { isEnd(it, end) }, { grid.out(it) })!!
         return path.sumOf { it.weight }
     }
     part1("Clumsy Crucible") {
-        run(IntGrid::getOutgoing) { v, end -> v.value.posX == end.x && v.value.posY == end.y }
+        run(IntGrid::getOutgoing) { v, end -> v.posX == end.x && v.posY == end.y }
     }
     part2 {
-        run(IntGrid::getOutgoing2) { v, end -> v.value.posX == end.x && v.value.posY == end.y && v.value.dirCount >= 4 }
+        run(IntGrid::getOutgoing2) { v, end -> v.posX == end.x && v.posY == end.y && v.dirCount >= 4 }
     }
 }

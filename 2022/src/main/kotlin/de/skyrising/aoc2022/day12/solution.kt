@@ -43,7 +43,7 @@ fun register() {
                 }
             }
         }
-        val path = g.dijkstra(g.vertex(start), g.vertex(end)) ?: return@part1 -1
+        val path = g.dijkstra(start, end) ?: return@part1 -1
         path.size
     }
     part2 {
@@ -56,8 +56,8 @@ fun register() {
                 }
             }
         }
-        val ends = g.getVertexes().filterTo(mutableSetOf()) { v -> grid[v.value] == 0 }
-        val path = g.dijkstra(g.vertex(end), ends::contains) ?: return@part2 -1
+        val ends = g.getVertexes().filterTo(mutableSetOf()) { v -> grid[v] == 0 }
+        val path = g.dijkstra(end, ends::contains) ?: return@part2 -1
         path.size
     }
 }

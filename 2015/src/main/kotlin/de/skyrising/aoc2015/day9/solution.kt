@@ -20,10 +20,9 @@ fun register() {
             g.edge(to, from, dist.toInt())
         }
         val cities = g.getVertexes()
-        val dummy = g.vertex("__DUMMY__")
         for (c in cities) {
-            g.edge(c, dummy, 0)
-            g.edge(dummy, c, 0)
+            g.edge(c, "__DUMMY__", 0)
+            g.edge("__DUMMY__", c, 0)
         }
         g.tsp()?.sumOf { e -> e.weight }
     }
@@ -35,10 +34,9 @@ fun register() {
             g.edge(to, from, -dist.toInt())
         }
         val cities = g.getVertexes()
-        val dummy = g.vertex("__DUMMY__")
         for (c in cities) {
-            g.edge(c, dummy, 0)
-            g.edge(dummy, c, 0)
+            g.edge(c, "__DUMMY__", 0)
+            g.edge("__DUMMY__", c, 0)
         }
         g.tsp()?.sumOf { e -> -e.weight }
     }

@@ -50,8 +50,8 @@ fun register() {
     """)
     part1("Passage Pathing") {
         val g = readInput(this) { s -> s }
-        g.getPathsV1(g["start"]!!, g["end"]!!) { p ->
-            val caves = p.getVertexes().map(Vertex<String>::value)
+        g.getPathsV1("start", "end") { p ->
+            val caves = p.getVertexes()
             val small = mutableSetOf<String>()
             for (cave in caves) {
                 if (cave.lowercase() == cave) {
@@ -64,10 +64,9 @@ fun register() {
     part1("Passage Pathing") {
         val caves = mutableMapOf<String, Cave>()
         val g = readInput(this) { s -> caves.computeIfAbsent(s, ::Cave) }
-        g.getPaths(g[caves["start"]!!]!!, g[caves["end"]!!]!!) { p ->
+        g.getPaths(caves["start"]!!, caves["end"]!!) { p ->
             val small = HashSet<Cave>(p.size)
-            p.forEachVertex { v ->
-                val cave = v.value
+            p.forEachVertex { cave ->
                 if (cave.isSmall && !small.add(cave)) return@getPaths false
             }
             true
@@ -75,8 +74,8 @@ fun register() {
     }
     part2 {
         val g = readInput(this) { s -> s }
-        g.getPathsV1(g["start"]!!, g["end"]!!) { p ->
-            val caves = p.getVertexes().map(Vertex<String>::value)
+        g.getPathsV1("start", "end") { p ->
+            val caves = p.getVertexes()
             val small = mutableSetOf<String>()
             var smallDouble = false
             for (cave in caves) {
@@ -96,11 +95,10 @@ fun register() {
     part2 {
         val caves = mutableMapOf<String, Cave>()
         val g = readInput(this) { s -> caves.computeIfAbsent(s, ::Cave) }
-        g.getPaths(g[caves["start"]!!]!!, g[caves["end"]!!]!!) { p ->
+        g.getPaths(caves["start"]!!, caves["end"]!!) { p ->
             val small = HashSet<Cave>(p.size)
             var smallDouble = false
-            p.forEachVertex { v ->
-                val cave = v.value
+            p.forEachVertex { cave ->
                 if (cave.isSmall && !small.add(cave)) {
                     if (!smallDouble && cave.name != "start") {
                         smallDouble = true

@@ -64,6 +64,6 @@ fun register() {
                 }
             }
         }
-        graph.countPaths(graph[0]!!, graph[numbers[numbers.lastIndex]]!!)
+        graph.countPaths(0, numbers.last())
     }
 }

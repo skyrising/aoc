@@ -1,7 +1,8 @@
 package de.skyrising.aoc2022.day16
 
 import de.skyrising.aoc.*
-import it.unimi.dsi.fastutil.objects.*
+import it.unimi.dsi.fastutil.objects.Object2IntMap
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
 @Suppress("unused")
 class BenchmarkDay : BenchmarkBaseV1(2022, 16)
@@ -18,9 +19,9 @@ private fun parseInput(input: PuzzleInput): Triple<Object2IntMap<String>, Object
     }
     val paths = Object2IntOpenHashMap<Pair<String, String>>()
     for ((a, b) in graph.getVertexes().toList().pairs()) {
-        paths[a.value to b.value] = (graph.dijkstra(a, b)?:continue).size
+        paths[a to b] = (graph.dijkstra(a, b)?:continue).size
     }
-    val closed = graph.getVertexes().filter { flows.getInt(it.value) != 0 }.map(Vertex<String>::value).toSet()
+    val closed = graph.getVertexes().filter { flows.getInt(it) != 0 }.toSet()
     return Triple(flows, paths, closed)
 }
 
