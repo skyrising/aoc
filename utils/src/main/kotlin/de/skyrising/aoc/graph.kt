@@ -1,6 +1,5 @@
 package de.skyrising.aoc
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import java.util.*
 
@@ -35,39 +34,10 @@ class Graph<V, E> {
     }
     inline fun dijkstra(from: V, to: (V) -> Boolean) = dijkstra(from, to, this::getOutgoing)
 
-    fun astar(from: V, to: V, h: (V) -> Int) = astar(from, h) {
+    inline fun astar(from: V, to: V, h: (V) -> Int) = astar(from, h) {
         it == to
     }
-    fun astar(from: V, h: (V) -> Int, to: (V) -> Boolean): Path<V, E>? {
-        val unvisited = mutableSetOf(from)
-        val visited = mutableSetOf<V>()
-        val inc = mutableMapOf<V, Edge<V, E?>>()
-        val distG = Object2IntOpenHashMap<V>()
-        val distF = Object2IntOpenHashMap<V>()
-        distG[from] = 0
-        distF[from] = h(from)
-        while (unvisited.isNotEmpty()) {
-            val current = lowest(unvisited, distF)!!
-            if (to(current) || current !in unvisited) {
-                return buildPath(from, current, inc)
-            }
-            val curDist = distG[current] ?: return null
-            unvisited.remove(current)
-            visited.add(current)
-            for (e in getOutgoing(current)) {
-                val v = e.to
-                if (visited.contains(v)) continue
-                val alt = curDist + e.weight
-                if (alt < (distG[v] ?: Integer.MAX_VALUE)) {
-                    distG[v] = alt
-                    distF[v] = alt + h(v)
-                    inc[v] = e
-                    unvisited.add(v)
-                }
-            }
-        }
-        return null
-    }
+    inline fun astar(from: V, h: (V) -> Int, to: (V) -> Boolean) = astar(from, h, to, this::getOutgoing)
 
     fun tsp(): List<Edge<V, E?>>? {
         val vertexList = vertexes.toList()
@@ -170,36 +140,25 @@ class Graph<V, E> {
     }
 }
 
-fun <V> lowest(unvisited: Collection<V>, map: Object2IntMap<V>): V? {
-    var lowest: V? = null
-    var lowestDist = Int.MAX_VALUE
-    for (v in unvisited) {
-        val d = map.getOrDefault(v as Any, Int.MAX_VALUE)
-        if (lowest == null || d < lowestDist) {
-            lowest = v
-            lowestDist = d
-        }
-    }
-    return lowest
-}
-
 fun <V, E> buildPath(from: V, to: V, inc: Map<V, Edge<V, E?>>): Path<V, E>? {
     val first = inc[to] ?: return null
-    val path = LinkedList<Edge<V, E?>>()
+    val path = mutableListOf<Edge<V, E?>>()
     path.add(first)
     var edge: Edge<V, E?>? = first
     while (true) {
         val eFrom = edge!!.from
-        if (eFrom == from) return Path(path)
+        if (eFrom == from) {
+            path.reverse()
+            return Path(path)
+        }
         edge = inc[eFrom]
         if (edge == null) return null
         path.addFirst(edge)
     }
 }
 
-data class V(val value: V)
 data class Edge<V, E>(val from: V, val to: V, val weight: Int, val value: E) {
-    override fun toString() = "${from} ==${if (value != null) "$value/" else ""}$weight=> ${to}"
+    override fun toString() = "$from ==${if (value != null) "$value/" else ""}$weight=> $to"
 }
 data class Path<V, E>(private val edges: List<Edge<V, E?>>) : List<Edge<V, E?>> by edges {
     fun getVertexes(): List<V> {
@@ -264,29 +223,55 @@ inline fun <T> bfsPath(start: T, end: (T) -> Boolean, step: (T) -> Iterable<T>):
     return null
 }
 
-inline fun <V, E> dijkstra(from: V, to: (V) -> Boolean, getOutgoing: (V)->Set<Edge<V, E?>>): Path<V, E>? {
-    val unvisited = mutableSetOf(from)
-    val visited = mutableSetOf<V>()
+data class VertexWithDistance<V>(val vertex: V, val dist: Int): Comparable<VertexWithDistance<V>> {
+    override fun compareTo(other: VertexWithDistance<V>) = dist.compareTo(other.dist)
+}
+
+inline fun <V, E> dijkstra(from: V, to: (V) -> Boolean, getOutgoing: (V)->Collection<Edge<V, E?>>): Path<V, E>? {
+    val unvisited = PriorityQueue<VertexWithDistance<V>>()
+    unvisited.add(VertexWithDistance(from, 0))
     val inc = mutableMapOf<V, Edge<V, E?>>()
     val dist = Object2IntOpenHashMap<V>()
-    dist[from] = 0
+    dist.put(from, 0)
     while (unvisited.isNotEmpty()) {
-        val current = lowest(unvisited, dist)!!
-        if (to(current) || current !in unvisited) {
-            return buildPath(from, current, inc)
-        }
-        val curDist = dist.getOrDefault(current as Any, -1)
-        if (curDist < 0) return null
-        unvisited.remove(current)
-        visited.add(current)
+        val (current, curDist) = unvisited.poll()
+        if (curDist != dist.getOrDefault(current as Any, -1)) continue
+        if (to(current)) return buildPath(from, current, inc)
         for (e in getOutgoing(current)) {
             val v = e.to
-            if (v in visited) continue
             val alt = curDist + e.weight
             if (alt < dist.getOrDefault(v as Any, Int.MAX_VALUE)) {
-                dist[v] = alt
+                dist.put(v, alt)
                 inc[v] = e
-                unvisited.add(v)
+                unvisited.add(VertexWithDistance(v, alt))
+            }
+        }
+    }
+    return null
+}
+
+inline fun <V, E> astar(from: V, h: (V) -> Int, to: (V) -> Boolean, getOutgoing: (V)->Collection<Edge<V, E?>>): Path<V, E>? {
+    val unvisited = PriorityQueue<VertexWithDistance<V>>()
+    unvisited.add(VertexWithDistance(from, h(from)))
+    val inc = mutableMapOf<V, Edge<V, E?>>()
+    val distG = Object2IntOpenHashMap<V>()
+    val distF = Object2IntOpenHashMap<V>()
+    distG[from] = 0
+    distF[from] = h(from)
+    while (unvisited.isNotEmpty()) {
+        val (current, curDistF) = unvisited.poll()
+        if (curDistF != distF.getOrDefault(current as Any, -1)) continue
+        if (to(current)) return buildPath(from, current, inc)
+        val curDist = distG.getInt(current)
+        for (e in getOutgoing(current)) {
+            val v = e.to
+            val alt = curDist + e.weight
+            if (alt < distG.getOrDefault(v as Any, Int.MAX_VALUE)) {
+                distG[v] = alt
+                val fDist = alt + h(v)
+                distF[v] = fDist
+                inc[v] = e
+                unvisited.add(VertexWithDistance(v, fDist))
             }
         }
     }

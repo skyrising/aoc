@@ -80,6 +80,7 @@ fun main(args: Array<String>) {
                     e.message
                 )
             )
+            e.printStackTrace()
         }
     }
     println("Done")
