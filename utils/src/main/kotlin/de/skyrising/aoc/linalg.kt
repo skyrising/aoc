@@ -9,12 +9,15 @@ value class Direction(val ordinal: Int) {
     val x inline get() = if (ordinal and 1 != 0) 2 - ordinal else 0
     val y inline get() = if (ordinal and 1 == 0) ordinal - 1 else 0
     val vec inline get() = Vec2i(x, y)
+    val vecL inline get() = Vec2l(x.toLong(), y.toLong())
 
     fun rotateCW() = Direction((ordinal + 1) and 3)
     fun rotateCCW() = Direction((ordinal + 3) and 3)
     operator fun unaryMinus() = Direction((ordinal + 2) and 3)
     operator fun inc() = rotateCW()
     operator fun dec() = rotateCCW()
+    operator fun times(distance: Int) = Vec2i(x * distance, y * distance)
+    operator fun times(distance: Long) = Vec2l(x * distance, y * distance)
 
     override fun toString() = "NESW"[ordinal].toString()
 
@@ -90,6 +93,68 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
         fun parse(input: String): Vec2i {
             val (x, y) = input.ints()
             return Vec2i(x, y)
+        }
+    }
+}
+
+data class Vec2l(val x: Long, val y: Long) {
+    override fun toString() = "[$x, $y]"
+    inline operator fun plus(other: Vec2l) = Vec2l(x + other.x, y + other.y)
+    inline operator fun plus(offset: Int) = Vec2l(x + offset, y + offset)
+    inline operator fun plus(direction: Direction) = Vec2l(x + direction.x, y + direction.y)
+    inline operator fun minus(other: Vec2l) = Vec2l(x - other.x, y - other.y)
+    inline operator fun minus(offset: Int) = Vec2l(x - offset, y - offset)
+    inline operator fun minus(direction: Direction) = Vec2l(x - direction.x, y - direction.y)
+    inline operator fun times(other: Vec2l) = Vec2l(x * other.x, y * other.y)
+    inline operator fun times(other: Int) = Vec2l(x * other, y * other)
+    inline operator fun div(other: Vec2l) = Vec2l(x / other.x, y / other.y)
+    inline operator fun div(other: Int) = Vec2l(x / other, y / other)
+    inline operator fun unaryMinus() = Vec2l(-x, -y)
+    operator fun get(i: Int) = when (i) {
+        0 -> x
+        1 -> y
+        else -> throw IndexOutOfBoundsException()
+    }
+    operator fun rem(other: Vec2l) = Vec2l(x % other.x, y % other.y)
+    operator fun rem(other: Int) = Vec2l(x % other, y % other)
+
+    infix fun dot(other: Vec2l) = x * other.x + y * other.y
+
+    fun manhattanDistance(v: Vec2l) = abs(x - v.x) + abs(y - v.y)
+
+    val north get() = Vec2l(x, y - 1)
+    val northEast get() = Vec2l(x + 1, y - 1)
+    val east get() = Vec2l(x + 1, y)
+    val southEast get() = Vec2l(x + 1, y + 1)
+    val south get() = Vec2l(x, y + 1)
+    val southWest get() = Vec2l(x - 1, y + 1)
+    val west get() = Vec2l(x - 1, y)
+    val northWest get() = Vec2l(x - 1, y - 1)
+
+    fun fourNeighbors() = arrayOf(north, east, south, west)
+    fun fiveNeighbors() = arrayOf(north, east, south, west, this)
+    fun eightNeighbors() = arrayOf(north, northEast, east, southEast, south, southWest, west, northWest)
+
+    companion object {
+        val ZERO = Vec2l(0, 0)
+        val N = Vec2l(0, -1)
+        val E = Vec2l(1, 0)
+        val S = Vec2l(0, 1)
+        val W = Vec2l(-1, 0)
+        val KNOWN = mapOf(
+            "U" to N,
+            "R" to E,
+            "D" to S,
+            "L" to W,
+            "N" to N,
+            "E" to E,
+            "S" to S,
+            "W" to W
+        )
+
+        fun parse(input: String): Vec2l {
+            val (x, y) = input.longs()
+            return Vec2l(x, y)
         }
     }
 }

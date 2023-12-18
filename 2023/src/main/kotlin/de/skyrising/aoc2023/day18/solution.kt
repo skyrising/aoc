@@ -24,7 +24,7 @@ fun register() {
         L 2 (#015232)
         U 2 (#7a21e3)
     """)
-    part1("") {
+    part1("Lavaduct Lagoon") {
         var pos = Vec2i.ZERO
         var area = 0
         var perimeter = 0
@@ -36,27 +36,20 @@ fun register() {
             area += pos.x * nextPos.y - pos.y * nextPos.x
             pos = nextPos
         }
-        area = area.absoluteValue / 2
-        area + perimeter / 2 + 1
+        (area.absoluteValue + perimeter) / 2 + 1
     }
     part2 {
-        var posX = 0L
-        var posY = 0L
+        var pos = Vec2l.ZERO
         var area = 0L
         var perimeter = 0L
         for (line in lines) {
-            val (_, _, colorS) = line.split(' ')
-            val colors = colorS.substring(2, 8).toInt(16)
-            val dist = colors shr 4
-            val dir = Direction((colors + 1) and 3)
+            val color = line.split(' ')[2].substring(2, 8).toInt(16)
+            val dist = color shr 4
             perimeter += dist
-            val nextPosX = posX + dir.x * dist
-            val nextPosY = posY + dir.y * dist
-            area += posX * nextPosY - posY * nextPosX
-            posX = nextPosX
-            posY = nextPosY
+            val nextPos = pos + Direction(color and 3) * dist.toLong()
+            area += pos.x * nextPos.y - pos.y * nextPos.x
+            pos = nextPos
         }
-        area = area.absoluteValue / 2
-        area + perimeter / 2 + 1
+        (area.absoluteValue + perimeter) / 2 + 1
     }
 }
