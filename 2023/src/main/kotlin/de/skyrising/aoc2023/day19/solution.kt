@@ -1,44 +1,48 @@
 package de.skyrising.aoc2023.day19
 
 import de.skyrising.aoc.*
-import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
-import it.unimi.dsi.fastutil.objects.Object2IntMap
 
 @Suppress("unused")
 class BenchmarkDay : BenchmarkBaseV1(2023, 19)
 
 enum class Operator {
-    LT, GT
-}
-data class Rule(val key: String?, val predicateOp: Operator, val predicateValue: Int, val next: String) {
-    fun matches(ratings: Object2IntMap<String>): Boolean {
-        if (key == null) return true
-        val value = ratings.getInt(key)
-        return when (predicateOp) {
-            Operator.LT -> value < predicateValue
-            Operator.GT -> value > predicateValue
-        }
+    LT, GT;
+    companion object {
+        inline operator fun get(c: Char) = entries[(c.code - '<'.code) / 2]
     }
-    fun split(ranges: Map<String, IntRange>): Triple<String, List<Map<String, IntRange>>, List<Map<String, IntRange>>> {
-        if (key == null) return Triple(next, listOf(ranges), emptyList())
-        val range = ranges[key] ?: return Triple(next, emptyList(), listOf(ranges))
-        val (matching, nonMatching) = when (predicateOp) {
-            Operator.LT -> (range.first until predicateValue) to (predicateValue .. range.last)
-            Operator.GT -> (predicateValue + 1 .. range.last) to (range.first .. predicateValue)
+}
+enum class Category {
+    X, M, A, S;
+
+    companion object {
+        val HASHED = arrayOf(X, A, S, M)
+        inline operator fun get(c: Char) = HASHED[(c.code xor (c.code shr 1)) and 3]
+    }
+}
+@JvmInline
+value class Categories<T>(private val value: Array<T>) {
+    val x get() = value[0]
+    val m get() = value[1]
+    val a get() = value[2]
+    val s get() = value[3]
+    operator fun get(category: Category) = value[category.ordinal]
+    fun copy(category: Category, value: T): Categories<T> {
+        val newValue = this.value.copyOf()
+        newValue[category.ordinal] = value
+        return Categories(newValue)
+    }
+    companion object {
+        inline fun <reified T> of(x: T, m: T, a: T, s: T) = Categories(arrayOf(x, m, a, s))
+    }
+}
+fun Categories<IntRange>.combinations() = x.count().toLong() * m.count() * a.count() * s.count()
+data class Rule(val key: Category?, val predicateOp: Operator, val predicateValue: Int, val next: String) {
+    fun matches(ratings: Categories<Int>): Boolean {
+        if (key == null) return true
+        return when (predicateOp) {
+            Operator.LT -> ratings[key] < predicateValue
+            Operator.GT -> ratings[key] > predicateValue
         }
-        val matchingRanges = mutableListOf<Map<String, IntRange>>()
-        val nonMatchingRanges = mutableListOf<Map<String, IntRange>>()
-        if (!matching.isEmpty()) {
-            val newRanges = ranges.toMutableMap()
-            newRanges[key] = matching
-            matchingRanges.add(newRanges)
-        }
-        if (!nonMatching.isEmpty()) {
-            val newRanges = ranges.toMutableMap()
-            newRanges[key] = nonMatching
-            nonMatchingRanges.add(newRanges)
-        }
-        return Triple(next, matchingRanges, nonMatchingRanges)
     }
 
     override fun toString(): String {
@@ -46,7 +50,66 @@ data class Rule(val key: String?, val predicateOp: Operator, val predicateValue:
         return "$key${"<>"[predicateOp.ordinal]}$predicateValue:$next"
     }
 }
-data class Workflow(val rules: List<Rule>)
+data class Workflow(val rules: List<Rule>) {
+    override fun toString() = rules.joinToString(", ", "Workflow{", "}")
+}
+
+fun parse(input: PuzzleInput, parseRatings: Boolean = true): Pair<Map<String, Workflow>, List<Categories<Int>>> {
+    val (workflowLines, ratingLines) = input.lines.splitOnEmpty(2)
+    val workflows = HashMap.newHashMap<String, Workflow>(workflowLines.size)
+    for (line in workflowLines) {
+        val brace = line.indexOf('{')
+        val name = line.substring(0, brace)
+        val rulesSubstr = line.substring(brace + 1, line.length - 1)
+        val rules = mutableListOf<Rule>()
+        rulesSubstr.splitToRanges(',') { from, to ->
+            rules.add(if (to != rulesSubstr.length) {
+                val key = Category[rulesSubstr[from]]
+                val op = Operator[rulesSubstr[from + 1]]
+                val colon = rulesSubstr.indexOf(':', from)
+                Rule(key, op, rulesSubstr.toInt(from + 2, colon), rulesSubstr.substring(colon + 1, to))
+            } else {
+                Rule(null, Operator.GT, 0, rulesSubstr.substring(from))
+            })
+        }
+        workflows[name] = Workflow(rules)
+    }
+    val ratings = if (parseRatings) ratingLines.map {
+        Categories(it.ints().toTypedArray())
+    } else emptyList()
+    return workflows to ratings
+}
+
+data class QueueEntry(val state: String, val ruleIndex: Int, val ranges: Categories<IntRange>)
+inline fun allAccepted(workflows: Map<String, Workflow>): MutableList<Categories<IntRange>> {
+    val unprocessed = ArrayDeque<QueueEntry>()
+    unprocessed.add(QueueEntry("in", 0, Categories.of(1..4000, 1..4000, 1..4000, 1..4000)))
+    val accepted = mutableListOf<Categories<IntRange>>()
+    while (unprocessed.isNotEmpty()) {
+        val (state, ruleIndex, ranges) = unprocessed.removeLast()
+        val workflow = workflows[state]!!
+        if (ruleIndex >= workflow.rules.size) continue
+        val rule = workflow.rules[ruleIndex]
+        val next = rule.next
+        val key = rule.key
+        if (key == null) {
+            if (next == "A") accepted.add(ranges)
+            else if (next != "R") unprocessed.add(QueueEntry(next, 0, ranges))
+            continue
+        }
+        val range = ranges[key]
+        val matching = if (rule.predicateOp == Operator.LT) range.first until rule.predicateValue else rule.predicateValue + 1..range.last
+        val nextRanges = if (!matching.isEmpty()) ranges.copy(key, matching) else null
+        if (nextRanges != null) {
+            if (next == "A") accepted.add(nextRanges)
+            else if (next != "R") unprocessed.add(QueueEntry(next, 0, nextRanges))
+        }
+        val nonMatching = if (rule.predicateOp == Operator.LT) rule.predicateValue..range.last else range.first..rule.predicateValue
+        val otherRanges = if (!nonMatching.isEmpty()) ranges.copy(key, nonMatching) else null
+        if (otherRanges != null) unprocessed.add(QueueEntry(state, ruleIndex + 1, otherRanges))
+    }
+    return accepted
+}
 
 @Suppress("unused")
 fun register() {
@@ -69,38 +132,6 @@ fun register() {
         {x=2461,m=1339,a=466,s=291}
         {x=2127,m=1623,a=2188,s=1013}
     """)
-    fun parse(input: PuzzleInput): Pair<Map<String, Workflow>, List<Object2IntMap<String>>> {
-        val (workflowLines, ratingLines) = input.lines.splitOnEmpty()
-        val workflows = mutableMapOf<String, Workflow>()
-        for (line in workflowLines) {
-            val (name, rules) = line.split('{')
-            val workflow = Workflow(rules.substringBefore('}').split(',').map { rule ->
-                val parts = rule.split(':')
-                if (parts.size == 1) {
-                    Rule(null, Operator.GT, 0, parts[0])
-                } else {
-                    val (pred, next) = parts
-                    val (_, key, opS, value) = Regex("(\\w+)([<>])(-?\\d+)").matchEntire(pred)!!.groups.map { it!!.value }
-                    val op = when (opS) {
-                        "<" -> Operator.LT
-                        ">" -> Operator.GT
-                        else -> throw IllegalArgumentException(opS)
-                    }
-                    Rule(key, op, value.toInt(), next)
-                }
-            })
-            workflows[name] = workflow
-        }
-        val ratings = ratingLines.map { line ->
-            val map = Object2IntLinkedOpenHashMap<String>()
-            for (part in line.substring(1, line.length - 1).split(',')) {
-                val (name, value) = part.split('=')
-                map[name] = value.toInt()
-            }
-            map
-        }
-        return workflows to ratings
-    }
     part1("Aplenty") {
         val (workflows, ratings) = parse(this)
         var result = 0
@@ -110,39 +141,14 @@ fun register() {
                 val workflow = workflows[state]!!
                 state = workflow.rules.first { it.matches(rating) }.next
             }
-            log("$rating, $state")
             if (state == "A") {
-                result += rating.getInt("x") + rating.getInt("m") + rating.getInt("a") + rating.getInt("s")
+                result += rating.x + rating.m + rating.a + rating.s
             }
         }
         result
     }
     part2 {
-        val (workflows, _) = parse(this)
-        val unprocessed = ArrayDeque<Triple<String, Int, Map<String, IntRange>>>()
-        unprocessed.add(Triple("in", 0, mapOf("x" to 1..4000, "m" to 1..4000, "a" to 1..4000, "s" to 1..4000)))
-        val accepted = mutableListOf<Map<String, IntRange>>()
-        while (unprocessed.isNotEmpty()) {
-            val (state, ruleIndex, ranges) = unprocessed.removeFirst()
-            val workflow = workflows[state]!!
-            if (ruleIndex >= workflow.rules.size) continue
-            val rule = workflow.rules[ruleIndex]
-            val (next, nextRanges, otherRanges) = rule.split(ranges)
-            //log("$state:$ruleIndex $rule, $nextRanges, $otherRanges")
-            for (r in nextRanges) {
-                if (next == "A") accepted.add(r)
-                else if (next != "R") unprocessed.add(Triple(next, 0, r))
-            }
-            for (r in otherRanges) unprocessed.add(Triple(state, ruleIndex + 1, r))
-        }
-        accepted.sumOf { r ->
-            val x = r["x"]!!
-            val m = r["m"]!!
-            val a = r["a"]!!
-            val s = r["s"]!!
-            val score = (x.last - x.first + 1L) * (m.last - m.first + 1) * (a.last - a.first + 1) * (s.last - s.first + 1)
-            //log("$r, $score")
-            score
-        }
+        val (workflows, _) = parse(this, false)
+        allAccepted(workflows).sumOf(Categories<IntRange>::combinations)
     }
 }

@@ -31,7 +31,7 @@ fun main(args: Array<String>) {
                 val allTimes = DoubleArray(WARMUP + MEASURE_ITERS) { a ->
                     measure(RUNS) { b ->
                         if (a == WARMUP + MEASURE_ITERS - 1 && b == RUNS - 1) input.benchmark = false
-                        puzzle.runPuzzle(input.copy()).also { result = it }
+                        puzzle.runPuzzle(input).also { result = it }
                     }
                 }
                 val times = allTimes.copyOfRange(WARMUP, allTimes.size)

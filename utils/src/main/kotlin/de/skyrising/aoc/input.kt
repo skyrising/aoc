@@ -14,8 +14,14 @@ var lastInputLB = MutableBox<Pair<ByteBuffer, List<ByteBuffer>>?>(null)
 var lastInputS = MutableBox<Pair<ByteBuffer, CharBuffer>?>(null)
 var lastInputLS = MutableBox<Pair<ByteBuffer, List<String>>?>(null)
 
+fun ByteBuffer.toLatin1String(): String {
+    if (hasArray()) return String(array(), arrayOffset() + position(), remaining(), StandardCharsets.ISO_8859_1)
+    val chars = ByteArray(remaining())
+    get(position(), chars, 0, chars.size)
+    return String(chars, StandardCharsets.ISO_8859_1)
+}
 fun calcInputS(input: ByteBuffer): CharBuffer = StandardCharsets.US_ASCII.decode(input.slice())
-fun calcInputLS(input: ByteBuffer) = lineList(input).map { StandardCharsets.US_ASCII.decode(it.slice()).toString() }
+fun calcInputLS(input: ByteBuffer) = lineList(input).map { it.toLatin1String() }
 
 interface PuzzleInput {
     var benchmark: Boolean
@@ -24,7 +30,7 @@ interface PuzzleInput {
     val byteLines: List<ByteBuffer>
     val string: String
     val chars: CharBuffer
-    val charGrid: CharGrid
+    val charGrid get() = CharGrid.parse(lines)
 
     fun log(value: Any) {
         if (benchmark) return
@@ -42,31 +48,25 @@ interface PuzzleInput {
             else -> println(value.toString())
         }
     }
-
-    fun copy(): PuzzleInput
 }
 
 class RealInput(override val input: ByteBuffer, override var benchmark: Boolean = false) : PuzzleInput {
     override val lines by lazy { getInput(input, lastInputLS, ::calcInputLS) }
     override val byteLines by lazy { getInput(input, lastInputLB, ::lineList) }
     override val chars by lazy { getInput(input, lastInputS, ::calcInputS) }
-    override val charGrid: CharGrid by lazy { CharGrid.parse(lines) }
     override val string by lazy { chars.toString() }
-    override fun copy() = RealInput(input.duplicate(), benchmark)
 }
 
 class TestInput(str: String) : PuzzleInput {
     override var benchmark: Boolean = false
-    override val string: String = str.trimIndent().trimEnd()
+    override val string = str.trimIndent().trimEnd()
     override val lines by lazy { string.lines() }
     override val byteLines by lazy { lines.map { ByteBuffer.wrap(it.toByteArray()) } }
     override val chars: CharBuffer by lazy { CharBuffer.wrap(string) }
-    override val charGrid: CharGrid by lazy { CharGrid.parse(lines) }
     override val input: ByteBuffer by lazy { ByteBuffer.wrap(string.toByteArray()) }
-    override fun copy() = TestInput(string)
 }
 
-inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer, T>?>, noinline fn: (ByteBuffer) -> T): T {
+inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer, T>?>, fn: (ByteBuffer) -> T): T {
     val value = lastInput.value
     if (value == null || value.first !== input) {
         val result = fn(input)
@@ -88,7 +88,7 @@ fun getInput(year: Int, day: Int): PuzzleInput = inputs.computeIfAbsent(year, In
 private fun getInput0(year: Int, day: Int): PuzzleInput {
     val cachePath = java.nio.file.Path.of("inputs", year.toString(), "$day.txt")
     if (cachePath.exists()) {
-        return RealInput(ByteBuffer.wrap(Files.readAllBytes(cachePath)).asReadOnlyBuffer())
+        return RealInput(ByteBuffer.wrap(Files.readAllBytes(cachePath)))
     }
     println("Downloading input for $year/$day")
     val connection = URL("https://adventofcode.com/${year}/day/$day/input").openConnection()
@@ -97,5 +97,5 @@ private fun getInput0(year: Int, day: Int): PuzzleInput {
     val bytes = connection.getInputStream().readBytes()
     Files.createDirectories(cachePath.parent)
     Files.write(cachePath, bytes)
-    return RealInput(ByteBuffer.wrap(bytes).asReadOnlyBuffer())
+    return RealInput(ByteBuffer.wrap(bytes))
 }

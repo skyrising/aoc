@@ -77,21 +77,33 @@ fun setBit(longs: LongArray, i: Int, value: Boolean) {
     }
 }
 
-inline fun splitToRanges(s: CharBuffer, delimiter: Char, consumer: CharBuffer.(from: Int, to: Int) -> Unit) {
-    val len = s.length
+inline fun <T: CharSequence> T.splitToRanges(delimiter: Char, consumer: T.(from: Int, to: Int) -> Unit) {
+    val len = length
     var offset = 0
     while (offset < len) {
-        val next = indexOfOrLength(s, delimiter, offset, len)
-        consumer(s, offset, next)
+        var next = indexOf(delimiter, offset)
+        if (next < 0) next = len
+        consumer(offset, next)
         if (next == len) return
         offset = next + 1
     }
 }
 
-fun indexOfOrLength(chars: CharBuffer, delimiter: Char, offset: Int, len: Int): Int {
-    val pos = chars.position()
+inline fun CharBuffer.splitToRanges(delimiter: Char, consumer: CharBuffer.(from: Int, to: Int) -> Unit) {
+    val len = length
+    var offset = 0
+    while (offset < len) {
+        val next = indexOfOrLength(delimiter, offset, len)
+        consumer(offset, next)
+        if (next == len) return
+        offset = next + 1
+    }
+}
+
+fun CharBuffer.indexOfOrLength(delimiter: Char, offset: Int, len: Int): Int {
+    val pos = position()
     for (i in pos + offset until pos + len) {
-        if (chars.get(i) == delimiter) return i - pos
+        if (get(i) == delimiter) return i - pos
     }
     return len
 }
@@ -421,20 +433,21 @@ inline fun <T> floodFill(origin: T, step: (T) -> Collection<T>): Set<T> {
     return result
 }
 
-fun <T> List<T>.splitOn(predicate: (T) -> Boolean): List<List<T>> {
-    val result = mutableListOf<List<T>>()
+fun <T> List<T>.splitOn(limit: Int = 0, predicate: (T) -> Boolean): List<List<T>> {
+    val result = ArrayList<List<T>>(limit)
     var start = 0
     for (i in indices) {
         if (predicate(this[i])) {
             result.add(subList(start, i))
             start = i + 1
+            if (limit > 0 && result.size == limit - 1) break
         }
     }
     result.add(subList(start, size))
     return result
 }
 
-fun List<String>.splitOnEmpty() = splitOn { it.isEmpty() }
+fun List<String>.splitOnEmpty(limit: Int = 0) = splitOn(limit) { it.isEmpty() }
 
 operator fun <E> List<E>.component6() = this[5]
 operator fun <E> List<E>.component7() = this[6]
@@ -536,3 +549,11 @@ fun <T> List<T>.pairs(): Set<Pair<T, T>> {
     }
     return pairs
 }
+
+inline fun String.split2(c: Char): Pair<String, String>? {
+    val i = indexOf(c)
+    return if (i < 0) null else substring(0, i) to substring(i + 1)
+}
+
+inline fun IntRange.count() = last - first + 1
+inline fun LongRange.count() = last - first + 1

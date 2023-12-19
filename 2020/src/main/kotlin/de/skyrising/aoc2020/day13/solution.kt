@@ -119,7 +119,7 @@ fun register() {
         var i = 0
         if (!chars.positionAfter('\n')) throw IllegalArgumentException("Invalid input")
         if (!chars.until('\n')) throw IllegalArgumentException("Invalid input")
-        splitToRanges(chars, ',') { from, to ->
+        chars.splitToRanges(',') { from, to ->
             val index = i++
             if (to == from + 1 && this[position() + from] == 'x') return@splitToRanges
             val bus = substring(from, to).toLong()
