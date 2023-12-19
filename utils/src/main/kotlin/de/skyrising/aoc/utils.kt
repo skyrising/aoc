@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.bytes.ByteIterable
 import it.unimi.dsi.fastutil.chars.Char2IntMap
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntArrayList
+import it.unimi.dsi.fastutil.ints.IntCollection
 import it.unimi.dsi.fastutil.ints.IntIterable
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.longs.LongArrayList
@@ -348,6 +349,23 @@ fun joinRanges(ranges: Collection<IntRange>) = ranges.sortedBy { it.first }.merg
 @JvmName("joinLongRanges")
 fun joinRanges(ranges: Collection<LongRange>) = ranges.sortedBy { it.first }.mergeTo(mutableSetOf()) {
         a, b -> if (b.first <= a.last + 1) a.first..kotlin.math.max(a.last, b.last) else null
+}
+
+fun IntRange.splitAt(points: IntCollection): List<IntRange> {
+    val start = first
+    val end = last
+    var last = start
+    val iter = points.intIterator()
+    val result = mutableListOf<IntRange>()
+    while (iter.hasNext()) {
+        val point = iter.nextInt()
+        if (point <= last) continue
+        if (point > end) break
+        result.add(last..<point)
+        last = point
+    }
+    if (last <= end) result.add(last..end)
+    return result
 }
 
 fun LongRange.splitAt(points: LongCollection): List<LongRange> {
