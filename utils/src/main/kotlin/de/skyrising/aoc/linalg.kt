@@ -159,6 +159,30 @@ data class Vec2l(val x: Long, val y: Long) {
     }
 }
 
+data class Vec2d(val x: Double, val y: Double) {
+    override fun toString() = "[$x, $y]"
+    inline operator fun plus(other: Vec2d) = Vec2d(x + other.x, y + other.y)
+    inline operator fun plus(offset: Double) = Vec2d(x + offset, y + offset)
+    inline operator fun minus(other: Vec2d) = Vec2d(x - other.x, y - other.y)
+    inline operator fun minus(offset: Double) = Vec2d(x - offset, y - offset)
+    inline operator fun times(other: Vec2d) = Vec2d(x * other.x, y * other.y)
+    inline operator fun times(other: Double) = Vec2d(x * other, y * other)
+    inline operator fun div(other: Vec2d) = Vec2d(x / other.x, y / other.y)
+    inline operator fun div(other: Double) = Vec2d(x / other, y / other)
+    inline operator fun unaryMinus() = Vec2d(-x, -y)
+    operator fun get(i: Int) = when (i) {
+        0 -> x
+        1 -> y
+        else -> throw IndexOutOfBoundsException()
+    }
+    operator fun rem(other: Vec2d) = Vec2d(x % other.x, y % other.y)
+    operator fun rem(other: Double) = Vec2d(x % other, y % other)
+
+    infix fun dot(other: Vec2d) = x * other.x + y * other.y
+
+    fun manhattanDistance(v: Vec2d) = abs(x - v.x) + abs(y - v.y)
+}
+
 fun min(a: Vec2i, b: Vec2i) = Vec2i(min(a.x, b.x), min(a.y, b.y))
 fun max(a: Vec2i, b: Vec2i) = Vec2i(max(a.x, b.x), max(a.y, b.y))
 

@@ -31,7 +31,9 @@ fun main(args: Array<String>) {
                 val allTimes = DoubleArray(WARMUP + MEASURE_ITERS) { a ->
                     measure(RUNS) { b ->
                         if (a == WARMUP + MEASURE_ITERS - 1 && b == RUNS - 1) input.benchmark = false
-                        puzzle.runPuzzle(input).also { result = it }
+                        input.use {
+                            puzzle.runPuzzle(input).also { result = it }
+                        }
                     }
                 }
                 val times = allTimes.copyOfRange(WARMUP, allTimes.size)
@@ -52,7 +54,7 @@ fun main(args: Array<String>) {
                 )
             } else {
                 val start = System.nanoTime()
-                val result = puzzle.runPuzzle(input)
+                val result = input.use { puzzle.runPuzzle(input) }
                 val time = (System.nanoTime() - start) / 1000.0
                 println(
                     String.format(

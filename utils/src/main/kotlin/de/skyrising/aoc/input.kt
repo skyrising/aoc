@@ -1,5 +1,8 @@
 package de.skyrising.aoc
 
+import de.skyrising.aoc.visualization.DummyVisualization
+import de.skyrising.aoc.visualization.RealVisualization
+import de.skyrising.aoc.visualization.Visualization
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
@@ -23,14 +26,17 @@ fun ByteBuffer.toLatin1String(): String {
 fun calcInputS(input: ByteBuffer): CharBuffer = StandardCharsets.US_ASCII.decode(input.slice())
 fun calcInputLS(input: ByteBuffer) = lineList(input).map { it.toLatin1String() }
 
-interface PuzzleInput {
+interface PuzzleInput : AutoCloseable {
     var benchmark: Boolean
+    val day: PuzzleDay
     val input: ByteBuffer
     val lines: List<String>
     val byteLines: List<ByteBuffer>
     val string: String
     val chars: CharBuffer
     val charGrid get() = CharGrid.parse(lines)
+    val viz: Visualization
+    val hasViz: Boolean
 
     fun log(value: Any) {
         if (benchmark) return
@@ -48,13 +54,31 @@ interface PuzzleInput {
             else -> println(value.toString())
         }
     }
+
+    fun visualization(block: Visualization.() -> Unit) {
+        if (benchmark) return
+        viz.block()
+    }
 }
 
-class RealInput(override val input: ByteBuffer, override var benchmark: Boolean = false) : PuzzleInput {
+class RealInput(override val day: PuzzleDay, override val input: ByteBuffer, override var benchmark: Boolean = false) : PuzzleInput {
     override val lines by lazy { getInput(input, lastInputLS, ::calcInputLS) }
     override val byteLines by lazy { getInput(input, lastInputLB, ::lineList) }
     override val chars by lazy { getInput(input, lastInputS, ::calcInputS) }
     override val string by lazy { chars.toString() }
+    private var lazyViz: Visualization? = null
+    override val viz: Visualization
+        get() {
+            if (benchmark) return DummyVisualization
+            if (lazyViz == null) lazyViz = RealVisualization(day)
+            return lazyViz!!
+        }
+    override val hasViz: Boolean get() = lazyViz != null
+
+    override fun close() {
+        if (hasViz) viz.close()
+        lazyViz = null
+    }
 }
 
 class TestInput(str: String) : PuzzleInput {
@@ -64,6 +88,10 @@ class TestInput(str: String) : PuzzleInput {
     override val byteLines by lazy { lines.map { ByteBuffer.wrap(it.toByteArray()) } }
     override val chars: CharBuffer by lazy { CharBuffer.wrap(string) }
     override val input: ByteBuffer by lazy { ByteBuffer.wrap(string.toByteArray()) }
+    override val day: PuzzleDay get() = throw UnsupportedOperationException()
+    override val viz: Visualization get() = throw UnsupportedOperationException()
+    override val hasViz: Boolean get() = false
+    override fun close() {}
 }
 
 inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer, T>?>, fn: (ByteBuffer) -> T): T {
@@ -88,7 +116,7 @@ fun getInput(year: Int, day: Int): PuzzleInput = inputs.computeIfAbsent(year, In
 private fun getInput0(year: Int, day: Int): PuzzleInput {
     val cachePath = java.nio.file.Path.of("inputs", year.toString(), "$day.txt")
     if (cachePath.exists()) {
-        return RealInput(ByteBuffer.wrap(Files.readAllBytes(cachePath)))
+        return RealInput(PuzzleDay(year, day), ByteBuffer.wrap(Files.readAllBytes(cachePath)))
     }
     println("Downloading input for $year/$day")
     val connection = URL("https://adventofcode.com/${year}/day/$day/input").openConnection()
@@ -97,5 +125,5 @@ private fun getInput0(year: Int, day: Int): PuzzleInput {
     val bytes = connection.getInputStream().readBytes()
     Files.createDirectories(cachePath.parent)
     Files.write(cachePath, bytes)
-    return RealInput(ByteBuffer.wrap(bytes))
+    return RealInput(PuzzleDay(year, day), ByteBuffer.wrap(bytes))
 }

@@ -10,7 +10,7 @@ abstract class BenchmarkBase(year: Int, day: Int) {
     init {
         registerFiltered(PuzzleFilter(sortedSetOf(PuzzleDay(year, day))))
     }
-    private val input = getInput(year, day)
+    private val input = getInput(year, day).also { it.benchmark = true }
     private val p1v1 = allPuzzles[year, day].find { it.part == 1 && it.index == 0 }!!
     private val p1v2 = allPuzzles[year, day].find { it.part == 1 && it.index == 1 }!!
     private val p2v1 = allPuzzles[year, day].find { it.part == 2 && it.index == 0 }!!
@@ -36,7 +36,7 @@ abstract class BenchmarkBaseV1(year: Int, day: Int) {
     init {
         registerFiltered(PuzzleFilter(sortedSetOf(PuzzleDay(year, day))))
     }
-    private val input = getInput(year, day)
+    private val input = getInput(year, day).also { it.benchmark = true }
     private val p1v1 = allPuzzles[year, day].find { it.part == 1 && it.index == 0 }!!
     private val p2v1 = allPuzzles[year, day].find { it.part == 2 && it.index == 0 }!!
 
