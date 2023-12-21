@@ -9,11 +9,9 @@ import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntCollection
 import it.unimi.dsi.fastutil.ints.IntIterable
 import it.unimi.dsi.fastutil.ints.IntList
-import it.unimi.dsi.fastutil.longs.LongArrayList
-import it.unimi.dsi.fastutil.longs.LongCollection
-import it.unimi.dsi.fastutil.longs.LongIterable
-import it.unimi.dsi.fastutil.longs.LongList
+import it.unimi.dsi.fastutil.longs.*
 import org.apache.commons.math3.util.ArithmeticUtils
+import org.apache.commons.math3.util.CombinatoricsUtils
 import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
@@ -490,11 +488,45 @@ inline fun <T> Iterable<T>.sumOfWithIndex(selector: (Int,T) -> Int): Int {
     return sum
 }
 
+inline fun Long.toIntExact() = Math.toIntExact(this)
+
 inline infix fun Int.gcd(other: Int) = ArithmeticUtils.gcd(this, other)
 inline infix fun Long.gcd(other: Long) = ArithmeticUtils.gcd(this, other)
 
 inline infix fun Int.lcm(other: Int) = ArithmeticUtils.lcm(this, other)
 inline infix fun Long.lcm(other: Long) = ArithmeticUtils.lcm(this, other)
+
+inline infix fun Int.choose(other: Int) = CombinatoricsUtils.binomialCoefficient(this, other)
+inline infix fun Long.choose(other: Long) = this.toIntExact() choose other.toIntExact()
+
+fun differenceCoefficients(terms: IntList): IntList {
+    var firsts: IntList = IntArrayList(terms)
+    for (start in 1..<terms.size) {
+        var allZero = true
+        var previous = firsts.getInt(start - 1)
+        for (i in start..<terms.size) {
+            val current = firsts.getInt(i)
+            firsts[i] = current - previous
+            previous = current
+            if (current != 0) allZero = false
+        }
+        if (allZero) {
+            firsts = firsts.subList(0, start)
+            break
+        }
+    }
+    return firsts
+}
+
+fun gregoryNewtonExtrapolation(diffCoeffs: IntList, n: Int): Long {
+    var sum = 0L
+    var binCoeff = 1L
+    for (k in 0..<diffCoeffs.size) {
+        sum += binCoeff * diffCoeffs.getInt(k)
+        binCoeff = binCoeff * (n - k) / (k + 1)
+    }
+    return sum
+}
 
 operator fun <T> Pair<T,T>.get(index: Int) = when(index) {
     0 -> first
@@ -504,7 +536,9 @@ operator fun <T> Pair<T,T>.get(index: Int) = when(index) {
 
 @JvmInline
 value class PackedIntPair(val longValue: Long) {
-    constructor(first: Int, second: Int) : this((first.toLong() shl 32) or (second.toLong() and 0xffffffffL))
+    constructor(first: Int, second: Int) : this(pack(first, second))
+    constructor(pair: Pair<Int, Int>) : this(pack(pair.first, pair.second))
+    constructor(vec: Vec2i) : this(pack(vec.x, vec.y))
     inline val first get() = unpackFirst(longValue)
     inline val second get() = unpackSecond(longValue)
 
@@ -516,9 +550,21 @@ value class PackedIntPair(val longValue: Long) {
 
     operator fun get(first: Boolean) = if (first) this.first else second
 
+    inline fun toPair() = Pair(first, second)
+    inline fun toVec2i() = Vec2i(first, second)
+
     companion object {
+        inline fun pack(first: Int, second: Int) = (first.toLong() shl 32) or (second.toLong() and 0xffffffffL)
+        inline fun pack(pair: Pair<Int, Int>) = pack(pair.first, pair.second)
+        inline fun pack(vec: Vec2i) = pack(vec.x, vec.y)
         inline fun unpackFirst(value: Long) = (value shr 32).toInt()
         inline fun unpackSecond(value: Long) = value.toInt()
+    }
+
+    object HASH_STRATEGY : LongHash.Strategy {
+        override fun equals(a: Long, b: Long) = a == b
+
+        override fun hashCode(e: Long) = (e xor (e ushr 16)).toInt()
     }
 }
 

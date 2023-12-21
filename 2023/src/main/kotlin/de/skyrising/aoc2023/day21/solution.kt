@@ -1,13 +1,33 @@
 package de.skyrising.aoc2023.day21
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
-import it.unimi.dsi.fastutil.ints.IntArrayList
+import de.skyrising.aoc.*
+import it.unimi.dsi.fastutil.ints.IntList
+import it.unimi.dsi.fastutil.longs.LongLinkedOpenCustomHashSet
+import it.unimi.dsi.fastutil.longs.LongSets
 
 @Suppress("unused")
 class BenchmarkDay : BenchmarkBaseV1(2023, 21)
+
+private inline fun CharGrid.goOutwards(steps: Int, cb: (Int,Int)->Unit = { _, _ -> }): Int {
+    var front = LongSets.singleton(PackedIntPair.pack(where { it == 'S' }.single()))
+    val count = intArrayOf(1, 0)
+    val seen = Array(2) { LongSets.emptySet() }
+    cb(0, 1)
+    for (i in 1..steps) {
+        val j = i and 1
+        seen[j] = front
+        val newFront = LongLinkedOpenCustomHashSet(front.size + 50, PackedIntPair.HASH_STRATEGY)
+        val iter = front.longIterator()
+        while (iter.hasNext()) for (n in PackedIntPair(iter.nextLong()).toVec2i().fourNeighbors()) {
+            val l = PackedIntPair.pack(n)
+            if (l !in seen[j xor 1] && this[n.x.mod(width), n.y.mod(height)] != '#') newFront.add(l)
+        }
+        front = newFront
+        count[j] += front.size
+        cb(i, count[j])
+    }
+    return count[steps and 1]
+}
 
 @Suppress("unused")
 fun register() {
@@ -25,30 +45,17 @@ fun register() {
         ...........
     """)
     part1("Step Counter") {
-        val g = charGrid
-        var set = g.where { it == 'S' }.toSet()
-        repeat(64) {
-            set = set.flatMapTo(mutableSetOf()) { it.fourNeighbors().filter { g[it] != '#' } }.toSet()
-        }
-        set.size
+        charGrid.goOutwards(64)
     }
     part2 {
         val g = charGrid
-        val start = g.where { it == 'S' }.first()
         val steps = 26501365
-        val rem = steps % g.width
-        var reachable = setOf(start)
-        val values = IntArrayList()
-        repeat(g.width * 2 + rem) {
-            reachable = reachable.flatMapTo(mutableSetOf()) { it.fourNeighbors().filter { g[it.x.mod(g.width), it.y.mod(g.height)] != '#' } }
-            if ((it + 1) % g.width == rem) {
-                values.add(reachable.size)
-            }
+        val size = g.width
+        val rem = steps % size
+        val values = IntArray(3)
+        g.goOutwards(size * 2 + rem) { i, v ->
+            if (i % size == rem) values[i / size] = v
         }
-        val d1 = values.getInt(1) - values.getInt(0)
-        val d2 = values.getInt(2) - values.getInt(1)
-        val d12 = d2 - d1
-        fun f(n: Long) = values.getInt(0) + n * d1 + n * (n - 1) / 2 * d12
-        f((steps / g.width).toLong())
+        gregoryNewtonExtrapolation(differenceCoefficients(IntList.of(*values)), steps / size)
     }
 }
