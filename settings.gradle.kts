@@ -2,6 +2,9 @@ import java.time.LocalDate
 
 rootProject.name = "aoc"
 
+include("aoc-ksp")
+project(":aoc-ksp").projectDir = file("ksp")
+
 include("aoc-utils")
 project(":aoc-utils").projectDir = file("utils")
 
