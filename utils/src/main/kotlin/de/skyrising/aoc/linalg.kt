@@ -353,6 +353,12 @@ data class BoundingBox3i(val min: Vec3i, val max: Vec3i): HasBoundingBox3i {
 
     fun expand(amount: Int) = BoundingBox3i(min - Vec3i(amount, amount, amount), max + Vec3i(amount, amount, amount))
     operator fun contains(point: Vec3i) = point.x in min.x..max.x && point.y in min.y..max.y && point.z in min.z..max.z
+    fun intersects(other: BoundingBox3i): Boolean {
+        if (min.x > other.max.x || max.x < other.min.x) return false
+        if (min.y > other.max.y || max.y < other.min.y) return false
+        if (min.z > other.max.z || max.z < other.min.z) return false
+        return true
+    }
 }
 
 operator fun Int.times(other: Vec2i) = other * this
