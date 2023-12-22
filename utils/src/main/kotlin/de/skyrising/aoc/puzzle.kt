@@ -1,5 +1,10 @@
 package de.skyrising.aoc
 
+import java.lang.invoke.LambdaMetafactory
+import java.lang.invoke.MethodHandles
+import java.lang.invoke.MethodType.methodType
+import java.lang.reflect.AccessFlag
+import java.lang.reflect.Method
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -17,6 +22,8 @@ data class PuzzleDay(val year: Int, val day: Int) : Comparable<PuzzleDay> {
 
     operator fun plus(days: Int) = PuzzleDay(year, day + days)
 }
+
+annotation class PuzzleName(val name: String, val part: Int = 0)
 
 interface Puzzle<T> : Comparable<Puzzle<T>> {
     val name: String
@@ -79,12 +86,45 @@ inline fun <T> puzzle(name: String, part: Int = 0, noinline run: PuzzleInput.() 
 inline fun <T> part1(name: String, noinline run: PuzzleInput.() -> T) = puzzle(name, 1, run)
 inline fun <T> part2(name: String = "Part Two", noinline run: PuzzleInput.() -> T) = puzzle(name, 2, run)
 
+private inline fun <reified T> convertMethod(lookup: MethodHandles.Lookup, method: Method): T {
+    val itf = T::class.java
+    val target = itf.methods.find { AccessFlag.ABSTRACT in it.accessFlags() } ?: error("No abstract methods in interface")
+    val mh = lookup.unreflect(method)
+    val targetType = lookup.unreflect(target).type().dropParameterTypes(0, 1)
+    return LambdaMetafactory.metafactory(
+        lookup,
+        target.name,
+        methodType(itf),
+        targetType,
+        mh,
+        mh.type()
+    ).target.invoke() as T
+}
+
 fun registerDay(day: PuzzleDay) {
     lastPart = 0
     currentDay = day
     try {
         val cls = Class.forName("de.skyrising.aoc${day.year}.day${day.day}.SolutionKt")
-        cls.getMethod("register").invoke(null)
+        val lookup = MethodHandles.lookup()
+        for (method in cls.methods) {
+            if (AccessFlag.STATIC !in method.accessFlags()) continue
+            if (method.name == "register" && method.parameterCount == 0) {
+                method.invoke(null)
+                continue
+            }
+            if (method.parameterCount == 1 && method.parameterTypes[0] == PuzzleInput::class.java) {
+                var part = 0
+                if (method.name.startsWith("part")) part = method.name[4].digitToInt()
+                var name = ""
+                method.getAnnotation(PuzzleName::class.java)?.let {
+                    if (it.part != 0) part = it.part
+                    name = it.name
+                }
+                if (name.isEmpty() && part == 2) name = "Part Two"
+                puzzle(name, part, convertMethod<Function1<PuzzleInput, Any?>>(lookup, method))
+            }
+        }
     } catch (ignored: ClassNotFoundException) {}
 }
 
