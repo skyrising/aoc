@@ -281,6 +281,7 @@ data class Vec3i(val x: Int, val y: Int, val z: Int) : HasBoundingBox3i {
     }
 
     operator fun plus(v: Vec3i) = Vec3i(x + v.x, y + v.y, z + v.z)
+    operator fun plus(offset: Int) = Vec3i(x + offset, y + offset, z + offset)
     operator fun minus(v: Vec3i) = Vec3i(x - v.x, y - v.y, z - v.z)
     operator fun times(v: Vec3i) = Vec3i(x * v.x, y * v.y, z * v.z)
     operator fun times(v: Int) = Vec3i(x * v, y * v, z * v)
@@ -344,7 +345,7 @@ data class BoundingBox3i(val min: Vec3i, val max: Vec3i): HasBoundingBox3i {
     }
 
     override val boundingBox get() = this
-    val size get() = max - min
+    val size get() = max - min + 1
 
     fun expand(other: HasBoundingBox3i): BoundingBox3i {
         val box = other.boundingBox
@@ -363,3 +364,20 @@ data class BoundingBox3i(val min: Vec3i, val max: Vec3i): HasBoundingBox3i {
 
 operator fun Int.times(other: Vec2i) = other * this
 operator fun Int.times(other: Vec3i) = other * this
+
+data class Cube(var x: Int, var y: Int, var z: Int, var dx: Int, var dy: Int, var dz: Int) : HasBoundingBox3i {
+    fun intersects(other: Cube): Boolean {
+        if (x >= other.x + other.dx || x + dx <= other.x) return false
+        if (y >= other.y + other.dy || y + dy <= other.y) return false
+        if (z >= other.z + other.dz || z + dz <= other.z) return false
+        return true
+    }
+
+    constructor(bbox: BoundingBox3i) : this(bbox.min.x, bbox.min.y, bbox.min.z, bbox.size.x, bbox.size.y, bbox.size.z)
+    val maxZ inline get() = z + dz - 1
+    val maxY inline get() = y + dy - 1
+    val maxX inline get() = x + dx - 1
+    override val boundingBox get() = BoundingBox3i(Vec3i(x, y, z), Vec3i(maxX, maxY, maxZ))
+
+    override fun toString() = "Cube($x,$y,$z~$maxX,$maxY,$maxZ)"
+}

@@ -17,23 +17,29 @@ val test = TestInput("""
 
 private fun parse(input: PuzzleInput) = input.lines.map {
     val (x1,y1,z1, x2, y2, z2) = it.ints()
-    listOf(Vec3i(x1, y1, z1), Vec3i(x2, y2, z2)).boundingBox()
+    Cube(listOf(Vec3i(x1, y1, z1), Vec3i(x2, y2, z2)).boundingBox())
 }
 
-private fun letFall(cubes: List<BoundingBox3i>, sorted: Boolean = false): Pair<List<BoundingBox3i>, Int> {
-    val newCubes = mutableListOf<BoundingBox3i>()
+private fun letFall(cubes: List<Cube>, shortCircuit: Boolean = false): Pair<List<Cube>, Int> {
+    val newCubes = ArrayList<Cube>(cubes.size)
     var count = 0
-    val down = Vec3i(0, 0, -1)
-    for (cube in if (sorted) cubes else cubes.sortedBy { it.min.z }) {
-        var cube1 = cube
-        while (true) {
-            if (cube1.min.z == 1) break
-            val fallenCube = BoundingBox3i(cube1.min + down, cube1.max + down)
-            if (newCubes.any { it.intersects(fallenCube)} ) break
-            cube1 = fallenCube
+    var maxZ = 0
+    for (oldCube in cubes.sortedBy { it.z }) {
+        val cube = oldCube.copy()
+        cube.z = minOf(maxZ + 1, cube.z)
+        while (cube.z > 1) {
+            cube.z--
+            if (newCubes.any { it.maxZ >= cube.z && it.maxX >= cube.x && it.x <= cube.maxX && it.intersects(cube)} ) {
+                cube.z++
+                break
+            }
         }
-        if (cube1 !== cube) count++
-        newCubes.add(cube1)
+        if (cube.z < oldCube.z) {
+            count++
+            if (shortCircuit) return newCubes to count
+        }
+        newCubes.add(cube)
+        maxZ = maxOf(cube.maxZ, maxZ)
     }
     return newCubes to count
 }
@@ -42,13 +48,13 @@ private fun letFall(cubes: List<BoundingBox3i>, sorted: Boolean = false): Pair<L
 fun PuzzleInput.part1(): Any {
     val (cubes, _) = letFall(parse(this))
     return cubes.count {
-        letFall(cubes - it, true).second == 0
+        letFall(cubes - it, shortCircuit = true).second == 0
     }
 }
 
 fun PuzzleInput.part2(): Any {
     val (cubes, _) = letFall(parse(this))
     return cubes.sumOf {
-        letFall(cubes - it, true).second
+        letFall(cubes - it).second
     }
 }
