@@ -11,9 +11,6 @@ import java.awt.RenderingHints
 import java.awt.geom.Rectangle2D
 import kotlin.math.ceil
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2023, 20)
-
 enum class Pulse {
     HIGH, LOW, NONE
 }
@@ -139,153 +136,155 @@ fun parse(input: PuzzleInput): State {
     return State(nodes)
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        broadcaster -> a, b, c
-        %a -> b
-        %b -> c
-        %c -> inv
-        &inv -> a
-    """)
-    val test2 = TestInput("""
-        broadcaster -> a
-        %a -> inv, con
-        &inv -> b
-        %b -> con
-        &con -> output
-    """)
-    part1("Pulse Propagation") {
-        val state = parse(this)
-        var low = 0L
-        var high = 0L
-        repeat(1000) {
-            state.pressButton { _, pulse, _ ->
-                if (pulse == Pulse.HIGH) high++
-                else if (pulse == Pulse.LOW) low++
-            }
-        }
-        low * high
-    }
-    part2 {
-        val state = parse(this)
-        val rxInputNode = state.nodes.entries.single {
-            "rx" in it.value.outputs
-        }.value as Conjunction
-        val rxInputs = rxInputNode.inputs
-        var i = 0L
-        val lastSeen = Object2LongOpenHashMap<String>()
-        while(true) {
-            i++
-            state.pressButton { _, pulse, to ->
-                if (pulse == Pulse.LOW && to in rxInputs && to !in lastSeen) {
-                    lastSeen[to] = i
-                    if (lastSeen.size == rxInputs.size) {
-                        return@part2 lastSeen.values.reduce(Long::lcm)
-                    }
-                }
-            }
+val test = TestInput("""
+    broadcaster -> a, b, c
+    %a -> b
+    %b -> c
+    %c -> inv
+    &inv -> a
+""")
+
+val test2 = TestInput("""
+    broadcaster -> a
+    %a -> inv, con
+    &inv -> b
+    %b -> con
+    &con -> output
+""")
+
+@PuzzleName("Pulse Propagation")
+fun PuzzleInput.part1(): Any {
+    val state = parse(this)
+    var low = 0L
+    var high = 0L
+    repeat(1000) {
+        state.pressButton { _, pulse, _ ->
+            if (pulse == Pulse.HIGH) high++
+            else if (pulse == Pulse.LOW) low++
         }
     }
-    part2 {
-        if (benchmark) return@part2 -1L
-        val state = parse(this)
-        val svg = renderGraphToSVG(state.dot())
-        visualization {
-            //video = true
-            size = Vec2i(ceil(svg.width * 1.5).toInt(), ceil(svg.height * 1.5).toInt())
-        }
-        val g = viz.g
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-        g.scale(1.5, 1.5)
-        val edges = mutableMapOf<Pair<String, String>, SVGGroup>()
-        val nodes = mutableMapOf<String, SVGGroup>()
-        svg.forEach {
-            if (it is SVGGroup) {
-                if (it.id.startsWith("edge")) {
-                    val (from, to) = it.title!!.split("->")
-                    edges[from to to] = it
-                } else if (it.id.startsWith("node")){
-                    nodes[it.title!!] = it
+    return low * high
+}
+
+fun PuzzleInput.part2(): Any {
+    val state = parse(this)
+    val rxInputNode = state.nodes.entries.single {
+        "rx" in it.value.outputs
+    }.value as Conjunction
+    val rxInputs = rxInputNode.inputs
+    var i = 0L
+    val lastSeen = Object2LongOpenHashMap<String>()
+    while(true) {
+        i++
+        state.pressButton { _, pulse, to ->
+            if (pulse == Pulse.LOW && to in rxInputs && to !in lastSeen) {
+                lastSeen[to] = i
+                if (lastSeen.size == rxInputs.size) {
+                    return@part2 lastSeen.values.reduce(Long::lcm)
                 }
             }
         }
-        val rxInputNode = state.nodes.entries.single {
-            "rx" in it.value.outputs
-        }
-        val rxInputs = (rxInputNode.value as Conjunction).inputs
-        var i = 0L
-        val lastSeen = Object2LongOpenHashMap<String>()
-        fun color(g: SVGGroup, color: Color) {
-            g.forEach {
-                if (it is SVGPath) {
-                    if (it.stroke != null) it.stroke = color
-                    if (it.fill != null) it.fill = color
-                }
+    }
+}
+
+fun PuzzleInput.part2viz(): Any {
+    if (benchmark) return -1L
+    val state = parse(this)
+    val svg = renderGraphToSVG(state.dot())
+    visualization {
+        //video = true
+        size = Vec2i(ceil(svg.width * 1.5).toInt(), ceil(svg.height * 1.5).toInt())
+    }
+    val g = viz.g
+    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+    g.scale(1.5, 1.5)
+    val edges = mutableMapOf<Pair<String, String>, SVGGroup>()
+    val nodes = mutableMapOf<String, SVGGroup>()
+    svg.forEach {
+        if (it is SVGGroup) {
+            if (it.id.startsWith("edge")) {
+                val (from, to) = it.title!!.split("->")
+                edges[from to to] = it
+            } else if (it.id.startsWith("node")){
+                nodes[it.title!!] = it
             }
         }
-        fun fillColor(g: SVGGroup, color: Color) {
-            g.forEach {
-                if (it is SVGPath) it.fill = color
+    }
+    val rxInputNode = state.nodes.entries.single {
+        "rx" in it.value.outputs
+    }
+    val rxInputs = (rxInputNode.value as Conjunction).inputs
+    var i = 0L
+    val lastSeen = Object2LongOpenHashMap<String>()
+    fun color(g: SVGGroup, color: Color) {
+        g.forEach {
+            if (it is SVGPath) {
+                if (it.stroke != null) it.stroke = color
+                if (it.fill != null) it.fill = color
             }
         }
-        fun draw() {
-            svg.draw(g)
-            g.font = g.font.deriveFont(20f)
-            g.color = Color.BLACK
-            val w = g.fontMetrics.stringWidth(i.toString())
-            val counterPos = Vec2d(svg.width - w - 10.0, 30.0)
-            g.drawString(i.toString(), counterPos.x.toFloat(), counterPos.y.toFloat())
+    }
+    fun fillColor(g: SVGGroup, color: Color) {
+        g.forEach {
+            if (it is SVGPath) it.fill = color
         }
-        fun textBox(textPos: Vec2d, s: String, size: Double, fill: Color?, stroke: Color?, color: Color = Color.BLACK, pad: Double = size / 4): Pair<SVGPath, SVGText> {
-            val width = g.getFontMetrics(g.font.deriveFont(size.toFloat())).stringWidth(s) + pad
-            val height = size + pad
-            val box = SVGPath(Color(0xfec686), Color(0xdc6666), Rectangle2D.Double(textPos.x - width / 2, textPos.y - height + pad, width, height))
-            val text = SVGText(textPos.x, textPos.y, s, Color.BLACK, SVGText.Anchor.MIDDLE, size)
-            return box to text
-        }
-        while(true) {
-            i++
-            for (edge in edges.values) color(edge, Color.BLACK)
-            state.pressButton { from, pulse, to ->
-                val edge = edges[from to to]
-                if (edge != null) color(edge, if (pulse == Pulse.HIGH) Color.RED else Color.BLUE)
-                val node = state.nodes[to] ?: Untyped
-                when (node) {
-                    is FlipFlop -> fillColor(nodes[to]!!, if (node.on) Color(0x7ed7c1) else Color(0x3eb7a1))
-                    is Conjunction -> fillColor(nodes[to]!!, if (node.allHigh) Color(0xdc8686) else Color(0xfec686))
-                    else -> {}
+    }
+    fun draw() {
+        svg.draw(g)
+        g.font = g.font.deriveFont(20f)
+        g.color = Color.BLACK
+        val w = g.fontMetrics.stringWidth(i.toString())
+        val counterPos = Vec2d(svg.width - w - 10.0, 30.0)
+        g.drawString(i.toString(), counterPos.x.toFloat(), counterPos.y.toFloat())
+    }
+    fun textBox(textPos: Vec2d, s: String, size: Double, fill: Color?, stroke: Color?, color: Color = Color.BLACK, pad: Double = size / 4): Pair<SVGPath, SVGText> {
+        val width = g.getFontMetrics(g.font.deriveFont(size.toFloat())).stringWidth(s) + pad
+        val height = size + pad
+        val box = SVGPath(Color(0xfec686), Color(0xdc6666), Rectangle2D.Double(textPos.x - width / 2, textPos.y - height + pad, width, height))
+        val text = SVGText(textPos.x, textPos.y, s, Color.BLACK, SVGText.Anchor.MIDDLE, size)
+        return box to text
+    }
+    while(true) {
+        i++
+        for (edge in edges.values) color(edge, Color.BLACK)
+        state.pressButton { from, pulse, to ->
+            val edge = edges[from to to]
+            if (edge != null) color(edge, if (pulse == Pulse.HIGH) Color.RED else Color.BLUE)
+            val node = state.nodes[to] ?: Untyped
+            when (node) {
+                is FlipFlop -> fillColor(nodes[to]!!, if (node.on) Color(0x7ed7c1) else Color(0x3eb7a1))
+                is Conjunction -> fillColor(nodes[to]!!, if (node.allHigh) Color(0xdc8686) else Color(0xfec686))
+                else -> {}
+            }
+            if (pulse == Pulse.LOW && to in rxInputs && to !in lastSeen) {
+                lastSeen[to] = i
+                val posA = (nodes[to]!!.children.first() as SVGPath).path.bounds2D.run { Vec2d(x + width / 2, y + height / 2) }
+                val posB = (nodes[rxInputNode.key]!!.children.first() as SVGPath).path.bounds2D.run { Vec2d(x + width / 2, y + height / 2) }
+                val t = 0.3
+                val textPos = posA * (1 - t) + posB * t + Vec2d(0.0, 25.0)
+                val (box, text) = textBox(textPos, i.toString(), 20.0, Color(0xfec686), Color(0xdc6666))
+                (svg.children.first() as SVGGroup).children.addAll(listOf(box, text))
+                draw()
+                repeat(60) {
+                    viz.present()
                 }
-                if (pulse == Pulse.LOW && to in rxInputs && to !in lastSeen) {
-                    lastSeen[to] = i
-                    val posA = (nodes[to]!!.children.first() as SVGPath).path.bounds2D.run { Vec2d(x + width / 2, y + height / 2) }
-                    val posB = (nodes[rxInputNode.key]!!.children.first() as SVGPath).path.bounds2D.run { Vec2d(x + width / 2, y + height / 2) }
-                    val t = 0.3
-                    val textPos = posA * (1 - t) + posB * t + Vec2d(0.0, 25.0)
-                    val (box, text) = textBox(textPos, i.toString(), 20.0, Color(0xfec686), Color(0xdc6666))
-                    (svg.children.first() as SVGGroup).children.addAll(listOf(box, text))
+                box.stroke = null
+                if (lastSeen.size == rxInputs.size) {
+                    val result = lastSeen.values.reduce(Long::lcm)
+                    val bigBox = textBox(Vec2d(svg.width / 2.0, -svg.height / 2.0), result.toString(), 70.0, Color(0xfec686), Color(0xdc6666))
+                    (svg.children.first() as SVGGroup).children.addAll(bigBox.toList())
                     draw()
-                    repeat(60) {
+                    repeat(120) {
                         viz.present()
                     }
-                    box.stroke = null
-                    if (lastSeen.size == rxInputs.size) {
-                        val result = lastSeen.values.reduce(Long::lcm)
-                        val bigBox = textBox(Vec2d(svg.width / 2.0, -svg.height / 2.0), result.toString(), 70.0, Color(0xfec686), Color(0xdc6666))
-                        (svg.children.first() as SVGGroup).children.addAll(bigBox.toList())
-                        draw()
-                        repeat(120) {
-                            viz.present()
-                        }
-                        return@part2 result
-                    }
+                    return result
                 }
             }
-            if (i >= 3650) {
-                draw()
-                viz.present()
-            }
+        }
+        if (i >= 3650) {
+            draw()
+            viz.present()
         }
     }
 }

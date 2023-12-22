@@ -2,9 +2,6 @@ package de.skyrising.aoc2023.day22
 
 import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2023, 22)
-
 val test = TestInput("""
     1,0,1~1,2,1
     0,0,2~2,0,2

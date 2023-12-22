@@ -3,9 +3,6 @@ package de.skyrising.aoc2022.day23
 import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 23)
-
 private fun parseInput(input: PuzzleInput): MutableSet<Vec2i> {
     val width = input.lines.maxOf { it.length }
     val height = input.lines.size
@@ -56,34 +53,35 @@ private fun round(elves: MutableSet<Vec2i>, roundCount: Int): Boolean {
     return moved > 0
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        ....#..
-        ..###.#
-        #...#.#
-        .#...##
-        #.###..
-        ##.#.##
-        .#..#..
-    """)
-    val test2 = TestInput("""
-        .....
-        ..##.
-        ..#..
-        .....
-        ..##.
-        ..... 
-    """)
-    part1("Unstable Diffusion") {
-        val elves = parseInput(this)
-        repeat(10) {
-            round(elves, it)
-        }
-        elves.boundingBox().area - elves.size
+val test = TestInput("""
+    ....#..
+    ..###.#
+    #...#.#
+    .#...##
+    #.###..
+    ##.#.##
+    .#..#..
+""")
+
+val test2 = TestInput("""
+    .....
+    ..##.
+    ..#..
+    .....
+    ..##.
+    ..... 
+""")
+
+@PuzzleName("Unstable Diffusion")
+fun PuzzleInput.part1(): Any {
+    val elves = parseInput(this)
+    repeat(10) {
+        round(elves, it)
     }
-    part2 {
-        val elves = parseInput(this)
-        1 + countWhile { round(elves, it) }
-    }
+    return elves.boundingBox().area - elves.size
+}
+
+fun PuzzleInput.part2(): Any {
+    val elves = parseInput(this)
+    return 1 + countWhile { round(elves, it) }
 }

@@ -3,9 +3,6 @@ package de.skyrising.aoc2020.day21
 import de.skyrising.aoc.*
 import java.util.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2020, 21)
-
 private fun solve(input: PuzzleInput): Pair<List<String>, Map<String, String>> {
     val allIngredients = mutableListOf<String>()
     val map = mutableMapOf<String, MutableSet<String>>()
@@ -36,21 +33,21 @@ private fun solve(input: PuzzleInput): Pair<List<String>, Map<String, String>> {
     return Pair(allIngredients, found)
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
-        trh fvjkl sbzzf mxmxvkd (contains dairy)
-        sqjhc fvjkl (contains soy)
-        sqjhc mxmxvkd sbzzf (contains fish)
-    """)
-    part1("Allergen Assessment") {
-        val (allIngredients, found) = solve(this)
-        allIngredients.count { it !in found.values }
-    }
-    part2 {
-        val (_, found) = solve(this)
-        val sorted = TreeMap(found)
-        sorted.values.joinToString(",") { s -> s }
-    }
+val test = TestInput("""
+    mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
+    trh fvjkl sbzzf mxmxvkd (contains dairy)
+    sqjhc fvjkl (contains soy)
+    sqjhc mxmxvkd sbzzf (contains fish)
+""")
+
+@PuzzleName("Allergen Assessment")
+fun PuzzleInput.part1(): Any {
+    val (allIngredients, found) = solve(this)
+    return allIngredients.count { it !in found.values }
+}
+
+fun PuzzleInput.part2(): Any {
+    val (_, found) = solve(this)
+    val sorted = TreeMap(found)
+    return sorted.values.joinToString(",") { s -> s }
 }

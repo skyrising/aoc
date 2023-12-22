@@ -1,25 +1,18 @@
 package de.skyrising.aoc2015.day1
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2015, 1)
+@PuzzleName("Not Quite Lisp")
+fun PuzzleInput.part1() = chars.sumOf { c -> if (c == '(') 1.toInt() else -1 }
 
-@Suppress("unused")
-fun register() {
-    part1("Not Quite Lisp") {
-        chars.sumOf { c -> if (c == '(') 1.toInt() else -1 }
-    }
-    part2 {
-        var floor = 0
-        for (i in chars.indices) {
-            when (chars[i]) {
-                '(' -> floor++
-                ')' -> floor--
-            }
-            if (floor == -1) return@part2 i + 1
+fun PuzzleInput.part2(): Any {
+    var floor = 0
+    for (i in chars.indices) {
+        when (chars[i]) {
+            '(' -> floor++
+            ')' -> floor--
         }
+        if (floor == -1) return i + 1
     }
+    return Unit
 }

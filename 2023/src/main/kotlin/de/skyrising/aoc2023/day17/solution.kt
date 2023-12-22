@@ -3,9 +3,6 @@ package de.skyrising.aoc2023.day17
 import de.skyrising.aoc.*
 import kotlin.math.absoluteValue
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2023, 17)
-
 data class Node(val posX: Int, val posY: Int, val dir: Direction, val dirCount: Int)
 
 private inline fun IntGrid.getOutgoing(node: Node): Collection<Edge<Node, Unit?>> {
@@ -74,27 +71,22 @@ private inline fun PuzzleInput.run(out: IntGrid.(Node) -> Collection<Edge<Node, 
     return path.sumOf { it.weight }
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        2413432311323
-        3215453535623
-        3255245654254
-        3446585845452
-        4546657867536
-        1438598798454
-        4457876987766
-        3637877979653
-        4654967986887
-        4564679986453
-        1224686865563
-        2546548887735
-        4322674655533
-    """)
-    part1("Clumsy Crucible") {
-        run(IntGrid::getOutgoing) { true }
-    }
-    part2 {
-        run(IntGrid::getOutgoing2) { it.dirCount >= 4 }
-    }
-}
+val test = TestInput("""
+    2413432311323
+    3215453535623
+    3255245654254
+    3446585845452
+    4546657867536
+    1438598798454
+    4457876987766
+    3637877979653
+    4654967986887
+    4564679986453
+    1224686865563
+    2546548887735
+    4322674655533
+""")
+
+@PuzzleName("Clumsy Crucible")
+fun PuzzleInput.part1() = run(IntGrid::getOutgoing) { true }
+fun PuzzleInput.part2() = run(IntGrid::getOutgoing2) { it.dirCount >= 4 }

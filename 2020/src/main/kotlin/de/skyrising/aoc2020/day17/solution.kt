@@ -3,9 +3,6 @@ package de.skyrising.aoc2020.day17
 import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBase(2020, 17)
-
 interface StateDelegate {
     val activeCount: Int
     operator fun get(index: Int): Boolean
@@ -198,23 +195,26 @@ private fun part2(input: List<String>, delegator: (Int) -> StateDelegate): Int {
     return state.activeCount
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        .#.
-        ..#
-        ###
-    """)
-    part1("Conway Cubes") {
-        part1(lines, ::DenseState)
-    }
-    part1("Conway Cubes") {
-        part1(lines) { SparseState() }
-    }
-    part2 {
-        part2(lines, ::DenseState)
-    }
-    part2 {
-        part2(lines) { SparseState() }
-    }
+val test = TestInput("""
+    .#.
+    ..#
+    ###
+""")
+
+@PuzzleName("Conway Cubes")
+fun PuzzleInput.part1v0(): Any {
+    return part1(lines, ::DenseState)
+}
+
+@PuzzleName("Conway Cubes")
+fun PuzzleInput.part1v1(): Any {
+    return part1(lines) { SparseState() }
+}
+
+fun PuzzleInput.part2v0(): Any {
+    return part2(lines, ::DenseState)
+}
+
+fun PuzzleInput.part2v1(): Any {
+    return part2(lines) { SparseState() }
 }

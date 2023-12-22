@@ -1,16 +1,10 @@
 package de.skyrising.aoc2020.day24
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongSet
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2020, 24)
 
 private enum class HexNeighbor(val xOff: Int, val yOff: Int) {
     E(1, 0),
@@ -77,53 +71,53 @@ private fun stepDay(grid: LongSet): LongSet {
     return newGrid
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        sesenwnenenewseeswwswswwnenewsewsw
-        neeenesenwnwwswnenewnwwsewnenwseswesw
-        seswneswswsenwwnwse
-        nwnwneseeswswnenewneswwnewseswneseene
-        swweswneswnenwsewnwneneseenw
-        eesenwseswswnenwswnwnwsewwnwsene
-        sewnenenenesenwsewnenwwwse
-        wenwwweseeeweswwwnwwe
-        wsweesenenewnwwnwsenewsenwwsesesenwne
-        neeswseenwwswnwswswnw
-        nenwswwsewswnenenewsenwsenwnesesenew
-        enewnwewneswsewnwswenweswnenwsenwsw
-        sweneswneswneneenwnewenewwneswswnese
-        swwesenesewenwneswnwwneseswwne
-        enesenwswwswneneswsenwnewswseenwsese
-        wnwnesenesenenwwnenwsewesewsesesew
-        nenewswnwewswnenesenwnesewesw
-        eneswnwswnwsenenwnwnwwseeswneewsenese
-        neswnwewnwnwseenwseesewsenwsweewe
-        wseweeenwnesenwwwswnew
-    """)
-    part1("Lobby Layout") {
-        val grid = Long2BooleanOpenHashMap()
-        for (line in lines) {
-            val tile = tileFromPath(0, line)
-            grid[tile] = !grid[tile]
-        }
-        grid.values.sumOf { if (it) 1L else 0 }
+val test = TestInput("""
+    sesenwnenenewseeswwswswwnenewsewsw
+    neeenesenwnwwswnenewnwwsewnenwseswesw
+    seswneswswsenwwnwse
+    nwnwneseeswswnenewneswwnewseswneseene
+    swweswneswnenwsewnwneneseenw
+    eesenwseswswnenwswnwnwsewwnwsene
+    sewnenenenesenwsewnenwwwse
+    wenwwweseeeweswwwnwwe
+    wsweesenenewnwwnwsenewsenwwsesesenwne
+    neeswseenwwswnwswswnw
+    nenwswwsewswnenenewsenwsenwnesesenew
+    enewnwewneswsewnwswenweswnenwsenwsw
+    sweneswneswneneenwnewenewwneswswnese
+    swwesenesewenwneswnwwneseswwne
+    enesenwswwswneneswsenwnewswseenwsese
+    wnwnesenesenenwwnenwsewesewsesesew
+    nenewswnwewswnenesenwnesewesw
+    eneswnwswnwsenenwnwnwwseeswneewsenese
+    neswnwewnwnwseenwseesewsenwsweewe
+    wseweeenwnesenwwwswnew
+""")
+
+@PuzzleName("Lobby Layout")
+fun PuzzleInput.part1(): Any {
+    val grid = Long2BooleanOpenHashMap()
+    for (line in lines) {
+        val tile = tileFromPath(0, line)
+        grid[tile] = !grid[tile]
     }
-    part2 {
-        val tiles = LongArrayList()
-        for (line in lines) tiles.add(tileFromPath(0, line))
-        var grid: LongSet = LongOpenHashSet()
-        for (tile in tiles) {
-            if (tile in grid) {
-                grid.remove(tile)
-            } else {
-                grid.add(tile)
-            }
+    return grid.values.sumOf { if (it) 1L else 0 }
+}
+
+fun PuzzleInput.part2(): Any {
+    val tiles = LongArrayList()
+    for (line in lines) tiles.add(tileFromPath(0, line))
+    var grid: LongSet = LongOpenHashSet()
+    for (tile in tiles) {
+        if (tile in grid) {
+            grid.remove(tile)
+        } else {
+            grid.add(tile)
         }
-        repeat(100) {
-            grid = stepDay(grid)
-            // println("Day ${it + 1}: ${grid.size}")
-        }
-        grid.size
     }
+    repeat(100) {
+        grid = stepDay(grid)
+        // println("Day ${it + 1}: ${grid.size}")
+    }
+    return grid.size
 }

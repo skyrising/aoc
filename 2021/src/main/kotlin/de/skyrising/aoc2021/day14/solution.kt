@@ -9,60 +9,59 @@ import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2CharMap
 import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2021, 14)
+val test = TestInput("""
+    NNCB
+    
+    CH -> B
+    HH -> N
+    CB -> H
+    NH -> C
+    HB -> C
+    HC -> B
+    HN -> C
+    NN -> C
+    BH -> H
+    NC -> B
+    NB -> B
+    BN -> B
+    BB -> N
+    BC -> B
+    CC -> N
+    CN -> C
+""")
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        NNCB
-        
-        CH -> B
-        HH -> N
-        CB -> H
-        NH -> C
-        HB -> C
-        HC -> B
-        HN -> C
-        NN -> C
-        BH -> H
-        NC -> B
-        NB -> B
-        BN -> B
-        BB -> N
-        BC -> B
-        CC -> N
-        CN -> C
-    """)
-    part1("Extended Polymerization") {
-        val (start, rules) = parseInput(this)
-        var current = start
-        for (step in 1..10) {
-            val sb = StringBuilder(current.length * 2)
-            for (i in 0 until current.lastIndex) {
-                sb.append(current[i])
-                val insert = rules.getChar(current.substring(i, i + 2))
-                if (insert != 0.toChar()) {
-                    sb.append(insert)
-                }
+@PuzzleName("Extended Polymerization")
+fun PuzzleInput.part1v0(): Any {
+    val (start, rules) = parseInput(this)
+    var current = start
+    for (step in 1..10) {
+        val sb = StringBuilder(current.length * 2)
+        for (i in 0 until current.lastIndex) {
+            sb.append(current[i])
+            val insert = rules.getChar(current.substring(i, i + 2))
+            if (insert != 0.toChar()) {
+                sb.append(insert)
             }
-            sb.append(current.last())
-            current = sb.toString()
         }
-        val counts = Char2IntOpenHashMap(26)
-        for (c in current) counts[c]++
-        val max = counts.maxOf(Map.Entry<Char, Int>::value)
-        val min = counts.minOf(Map.Entry<Char, Int>::value)
-        max - min
+        sb.append(current.last())
+        current = sb.toString()
     }
-    part1("Extended Polymerization") {
-        val (start, rules) = parseInput(this)
-        solveDay14Fast(start, rules, 10)
-    }
-    part2 {
-        val (start, rules) = parseInput(this)
-        solveDay14Fast(start, rules, 40)
-    }
+    val counts = Char2IntOpenHashMap(26)
+    for (c in current) counts[c]++
+    val max = counts.maxOf(Map.Entry<Char, Int>::value)
+    val min = counts.minOf(Map.Entry<Char, Int>::value)
+    return max - min
+}
+
+@PuzzleName("Extended Polymerization")
+fun PuzzleInput.part1v1(): Any {
+    val (start, rules) = parseInput(this)
+    return solveDay14Fast(start, rules, 10)
+}
+
+fun PuzzleInput.part2(): Any {
+    val (start, rules) = parseInput(this)
+    return solveDay14Fast(start, rules, 40)
 }
 
 private fun solveDay14Fast(start: String, rules: Object2CharMap<String>, steps: Int): Long {

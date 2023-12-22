@@ -1,13 +1,8 @@
 package de.skyrising.aoc2020.day23
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.Int2IntMap
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2020, 23)
 
 /*
 private fun move(cups: IntArray, count: Int): IntArray {
@@ -69,47 +64,49 @@ private fun move(cups: Int2IntMap, current: Int) {
     cups[pickup[2]] = tmpLabel
 }
 
-@Suppress("unused")
-fun register() {
-    val test = "389125467\n"
-    part1("Crab Cups") {
-        val base = IntArray(chars.length - 1) { i -> chars[i] - '0' }
-        val cups = Int2IntOpenHashMap(base.size)
-        for (i in 0 until base.size - 1) cups[base[i]] = base[i + 1]
-        cups[base.last()] = base[0]
+
+val test = "389125467\n"
+
+@PuzzleName("Crab Cups")
+fun PuzzleInput.part1(): Any {
+    val base = IntArray(chars.length - 1) { i -> chars[i] - '0' }
+    val cups = Int2IntOpenHashMap(base.size)
+    for (i in 0 until base.size - 1) cups[base[i]] = base[i + 1]
+    cups[base.last()] = base[0]
+    //println(cups)
+    var current = base[0]
+    repeat(100) {
+        move(cups, current)
         //println(cups)
-        var current = base[0]
-        repeat(100) {
-            move(cups, current)
-            //println(cups)
-            current = cups[current]
-        }
-        var i = cups[1]
-        val sb = StringBuilder(cups.size - 1)
-        while (i != 1) {
-            sb.append(i)
-            i = cups[i]
-        }
-        sb.toString()
+        current = cups[current]
     }
-    part2 {
-        val base = IntArray(chars.length - 1) { i -> chars[i] - '0' }
-        //println(base.contentToString())
-        val cups = Int2IntOpenHashMap(1_000_000)
-        for (i in 0 until base.size - 1) cups[base[i]] = base[i + 1]
-        cups[base.last()] = base.size + 1
-        for (i in base.size + 1 until 1_000_000) cups[i] = i + 1
-        cups[1_000_000] = base[0]
-        var current = base[0]
-        //for ((k, v) in cups) if (v != k + 1 || k in base) println("$k, $v")
-        repeat(10_000_000) {
-            //if (it % 100_000 == 0) println("${it / 100_000}%")
-            move(cups, current)
-            current = cups[current]
-        }
-        val a = cups[1]
-        val b = cups[a]
-        //println("$a,$b")
-        a.toLong() * b.toLong()
+    var i = cups[1]
+    val sb = StringBuilder(cups.size - 1)
+    while (i != 1) {
+        sb.append(i)
+        i = cups[i]
     }
+    return sb.toString()
 }
+
+fun PuzzleInput.part2(): Any {
+    val base = IntArray(chars.length - 1) { i -> chars[i] - '0' }
+    //println(base.contentToString())
+    val cups = Int2IntOpenHashMap(1_000_000)
+    for (i in 0 until base.size - 1) cups[base[i]] = base[i + 1]
+    cups[base.last()] = base.size + 1
+    for (i in base.size + 1 until 1_000_000) cups[i] = i + 1
+    cups[1_000_000] = base[0]
+    var current = base[0]
+    //for ((k, v) in cups) if (v != k + 1 || k in base) println("$k, $v")
+    repeat(10_000_000) {
+        //if (it % 100_000 == 0) println("${it / 100_000}%")
+        move(cups, current)
+        current = cups[current]
+    }
+    val a = cups[1]
+    val b = cups[a]
+    //println("$a,$b")
+    return a.toLong() * b.toLong()
+}
+

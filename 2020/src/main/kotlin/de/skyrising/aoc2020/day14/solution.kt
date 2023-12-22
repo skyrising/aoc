@@ -5,9 +5,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
 import java.nio.ByteBuffer
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBase(2020, 14)
-
 private fun getMask(line: String): Pair<Long, Long> {
     val actualMask = line.replace('1', '0').replace('X', '1').toLong(2)
     val maskBits = line.replace('X', '0').toLong(2)
@@ -55,130 +52,134 @@ private fun parseLong(buf: ByteBuffer): Long {
     return l
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
-        mem[8] = 11
-        mem[7] = 101
-        mem[8] = 0
-    """)
-    val test2 = TestInput("""
-        mask = 000000000000000000000000000000X1001X
-        mem[42] = 100
-        mask = 00000000000000000000000000000000X0XX
-        mem[26] = 1
-    """)
-    part1("Docking Data") {
-        val mem = Long2LongOpenHashMap()
-        var mask = -1L
-        var maskBits = 0L
-        for (line in lines) {
-            if (line.startsWith("mask = ")) {
-                val m = getMask(line.substring(7))
-                mask = m.first
-                maskBits = m.second
-            } else {
-                val addr = line.substring(line.indexOf('[') + 1, line.indexOf(']')).toLong()
-                val value = line.substring(line.indexOf('=') + 2).toLong()
-                // println("$addr, $value -> ${(value and mask) or maskBits}")
-                mem[addr] = (value and mask) or maskBits
-            }
+val test = TestInput("""
+    mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
+    mem[8] = 11
+    mem[7] = 101
+    mem[8] = 0
+""")
+
+val test2 = TestInput("""
+    mask = 000000000000000000000000000000X1001X
+    mem[42] = 100
+    mask = 00000000000000000000000000000000X0XX
+    mem[26] = 1
+""")
+
+@PuzzleName("Docking Data")
+fun PuzzleInput.part1v0(): Any {
+    val mem = Long2LongOpenHashMap()
+    var mask = -1L
+    var maskBits = 0L
+    for (line in lines) {
+        if (line.startsWith("mask = ")) {
+            val m = getMask(line.substring(7))
+            mask = m.first
+            maskBits = m.second
+        } else {
+            val addr = line.substring(line.indexOf('[') + 1, line.indexOf(']')).toLong()
+            val value = line.substring(line.indexOf('=') + 2).toLong()
+            // println("$addr, $value -> ${(value and mask) or maskBits}")
+            mem[addr] = (value and mask) or maskBits
         }
-        // println(mem)
-        mem.values.sum()
     }
-    part1("Docking Data") {
-        val mem = Long2LongOpenHashMap()
-        var mask = -1L
-        var maskBits = 0L
-        for (line in byteLines) {
-            if (line[1] == 'a'.code.toByte()) {
-                val m = getMask(line)
-                mask = m.first
-                maskBits = m.second
-            } else {
-                val buf = line.slice()
-                buf.positionAfter('['.code.toByte())
-                buf.until(']'.code.toByte())
-                val addr = parseLong(buf)
-                buf.clear()
-                buf.positionAfter('='.code.toByte())
-                buf.position(buf.position() + 1)
-                val value = parseLong(buf)
-                // println("$addr, $value -> ${(value and mask) or maskBits}")
-                mem[addr] = (value and mask) or maskBits
-            }
+    // println(mem)
+    return mem.values.sum()
+}
+
+@PuzzleName("Docking Data")
+fun PuzzleInput.part1v1(): Any {
+    val mem = Long2LongOpenHashMap()
+    var mask = -1L
+    var maskBits = 0L
+    for (line in byteLines) {
+        if (line[1] == 'a'.code.toByte()) {
+            val m = getMask(line)
+            mask = m.first
+            maskBits = m.second
+        } else {
+            val buf = line.slice()
+            buf.positionAfter('['.code.toByte())
+            buf.until(']'.code.toByte())
+            val addr = parseLong(buf)
+            buf.clear()
+            buf.positionAfter('='.code.toByte())
+            buf.position(buf.position() + 1)
+            val value = parseLong(buf)
+            // println("$addr, $value -> ${(value and mask) or maskBits}")
+            mem[addr] = (value and mask) or maskBits
         }
-        // println(mem)
-        mem.values.sum()
     }
-    part2 {
-        val mem = Long2LongOpenHashMap()
-        var mask = 0L
-        var maskBits = 0L
-        var floatingPos = IntArray(0)
-        for (line in lines) {
-            if (line.startsWith("mask = ")) {
-                val m = getMask(line.substring(7))
-                mask = m.first
-                maskBits = m.second
-                floatingPos = getOneBits(mask)
-            } else {
-                val addr = line.substring(line.indexOf('[') + 1, line.indexOf(']')).toLong()
-                val value = line.substring(line.indexOf('=') + 2).toLong()
-                val fixed = (addr or maskBits) and mask.inv()
-                for (i in 0 until (1L shl floatingPos.size)) {
-                    var addr2 = fixed
-                    for (j in floatingPos.indices) {
-                        val bit = (i shr j) and 1L
-                        val pos = floatingPos[j]
-                        addr2 = addr2 or (bit shl pos)
-                        // println("$bit, $pos, $addr -> $addr2")
-                    }
-                    // println("$addr -> $addr2")
-                    mem[addr2] = value
+    // println(mem)
+    return mem.values.sum()
+}
+
+fun PuzzleInput.part2v0(): Any {
+    val mem = Long2LongOpenHashMap()
+    var mask = 0L
+    var maskBits = 0L
+    var floatingPos = IntArray(0)
+    for (line in lines) {
+        if (line.startsWith("mask = ")) {
+            val m = getMask(line.substring(7))
+            mask = m.first
+            maskBits = m.second
+            floatingPos = getOneBits(mask)
+        } else {
+            val addr = line.substring(line.indexOf('[') + 1, line.indexOf(']')).toLong()
+            val value = line.substring(line.indexOf('=') + 2).toLong()
+            val fixed = (addr or maskBits) and mask.inv()
+            for (i in 0 until (1L shl floatingPos.size)) {
+                var addr2 = fixed
+                for (j in floatingPos.indices) {
+                    val bit = (i shr j) and 1L
+                    val pos = floatingPos[j]
+                    addr2 = addr2 or (bit shl pos)
+                    // println("$bit, $pos, $addr -> $addr2")
                 }
+                // println("$addr -> $addr2")
+                mem[addr2] = value
             }
         }
-        // println(mem)
-        mem.values.sum()
     }
-    part2 {
-        val mem = Long2LongOpenHashMap()
-        var mask = 0L
-        var maskBits = 0L
-        var floatingPos = IntArray(0)
-        for (line in byteLines) {
-            if (line[1] == 'a'.code.toByte()) {
-                val m = getMask(line)
-                mask = m.first
-                maskBits = m.second
-                floatingPos = m.third
-            } else {
-                val buf = line.slice()
-                buf.positionAfter('['.code.toByte())
-                buf.until(']'.code.toByte())
-                val addr = parseLong(buf)
-                buf.clear()
-                buf.positionAfter('='.code.toByte())
-                buf.position(buf.position() + 1)
-                val value = parseLong(buf)
-                val fixed = (addr or maskBits) and mask.inv()
-                for (i in 0 until (1L shl floatingPos.size)) {
-                    var addr2 = fixed
-                    for (j in floatingPos.indices) {
-                        val bit = (i shr j) and 1L
-                        val pos = floatingPos[j]
-                        addr2 = addr2 or (bit shl pos)
-                        // println("$bit, $pos, $addr -> $addr2")
-                    }
-                    // println("$addr -> $addr2")
-                    mem[addr2] = value
+    // println(mem)
+    return mem.values.sum()
+}
+
+fun PuzzleInput.part2v1(): Any {
+    val mem = Long2LongOpenHashMap()
+    var mask = 0L
+    var maskBits = 0L
+    var floatingPos = IntArray(0)
+    for (line in byteLines) {
+        if (line[1] == 'a'.code.toByte()) {
+            val m = getMask(line)
+            mask = m.first
+            maskBits = m.second
+            floatingPos = m.third
+        } else {
+            val buf = line.slice()
+            buf.positionAfter('['.code.toByte())
+            buf.until(']'.code.toByte())
+            val addr = parseLong(buf)
+            buf.clear()
+            buf.positionAfter('='.code.toByte())
+            buf.position(buf.position() + 1)
+            val value = parseLong(buf)
+            val fixed = (addr or maskBits) and mask.inv()
+            for (i in 0 until (1L shl floatingPos.size)) {
+                var addr2 = fixed
+                for (j in floatingPos.indices) {
+                    val bit = (i shr j) and 1L
+                    val pos = floatingPos[j]
+                    addr2 = addr2 or (bit shl pos)
+                    // println("$bit, $pos, $addr -> $addr2")
                 }
+                // println("$addr -> $addr2")
+                mem[addr2] = value
             }
         }
-        // println(mem)
-        mem.values.sum()
     }
+    // println(mem)
+    return mem.values.sum()
 }

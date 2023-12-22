@@ -5,9 +5,6 @@ import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongList
 import java.util.function.LongConsumer
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 11)
-
 data class Monkey(val items: LongList, val op: (Long) -> Long, val divisor: Int, val trueMonkey: Int, val falseMonkey: Int) {
     var inspected = 0L
 
@@ -61,12 +58,6 @@ private fun parseInput(input: PuzzleInput): List<Monkey> {
     }
 }
 
-@Suppress("unused")
-fun register() {
-    part1("Monkey in the Middle") {
-        monkeyBusiness(this, 20, true)
-    }
-    part2 {
-        monkeyBusiness(this, 10000, false)
-    }
-}
+@PuzzleName("Monkey in the Middle")
+fun PuzzleInput.part1() = monkeyBusiness(this, 20, true)
+fun PuzzleInput.part2() = monkeyBusiness(this, 10000, false)

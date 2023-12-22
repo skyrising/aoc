@@ -1,13 +1,7 @@
 package de.skyrising.aoc2020.day18
 
-import de.skyrising.aoc.BenchmarkBase
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import java.util.*
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBase(2020, 18)
 
 private interface Expr {
     fun eval(): Long
@@ -176,43 +170,46 @@ private fun parseBinOp(tokens: List<Token>, lhs: Expr, minPrecedence: Int, prece
     return Pair(mutLhs, pos)
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("2 * 3 + (4 * 5)")
-    part1("Operation Order") {
-        var sum = 0L
-        for (line in lines) {
-            val expr = parse(lex(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 1)))
-            sum += expr.eval()
-            // println("$line: $expr, ${expr.eval()}")
-        }
-        sum
+val test = TestInput("2 * 3 + (4 * 5)")
+
+@PuzzleName("Operation Order")
+fun PuzzleInput.part1v0(): Any {
+    var sum = 0L
+    for (line in lines) {
+        val expr = parse(lex(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 1)))
+        sum += expr.eval()
+        // println("$line: $expr, ${expr.eval()}")
     }
-    part1("Operation Order") {
-        var sum = 0L
-        for (line in lines) {
-            val expr = parse(lex2(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 1)))
-            sum += expr.eval()
-            // println("$line: $expr, ${expr.eval()}")
-        }
-        sum
+    return sum
+}
+
+@PuzzleName("Operation Order")
+fun PuzzleInput.part1v1(): Any {
+    var sum = 0L
+    for (line in lines) {
+        val expr = parse(lex2(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 1)))
+        sum += expr.eval()
+        // println("$line: $expr, ${expr.eval()}")
     }
-    part2 {
-        var sum = 0L
-        for (line in lines) {
-            val expr = parse(lex(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 2)))
-            sum += expr.eval()
-            // println("$line: $expr, ${expr.eval()}")
-        }
-        sum
+    return sum
+}
+
+fun PuzzleInput.part2v0(): Any {
+    var sum = 0L
+    for (line in lines) {
+        val expr = parse(lex(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 2)))
+        sum += expr.eval()
+        // println("$line: $expr, ${expr.eval()}")
     }
-    part2 {
-        var sum = 0L
-        for (line in lines) {
-            val expr = parse(lex2(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 2)))
-            sum += expr.eval()
-            // println("$line: $expr, ${expr.eval()}")
-        }
-        sum
+    return sum
+}
+
+fun PuzzleInput.part2v1(): Any {
+    var sum = 0L
+    for (line in lines) {
+        val expr = parse(lex2(line), EnumMap(mapOf(BinOpType.MUL to 1, BinOpType.ADD to 2)))
+        sum += expr.eval()
+        // println("$line: $expr, ${expr.eval()}")
     }
+    return sum
 }

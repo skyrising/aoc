@@ -1,37 +1,28 @@
 package de.skyrising.aoc2021.day23
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2021, 23)
-
 private const val DUMP_PATH = false
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        #############
-        #...........#
-        ###B#C#B#D###
-          #A#D#C#A#
-          #########
-    """)
-    part1("Amphipod") {
-        val layout = parseInput(lines)
-        solve(layout, AmphipodLayout.SOLVED1)
-    }
-    part2 {
-        val input = ArrayList(lines)
-        input.addAll(3, listOf("  #D#C#B#A#", "  #D#B#A#C#"))
-        val layout = parseInput(input)
-        solve(layout, AmphipodLayout.SOLVED2)
-    }
+val test = TestInput("""
+    #############
+    #...........#
+    ###B#C#B#D###
+      #A#D#C#A#
+      #########
+""")
+
+@PuzzleName("Amphipod")
+fun PuzzleInput.part1() = solve(parseInput(lines), AmphipodLayout.SOLVED1)
+
+fun PuzzleInput.part2(): Any {
+    val input = ArrayList(lines)
+    input.addAll(3, listOf("  #D#C#B#A#", "  #D#B#A#C#"))
+    val layout = parseInput(input)
+    return solve(layout, AmphipodLayout.SOLVED2)
 }
 
 private fun solve(layout: AmphipodLayout, solved: AmphipodLayout): Int {

@@ -2,9 +2,6 @@ package de.skyrising.aoc2022.day24
 
 import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 24)
-
 private class Day24Setup(val start: Vec2i, val end: Vec2i, val grid: CharGrid, val blizzardsX: Array<Set<Vec2i>>, val blizzardsY: Array<Set<Vec2i>>) {
     fun validPos(pos: Vec2i) = pos in grid || pos == start || pos == end
     fun blizzardAt(pos: Vec2i, t: Int) = pos in blizzardsX[t % grid.width] || pos in blizzardsY[t % grid.height]
@@ -38,28 +35,28 @@ private fun parseInput(input: PuzzleInput): Day24Setup {
     return Day24Setup(start, end, innerGrid, blizzardsX, blizzardsY)
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        #.######
-        #>>.<^<#
-        #.<..<<#
-        #>v.><>#
-        #<^v^^>#
-        ######.#
-    """)
-    part1("Blizzard Basin") {
-        parseInput(this).run {
-            dist(start, end, 0)
-        }
+val test = TestInput("""
+    #.######
+    #>>.<^<#
+    #.<..<<#
+    #>v.><>#
+    #<^v^^>#
+    ######.#
+""")
+
+@PuzzleName("Blizzard Basin")
+fun PuzzleInput.part1(): Any {
+    return parseInput(this).run {
+        dist(start, end, 0)
     }
-    part2 {
-        parseInput(this).run {
-            val a = dist(start, end, 0)
-            val b = dist(end, start, a)
-            val c = dist(start, end, a + b)
-            log("$a+$b+$c")
-            a + b + c
-        }
+}
+
+fun PuzzleInput.part2(): Any {
+    return parseInput(this).run {
+        val a = dist(start, end, 0)
+        val b = dist(end, start, a)
+        val c = dist(start, end, a + b)
+        log("$a+$b+$c")
+        a + b + c
     }
 }

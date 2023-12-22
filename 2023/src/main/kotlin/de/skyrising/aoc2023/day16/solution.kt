@@ -3,9 +3,6 @@ package de.skyrising.aoc2023.day16
 import de.skyrising.aoc.*
 import java.util.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2023, 16)
-
 @JvmInline
 value class State(val intValue: Int) {
     constructor(x: Int, y: Int, dir: Direction): this(((x and 0x7fff) shl 15) or (y and 0x7fff) or (dir.ordinal shl 30))
@@ -63,45 +60,45 @@ inline fun CharGrid.maxBeam(posX: Int, posY: Int, dir: Direction, beam: BitSet, 
     return positions.cardinality()
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        .|...\....
-        |.-.\.....
-        .....|-...
-        ........|.
-        ..........
-        .........\
-        ..../.\\..
-        .-.-/..|..
-        .|....-|.\
-        ..//.|....
-    """)
-    part1("The Floor Will Be Lava") {
-        val grid = charGrid
-        grid.maxBeam(
-            -1,
-            0,
-            Direction.E,
-            BitSet(grid.width * grid.height * 4),
-            BitSet(grid.width * grid.height),
-            IntArrayDeque(128)
-        )
+val test = TestInput("""
+    .|...\....
+    |.-.\.....
+    .....|-...
+    ........|.
+    ..........
+    .........\
+    ..../.\\..
+    .-.-/..|..
+    .|....-|.\
+    ..//.|....
+""")
+
+@PuzzleName("The Floor Will Be Lava")
+fun PuzzleInput.part1(): Any {
+    val grid = charGrid
+    return grid.maxBeam(
+        -1,
+        0,
+        Direction.E,
+        BitSet(grid.width * grid.height * 4),
+        BitSet(grid.width * grid.height),
+        IntArrayDeque(128)
+    )
+}
+
+fun PuzzleInput.part2(): Any {
+    val grid = charGrid
+    var max = 0
+    val beam = BitSet(grid.width * grid.height * 4)
+    val positions = BitSet(grid.width * grid.height)
+    val deque = IntArrayDeque(128)
+    for (x in 0 until grid.width) {
+        max = maxOf(max, grid.maxBeam(x, -1, Direction.S, beam, positions, deque))
+        max = maxOf(max, grid.maxBeam(x, grid.height, Direction.N, beam, positions, deque))
     }
-    part2 {
-        val grid = charGrid
-        var max = 0
-        val beam = BitSet(grid.width * grid.height * 4)
-        val positions = BitSet(grid.width * grid.height)
-        val deque = IntArrayDeque(128)
-        for (x in 0 until grid.width) {
-            max = maxOf(max, grid.maxBeam(x, -1, Direction.S, beam, positions, deque))
-            max = maxOf(max, grid.maxBeam(x, grid.height, Direction.N, beam, positions, deque))
-        }
-        for (y in 0 until grid.height) {
-            max = maxOf(max, grid.maxBeam(-1, y, Direction.E, beam, positions, deque))
-            max = maxOf(max, grid.maxBeam(grid.width, y, Direction.W, beam, positions, deque))
-        }
-        max
+    for (y in 0 until grid.height) {
+        max = maxOf(max, grid.maxBeam(-1, y, Direction.E, beam, positions, deque))
+        max = maxOf(max, grid.maxBeam(grid.width, y, Direction.W, beam, positions, deque))
     }
+    return max
 }

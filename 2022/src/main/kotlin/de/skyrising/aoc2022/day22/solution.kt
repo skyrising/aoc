@@ -2,9 +2,6 @@ package de.skyrising.aoc2022.day22
 
 import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 22)
-
 private fun parseInput(input: PuzzleInput): Pair<CharGrid, List<String>> {
     val grid = CharGrid.parse(input.lines.subList(0, input.lines.size - 2))
     val path = Regex("\\d+|R|L").findAll(input.lines.last()).map { it.value }.toList()
@@ -116,29 +113,23 @@ private fun run(input: PuzzleInput, transitions: Map<VecState, VecState>? = null
     return pos.y * 1000 + pos.x * 4 + FACINGS.indexOf(state.second) + 1004
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-                ...#
-                .#..
-                #...
-                ....
-        ...#.......#
-        ........#...
-        ..#....#....
-        ..........#.
-                ...#....
-                .....#..
-                .#......
-                ......#.
-        
-        10R5L5R10L4R5L5
-    """)
-    part1("Monkey Map") {
-        run(this)
-    }
-    part2 {
-        // run(test, buildTransitions(cubeNetTest(4)))
-        run(this, buildTransitions(cubeNetReal(50)))
-    }
-}
+val test = TestInput("""
+            ...#
+            .#..
+            #...
+            ....
+    ...#.......#
+    ........#...
+    ..#....#....
+    ..........#.
+            ...#....
+            .....#..
+            .#......
+            ......#.
+    
+    10R5L5R10L4R5L5
+""")
+
+@PuzzleName("Monkey Map")
+fun PuzzleInput.part1() = run(this)
+fun PuzzleInput.part2() = run(this, buildTransitions(cubeNetReal(50)))

@@ -1,12 +1,7 @@
 package de.skyrising.aoc2022.day13
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import kotlinx.serialization.json.*
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 13)
 
 private fun compare(left: JsonElement, right: JsonElement): Int {
     if (left is JsonPrimitive && right is JsonPrimitive) {
@@ -30,27 +25,26 @@ private fun compare(left: JsonElement, right: JsonElement): Int {
     return 0
 }
 
-@Suppress("unused")
-fun register() {
-    part1("Distress Signal") {
-        val values = lines.filter(String::isNotBlank).map(Json::parseToJsonElement).chunked(2)
-        var result = 0
-        for (i in values.indices) {
-            val (left, right) = values[i]
-            val cmp = compare(left, right)
-            if (cmp < 0) result += i + 1
-        }
-        result
+@PuzzleName("Distress Signal")
+fun PuzzleInput.part1(): Any {
+    val values = lines.filter(String::isNotBlank).map(Json::parseToJsonElement).chunked(2)
+    var result = 0
+    for (i in values.indices) {
+        val (left, right) = values[i]
+        val cmp = compare(left, right)
+        if (cmp < 0) result += i + 1
     }
-    part2 {
-        val values = lines.filter(String::isNotBlank).mapTo(mutableListOf(),  Json::parseToJsonElement)
-        val div1 = JsonArray(listOf(JsonArray(listOf(JsonPrimitive(2)))))
-        val div2 = JsonArray(listOf(JsonArray(listOf(JsonPrimitive(6)))))
-        values.add(div1)
-        values.add(div2)
-        val sorted = values.sortedWith(::compare)
-        val div1Index = sorted.indexOf(div1) + 1
-        val div2Index = sorted.indexOf(div2) + 1
-        div1Index * div2Index
-    }
+    return result
+}
+
+fun PuzzleInput.part2(): Any {
+    val values = lines.filter(String::isNotBlank).mapTo(mutableListOf(),  Json::parseToJsonElement)
+    val div1 = JsonArray(listOf(JsonArray(listOf(JsonPrimitive(2)))))
+    val div2 = JsonArray(listOf(JsonArray(listOf(JsonPrimitive(6)))))
+    values.add(div1)
+    values.add(div2)
+    val sorted = values.sortedWith(::compare)
+    val div1Index = sorted.indexOf(div1) + 1
+    val div2Index = sorted.indexOf(div2) + 1
+    return div1Index * div2Index
 }

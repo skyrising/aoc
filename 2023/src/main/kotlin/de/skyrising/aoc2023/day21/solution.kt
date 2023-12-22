@@ -5,9 +5,6 @@ import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenCustomHashSet
 import it.unimi.dsi.fastutil.longs.LongSets
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2023, 21)
-
 private inline fun CharGrid.goOutwards(steps: Int, cb: (Int,Int)->Unit = { _, _ -> }): Int {
     var front = LongSets.singleton(PackedIntPair.pack(where { it == 'S' }.single()))
     val count = intArrayOf(1, 0)
@@ -29,33 +26,33 @@ private inline fun CharGrid.goOutwards(steps: Int, cb: (Int,Int)->Unit = { _, _ 
     return count[steps and 1]
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        ...........
-        .....###.#.
-        .###.##..#.
-        ..#.#...#..
-        ....#.#....
-        .##..S####.
-        .##..#...#.
-        .......##..
-        .##.#.####.
-        .##..##.##.
-        ...........
-    """)
-    part1("Step Counter") {
-        charGrid.goOutwards(64)
+val test = TestInput("""
+    ...........
+    .....###.#.
+    .###.##..#.
+    ..#.#...#..
+    ....#.#....
+    .##..S####.
+    .##..#...#.
+    .......##..
+    .##.#.####.
+    .##..##.##.
+    ...........
+""")
+
+@PuzzleName("Step Counter")
+fun PuzzleInput.part1(): Any {
+    return charGrid.goOutwards(64)
+}
+
+fun PuzzleInput.part2(): Any {
+    val g = charGrid
+    val steps = 26501365
+    val size = g.width
+    val rem = steps % size
+    val values = IntArray(3)
+    g.goOutwards(size * 2 + rem) { i, v ->
+        if (i % size == rem) values[i / size] = v
     }
-    part2 {
-        val g = charGrid
-        val steps = 26501365
-        val size = g.width
-        val rem = steps % size
-        val values = IntArray(3)
-        g.goOutwards(size * 2 + rem) { i, v ->
-            if (i % size == rem) values[i / size] = v
-        }
-        gregoryNewtonExtrapolation(differenceCoefficients(IntList.of(*values)), steps / size)
-    }
+    return gregoryNewtonExtrapolation(differenceCoefficients(IntList.of(*values)), steps / size)
 }

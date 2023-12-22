@@ -2,9 +2,6 @@ package de.skyrising.aoc2015.day7
 
 import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2015, 7)
-
 private fun parse(input: PuzzleInput): MutableMap<String, List<String>> {
     val map = mutableMapOf<String, List<String>>()
     for (line in input.lines) {
@@ -38,26 +35,23 @@ private fun eval(map: MutableMap<String, List<String>>, name: String): UShort {
     }
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        123 -> x
-        456 -> y
-        x AND y -> d
-        x OR y -> e
-        x LSHIFT 2 -> f
-        y RSHIFT 2 -> g
-        NOT x -> h
-        NOT y -> i
-    """)
-    part1("Some Assembly Required") {
-        val map = parse(this)
-        eval(map, "a")
-    }
-    part2 {
-        val map = parse(this)
-        val map2 = HashMap(map)
-        map2["b"] = listOf(eval(map, "a").toString())
-        eval(map2, "a")
-    }
+val test = TestInput("""
+    123 -> x
+    456 -> y
+    x AND y -> d
+    x OR y -> e
+    x LSHIFT 2 -> f
+    y RSHIFT 2 -> g
+    NOT x -> h
+    NOT y -> i
+""")
+
+@PuzzleName("Some Assembly Required")
+fun PuzzleInput.part1() = eval(parse(this), "a")
+
+fun PuzzleInput.part2(): Any {
+    val map = parse(this)
+    val map2 = HashMap(map)
+    map2["b"] = listOf(eval(map, "a").toString())
+    return eval(map2, "a")
 }

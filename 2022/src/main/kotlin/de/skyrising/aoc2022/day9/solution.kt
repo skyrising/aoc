@@ -4,9 +4,6 @@ import de.skyrising.aoc.*
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 9)
-
 private fun simulateRope(input: PuzzleInput, knots: Int): Int {
     val path = mutableSetOf<Vec2i>()
     val pos = Array(knots) { Vec2i.ZERO }
@@ -27,12 +24,6 @@ private fun simulateRope(input: PuzzleInput, knots: Int): Int {
     return path.size
 }
 
-@Suppress("unused")
-fun register() {
-    part1("Rope Bridge") {
-        simulateRope(this, 2)
-    }
-    part2 {
-        simulateRope(this, 10)
-    }
-}
+@PuzzleName("Rope Bridge")
+fun PuzzleInput.part1() = simulateRope(this, 2)
+fun PuzzleInput.part2() = simulateRope(this, 10)

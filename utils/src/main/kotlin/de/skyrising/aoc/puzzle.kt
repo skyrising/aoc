@@ -83,9 +83,6 @@ inline fun <T> puzzle(name: String, part: Int = 0, noinline run: PuzzleInput.() 
     return DefaultPuzzle(name, currentDay, part, currentIndex++, run).also(allPuzzles::add)
 }
 
-inline fun <T> part1(name: String, noinline run: PuzzleInput.() -> T) = puzzle(name, 1, run)
-inline fun <T> part2(name: String = "Part Two", noinline run: PuzzleInput.() -> T) = puzzle(name, 2, run)
-
 private inline fun <reified T> convertMethod(lookup: MethodHandles.Lookup, method: Method): T {
     val itf = T::class.java
     val target = itf.methods.find { AccessFlag.ABSTRACT in it.accessFlags() } ?: error("No abstract methods in interface")
@@ -108,11 +105,7 @@ fun registerDay(day: PuzzleDay) {
         val cls = Class.forName("de.skyrising.aoc${day.year}.day${day.day}.SolutionKt")
         val lookup = MethodHandles.lookup()
         for (method in cls.methods) {
-            if (AccessFlag.STATIC !in method.accessFlags()) continue
-            if (method.name == "register" && method.parameterCount == 0) {
-                method.invoke(null)
-                continue
-            }
+            if (AccessFlag.STATIC !in method.accessFlags() || !method.name.startsWith("part")) continue
             if (method.parameterCount == 1 && method.parameterTypes[0] == PuzzleInput::class.java) {
                 var part = 0
                 if (method.name.startsWith("part")) part = method.name[4].digitToInt()

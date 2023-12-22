@@ -2,9 +2,6 @@ package de.skyrising.aoc2022.day14
 
 import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 14)
-
 private fun parseInput(input: PuzzleInput, floor: Boolean = false): CharGrid {
     val lines = input.lines.flatMapTo(mutableListOf()) { line ->
         line.split(" -> ").map(Vec2i::parse).zipWithNext { a, b -> a lineTo b }
@@ -25,22 +22,22 @@ private fun CharGrid.dropSand(pos: Vec2i) = pos.iterate {
     null
 }.also { if (it in this) this[it] = 'o' }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        498,4 -> 498,6 -> 496,6
-        503,4 -> 502,4 -> 502,9 -> 494,9
-    """)
-    part1("Regolith Reservoir") {
-        val grid = parseInput(this)
-        countWhile {
-            grid.dropSand(Vec2i(500, 0)) in grid
-        }
+val test = TestInput("""
+    498,4 -> 498,6 -> 496,6
+    503,4 -> 502,4 -> 502,9 -> 494,9
+""")
+
+@PuzzleName("Regolith Reservoir")
+fun PuzzleInput.part1(): Any {
+    val grid = parseInput(this)
+    return countWhile {
+        grid.dropSand(Vec2i(500, 0)) in grid
     }
-    part2 {
-        val grid = parseInput(this, true)
-        1 + countWhile {
-            grid.dropSand(Vec2i(500, 0)).y != 0
-        }
+}
+
+fun PuzzleInput.part2(): Any {
+    val grid = parseInput(this, true)
+    return 1 + countWhile {
+        grid.dropSand(Vec2i(500, 0)).y != 0
     }
 }

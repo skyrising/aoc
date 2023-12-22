@@ -2,49 +2,48 @@ package de.skyrising.aoc2021.day17
 
 import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2021, 17)
+val test = TestInput("target area: x=20..30, y=-10..-5")
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("target area: x=20..30, y=-10..-5")
-    part1("Trick Shot") {
-        val target = parseInput(this)
-        val x2 = target.first.last
-        val y1 = target.second.first
-        var maxY = 0
-        for (x in 1..x2) {
-            for (y in 1..-y1) {
-                val result = ProbeState(0, 0, x, y).simulate(target)
-                if (result.hit) {
-                    maxY = maxOf(maxY, result.maxY)
-                    //println("$x,$y ${result.maxY}")
-                }
+@PuzzleName("Trick Shot")
+fun PuzzleInput.part1v0(): Any {
+    val target = parseInput(this)
+    val x2 = target.first.last
+    val y1 = target.second.first
+    var maxY = 0
+    for (x in 1..x2) {
+        for (y in 1..-y1) {
+            val result = ProbeState(0, 0, x, y).simulate(target)
+            if (result.hit) {
+                maxY = maxOf(maxY, result.maxY)
+                //println("$x,$y ${result.maxY}")
             }
         }
-        maxY
     }
-    part1("Trick Shot") {
-        val target = parseInput(this)
-        val vy = -target.second.first - 1
-        vy * (vy + 1) / 2
-    }
-    part2 {
-        val target = parseInput(this)
-        val x2 = target.first.last
-        val y1 = target.second.first
-        var hits = 0
-        for (x in 1..x2) {
-            for (y in y1..-y1) {
-                val result = ProbeState(0, 0, x, y).simulate(target)
-                if (result.hit) {
-                    hits++
-                    //println("$x,$y ${result.maxY}")
-                }
+    return maxY
+}
+
+@PuzzleName("Trick Shot")
+fun PuzzleInput.part1v1(): Any {
+    val target = parseInput(this)
+    val vy = -target.second.first - 1
+    return vy * (vy + 1) / 2
+}
+
+fun PuzzleInput.part2(): Any {
+    val target = parseInput(this)
+    val x2 = target.first.last
+    val y1 = target.second.first
+    var hits = 0
+    for (x in 1..x2) {
+        for (y in y1..-y1) {
+            val result = ProbeState(0, 0, x, y).simulate(target)
+            if (result.hit) {
+                hits++
+                //println("$x,$y ${result.maxY}")
             }
         }
-        hits
     }
+    return hits
 }
 
 private fun parseInput(input: PuzzleInput): Pair<IntRange, IntRange> {

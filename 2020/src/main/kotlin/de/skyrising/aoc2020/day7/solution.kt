@@ -1,12 +1,6 @@
 package de.skyrising.aoc2020.day7
 
-import de.skyrising.aoc.BenchmarkBase
-import de.skyrising.aoc.Graph
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBase(2020, 7)
+import de.skyrising.aoc.*
 
 private fun readMap(lines: List<String>): Map<String, Set<Pair<String, Int>>> {
     val map = mutableMapOf<String, MutableSet<Pair<String, Int>>>()
@@ -39,68 +33,70 @@ private fun readGraph(lines: List<String>) = Graph.build<String, Nothing?> {
     }
 }
 
-@Suppress("unused")
-fun register() {
-    part1("Handy Haversacks") {
-        val set = mutableSetOf<String>()
-        var count = 0
-        var lastCount = -1
-        while (count > lastCount) {
-            for (line in lines) {
-                val (bags, contain) = line.split(" bags contain ")
-                if (contain.startsWith("no other")) continue
-                val containList = contain.split(", ")
-                for (containItem in containList) {
-                    val space = containItem.indexOf(' ')
-                    //val num = containItem.substring(0, space)
-                    val type = containItem.substring(space + 1, containItem.indexOf(" bag"))
-                    if (type == "shiny gold" || set.contains(type)) {
-                        set.add(bags)
-                    }
+@PuzzleName("Handy Haversacks")
+fun PuzzleInput.part1v0(): Any {
+    val set = mutableSetOf<String>()
+    var count = 0
+    var lastCount = -1
+    while (count > lastCount) {
+        for (line in lines) {
+            val (bags, contain) = line.split(" bags contain ")
+            if (contain.startsWith("no other")) continue
+            val containList = contain.split(", ")
+            for (containItem in containList) {
+                val space = containItem.indexOf(' ')
+                //val num = containItem.substring(0, space)
+                val type = containItem.substring(space + 1, containItem.indexOf(" bag"))
+                if (type == "shiny gold" || set.contains(type)) {
+                    set.add(bags)
                 }
             }
-            lastCount = count
-            count = set.size
         }
-        count
+        lastCount = count
+        count = set.size
     }
-    part1("Handy Haversacks") {
-        val graph = readGraph(lines)
-        val set = mutableSetOf("shiny gold")
-        var count = 0
-        while (set.size > count) {
-            count = set.size
-            val newSet = mutableSetOf<String>()
-            for (v in set) {
-                for ((from, _, weight, _) in graph.getIncoming(v)) {
-                    newSet.add(from)
-                }
+    return count
+}
+
+@PuzzleName("Handy Haversacks")
+fun PuzzleInput.part1v1(): Any {
+    val graph = readGraph(lines)
+    val set = mutableSetOf("shiny gold")
+    var count = 0
+    while (set.size > count) {
+        count = set.size
+        val newSet = mutableSetOf<String>()
+        for (v in set) {
+            for ((from, _, weight, _) in graph.getIncoming(v)) {
+                newSet.add(from)
             }
-            set.addAll(newSet)
         }
-        count - 1
+        set.addAll(newSet)
     }
-    part2 {
-        val map = readMap(lines)
-        fun getContained(type: String): Int {
-            val set = map[type] ?: return 1
-            var sum = 1
-            for ((contained, num) in set) {
-                sum += num * getContained(contained)
-            }
-            return sum
+    return count - 1
+}
+
+fun PuzzleInput.part2v0(): Any {
+    val map = readMap(lines)
+    fun getContained(type: String): Int {
+        val set = map[type] ?: return 1
+        var sum = 1
+        for ((contained, num) in set) {
+            sum += num * getContained(contained)
         }
-        getContained("shiny gold") - 1
+        return sum
     }
-    part2 {
-        val graph = readGraph(lines)
-        fun getContained(type: String): Int {
-            var sum = 1
-            for ((_, contained, num, _) in graph.getOutgoing(type)) {
-                sum += num * getContained(contained)
-            }
-            return sum
+    return getContained("shiny gold") - 1
+}
+
+fun PuzzleInput.part2v1(): Any {
+    val graph = readGraph(lines)
+    fun getContained(type: String): Int {
+        var sum = 1
+        for ((_, contained, num, _) in graph.getOutgoing(type)) {
+            sum += num * getContained(contained)
         }
-        getContained("shiny gold") - 1
+        return sum
     }
+    return getContained("shiny gold") - 1
 }

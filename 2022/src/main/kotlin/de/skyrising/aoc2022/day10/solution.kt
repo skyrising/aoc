@@ -3,9 +3,6 @@ package de.skyrising.aoc2022.day10
 import de.skyrising.aoc.*
 import kotlin.math.abs
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 10)
-
 private inline fun runProgram(input: PuzzleInput, cycle: (x: Int) -> Unit) {
     var x = 1
     for (line in input.lines) {
@@ -22,27 +19,26 @@ private inline fun runProgram(input: PuzzleInput, cycle: (x: Int) -> Unit) {
     }
 }
 
-@Suppress("unused")
-fun register() {
-    part1("Cathode-Ray Tube") {
-        var result = 0
-        var cycle = 0
-        runProgram(this) { x ->
-            if (++cycle % 40 == 20) {
-                result += cycle * x
-            }
+@PuzzleName("Cathode-Ray Tube")
+fun PuzzleInput.part1(): Any {
+    var result = 0
+    var cycle = 0
+    runProgram(this) { x ->
+        if (++cycle % 40 == 20) {
+            result += cycle * x
         }
-        result
     }
-    part2 {
-        var cycle = 0
-        val output = StringBuilder()
-        runProgram(this) { x ->
-            output.append(if (abs(x - cycle % 40) <= 1) "█" else " ")
-            if (++cycle % 40 == 0) output.append('\n')
-        }
-        val display = output.delete(output.length - 1, output.length).toString()
-        log(display)
-        parseDisplay(display)
+    return result
+}
+
+fun PuzzleInput.part2(): Any {
+    var cycle = 0
+    val output = StringBuilder()
+    runProgram(this) { x ->
+        output.append(if (abs(x - cycle % 40) <= 1) "█" else " ")
+        if (++cycle % 40 == 0) output.append('\n')
     }
+    val display = output.delete(output.length - 1, output.length).toString()
+    log(display)
+    return parseDisplay(display)
 }

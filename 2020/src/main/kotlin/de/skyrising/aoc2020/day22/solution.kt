@@ -3,9 +3,6 @@ package de.skyrising.aoc2020.day22
 import de.skyrising.aoc.*
 import java.util.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2020, 22)
-
 private fun readInput(input: PuzzleInput): Map<Int, LinkedList<Int>> {
     val map = mutableMapOf<Int, LinkedList<Int>>()
     var current = LinkedList<Int>()
@@ -80,51 +77,52 @@ private fun roundRecursive(p1: LinkedList<Int>, p2: LinkedList<Int>, previous: M
     return 0
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        Player 1:
-        9
-        2
-        6
-        3
-        1
+val test = TestInput("""
+    Player 1:
+    9
+    2
+    6
+    3
+    1
 
-        Player 2:
-        5
-        8
-        4
-        7
-        10
-    """)
-    val test2 = TestInput("""
-        Player 1:
-        43
-        19
+    Player 2:
+    5
+    8
+    4
+    7
+    10
+""")
 
-        Player 2:
-        2
-        29
-        14
-    """)
-    part1("Crab Combat") {
-        val (p1, p2) = ArrayList(readInput(this).values)
-        while (!round(p1, p2)) {}
-        var sum = 0
-        val winner = if (p1.isEmpty()) p2 else p1
-        for ((i, j) in winner.withIndex()) {
-            sum += (winner.size - i) * j
-        }
-        sum
+val test2 = TestInput("""
+    Player 1:
+    43
+    19
+
+    Player 2:
+    2
+    29
+    14
+""")
+
+@PuzzleName("Crab Combat")
+fun PuzzleInput.part1(): Any {
+    val (p1, p2) = ArrayList(readInput(this).values)
+    while (!round(p1, p2)) {}
+    var sum = 0
+    val winner = if (p1.isEmpty()) p2 else p1
+    for ((i, j) in winner.withIndex()) {
+        sum += (winner.size - i) * j
     }
-    part2 {
-        val (p1, p2) = ArrayList(readInput(this).values)
-        gameRecursive(p1, p2)
-        var sum = 0
-        val winner = if (p1.isEmpty()) p2 else p1
-        for ((i, j) in winner.withIndex()) {
-            sum += (winner.size - i) * j
-        }
-        sum
+    return sum
+}
+
+fun PuzzleInput.part2(): Any {
+    val (p1, p2) = ArrayList(readInput(this).values)
+    gameRecursive(p1, p2)
+    var sum = 0
+    val winner = if (p1.isEmpty()) p2 else p1
+    for ((i, j) in winner.withIndex()) {
+        sum += (winner.size - i) * j
     }
+    return sum
 }

@@ -3,36 +3,33 @@ package de.skyrising.aoc2021.day20
 import de.skyrising.aoc.*
 import java.util.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2021, 20)
+val test = TestInput("""
+    ..#.#..#####.#.#.#.###.##.....###.##.#..###.####..#####..#....#..#..##..###..######.###...####..#..#####..##..#.#####...##.#.#..#.##..#.#......#.###.######.###.####...#.##.##..#..#..#####.....#.#....###..#.##......#.....#..#..#..##..#...##.######.####.####.#.#...#.......#..#.#.#...####.##.#......#..#...##.#.##..#...##.#.##..###.#......#.#.......#.#.#.####.###.##...#.....####.#..#..#.##.#....##..#.####....##...##..#...#......#.#.......#.......##..####..#...#.#.#...##..#.#..###..#####........#..####......#..#
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        ..#.#..#####.#.#.#.###.##.....###.##.#..###.####..#####..#....#..#..##..###..######.###...####..#..#####..##..#.#####...##.#.#..#.##..#.#......#.###.######.###.####...#.##.##..#..#..#####.....#.#....###..#.##......#.....#..#..#..##..#...##.######.####.####.#.#...#.......#..#.#.#...####.##.#......#..#...##.#.##..#...##.#.##..###.#......#.#.......#.#.#.####.###.##...#.....####.#..#..#.##.#....##..#.####....##...##..#...#......#.#.......#.......##..####..#...#.#.#...##..#.#..###..#####........#..####......#..#
+    #..#.
+    #....
+    ##..#
+    ..#..
+    ..###
+""")
 
-        #..#.
-        #....
-        ##..#
-        ..#..
-        ..###
-    """)
-    part1("Trench Map") {
-        val (algorithm, image) = parseInput(this)
-        var img = InfiniteBitImage(image, 0, 0, false)
-        repeat(2) {
-            img = processImageStep(img, algorithm)
-        }
-        img.count()
+@PuzzleName("Trench Map")
+fun PuzzleInput.part1(): Any {
+    val (algorithm, image) = parseInput(this)
+    var img = InfiniteBitImage(image, 0, 0, false)
+    repeat(2) {
+        img = processImageStep(img, algorithm)
     }
-    part2 {
-        val (algorithm, image) = parseInput(this)
-        var img = InfiniteBitImage(image, 0, 0, false)
-        repeat(50) {
-            img = processImageStep(img, algorithm)
-        }
-        img.count()
+    return img.count()
+}
+
+fun PuzzleInput.part2(): Any {
+    val (algorithm, image) = parseInput(this)
+    var img = InfiniteBitImage(image, 0, 0, false)
+    repeat(50) {
+        img = processImageStep(img, algorithm)
     }
+    return img.count()
 }
 
 private fun parseInput(input: PuzzleInput): Pair<BitSet, BitImage> {

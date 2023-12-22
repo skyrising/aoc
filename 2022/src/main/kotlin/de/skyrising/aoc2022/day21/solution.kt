@@ -2,9 +2,6 @@ package de.skyrising.aoc2022.day21
 
 import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 21)
-
 private interface MonkeyMath {
     fun compute(monkeys: Map<String, MonkeyMath>): LongFraction
     fun toPolynomial(monkeys: Map<String, MonkeyMath>): LongPolynomial
@@ -57,32 +54,32 @@ private fun parseInput(input: PuzzleInput): MutableMap<String, MonkeyMath> {
     return monkeys
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        root: pppw + sjmn
-        dbpl: 5
-        cczh: sllz + lgvd
-        zczc: 2
-        ptdq: humn - dvpt
-        dvpt: 3
-        lfqf: 4
-        humn: 5
-        ljgn: 2
-        sjmn: drzm * dbpl
-        sllz: 4
-        pppw: cczh / lfqf
-        lgvd: ljgn * ptdq
-        drzm: hmdt - zczc
-        hmdt: 32
-    """)
-    part1("Monkey Math") {
-        val monkeys = parseInput(this)
-        monkeys["root"]!!.compute(monkeys)
-    }
-    part2 {
-        val monkeys = parseInput(this)
-        val root = monkeys["root"] as MonkeyOp
-        MonkeyOp(root.lhs, root.rhs, '=').toPolynomial(monkeys).rootNear(LongFraction(0))
-    }
+val test = TestInput("""
+    root: pppw + sjmn
+    dbpl: 5
+    cczh: sllz + lgvd
+    zczc: 2
+    ptdq: humn - dvpt
+    dvpt: 3
+    lfqf: 4
+    humn: 5
+    ljgn: 2
+    sjmn: drzm * dbpl
+    sllz: 4
+    pppw: cczh / lfqf
+    lgvd: ljgn * ptdq
+    drzm: hmdt - zczc
+    hmdt: 32
+""")
+
+@PuzzleName("Monkey Math")
+fun PuzzleInput.part1(): Any {
+    val monkeys = parseInput(this)
+    return monkeys["root"]!!.compute(monkeys)
+}
+
+fun PuzzleInput.part2(): Any? {
+    val monkeys = parseInput(this)
+    val root = monkeys["root"] as MonkeyOp
+    return MonkeyOp(root.lhs, root.rhs, '=').toPolynomial(monkeys).rootNear(LongFraction(0))
 }

@@ -1,26 +1,14 @@
 package de.skyrising.aoc2021.day24
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.util.function.IntFunction
 
+@PuzzleName("Arithmetic Logic Unit")
+fun PuzzleInput.part1() = solve(this, intArrayOf(9, 8, 7, 6, 5, 4, 3, 2, 1))
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2021, 24)
-
-@Suppress("unused")
-fun register() {
-    part1("Arithmetic Logic Unit") {
-        solve(this, intArrayOf(9, 8, 7, 6, 5, 4, 3, 2, 1))
-    }
-    part2 {
-        solve(this, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))
-    }
-}
+fun PuzzleInput.part2() = solve(this, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))
 
 data class Box<T>(val value: T)
 

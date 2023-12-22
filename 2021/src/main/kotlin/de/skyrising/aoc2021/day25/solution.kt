@@ -4,34 +4,30 @@ import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.objects.Object2CharMap
 import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2021, 25)
+val test = TestInput("""
+    v...>>.vv>
+    .vv>>.vv..
+    >>.>v>...v
+    >>v>>.>.v.
+    v>v.vv.v..
+    >.>>..v...
+    .vv..>.>v.
+    v.v..>>v.v
+    ....v..v.>
+""")
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        v...>>.vv>
-        .vv>>.vv..
-        >>.>v>...v
-        >>v>>.>.v.
-        v>v.vv.v..
-        >.>>..v...
-        .vv..>.>v.
-        v.v..>>v.v
-        ....v..v.>
-    """)
-    part1("Sea Cucumber") {
-        val (map, size) = parseInput(this)
-        var state = map
-        var steps = 0
-        while (true) {
-            steps++
-            val newState = step(state, size)
-            if (state == newState) break
-            state = newState
-        }
-        steps
+@PuzzleName("Sea Cucumber")
+fun PuzzleInput.part1(): Any {
+    val (map, size) = parseInput(this)
+    var state = map
+    var steps = 0
+    while (true) {
+        steps++
+        val newState = step(state, size)
+        if (state == newState) break
+        state = newState
     }
+    return steps
 }
 
 private fun step(map: Object2CharMap<Vec2i>, size: Vec2i): Object2CharMap<Vec2i> {

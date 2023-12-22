@@ -1,12 +1,7 @@
 package de.skyrising.aoc2022.day25
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.part1
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.IntArrayList
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 25)
 
 private fun snafuDecode(number: String): Long {
     var result = 0L
@@ -55,24 +50,21 @@ private fun snafuEncode(number: Long): String {
     return sb.toString()
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        1=-0-2
-        12111
-        2=0=
-        21
-        2=01
-        111
-        20012
-        112
-        1=-1=
-        1-12
-        12
-        1=
-        122
-    """)
-    part1("Full of Hot Air") {
-        snafuEncode(lines.map(::snafuDecode).sum())
-    }
-}
+val test = TestInput("""
+    1=-0-2
+    12111
+    2=0=
+    21
+    2=01
+    111
+    20012
+    112
+    1=-1=
+    1-12
+    12
+    1=
+    122
+""")
+
+@PuzzleName("Full of Hot Air")
+fun PuzzleInput.part1() = snafuEncode(lines.map(::snafuDecode).sum())

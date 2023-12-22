@@ -1,15 +1,9 @@
 package de.skyrising.aoc2022.day7
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.objects.Object2LongMap
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap
 import java.nio.file.Path
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 7)
 
 private fun parseInput(input: PuzzleInput): Object2LongMap<Path> {
     val commands = mutableListOf<Pair<String, List<String>>>()
@@ -50,29 +44,27 @@ private fun parseInput(input: PuzzleInput): Object2LongMap<Path> {
     return spaceUsed
 }
 
-@Suppress("unused")
-fun register() {
-    part1("No Space Left On Device") {
-        val spaceUsed = parseInput(this)
-        var sum = 0L
-        for (v in spaceUsed.values) {
-            if (v <= 100000) sum += v
-        }
-        sum
+@PuzzleName("No Space Left On Device")
+fun PuzzleInput.part1(): Any {
+    val spaceUsed = parseInput(this)
+    var sum = 0L
+    for (v in spaceUsed.values) {
+        if (v <= 100000) sum += v
     }
+    return sum
+}
 
-    part2 {
-        val spaceUsed = parseInput(this)
-        var smallestMatching = Long.MAX_VALUE
-        val used = spaceUsed.getLong(Path.of("/"))
-        val available = 70000000 - used
-        for (v in spaceUsed.values) {
-            if (v + available >= 30000000) {
-                if (v < smallestMatching) {
-                    smallestMatching = v
-                }
+fun PuzzleInput.part2(): Any {
+    val spaceUsed = parseInput(this)
+    var smallestMatching = Long.MAX_VALUE
+    val used = spaceUsed.getLong(Path.of("/"))
+    val available = 70000000 - used
+    for (v in spaceUsed.values) {
+        if (v + available >= 30000000) {
+            if (v < smallestMatching) {
+                smallestMatching = v
             }
         }
-        smallestMatching
     }
+    return smallestMatching
 }

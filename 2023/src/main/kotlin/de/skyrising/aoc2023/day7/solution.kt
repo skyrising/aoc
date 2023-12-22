@@ -4,9 +4,6 @@ import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.bytes.Byte2IntMap
 import java.nio.ByteBuffer
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2023, 7)
-
 enum class HandType {
     HIGH_CARD,
     ONE_PAIR,
@@ -70,19 +67,14 @@ private inline fun run(input: PuzzleInput, ctor: (ByteBuffer,Int)-> Hand) = inpu
     ctor(it.slice(0, 5), it.slice(6, it.remaining() - 6).toInt())
 }.sorted().sumOfWithIndex { i, it -> it.bid * (i + 1) }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        32T3K 765
-        T55J5 684
-        KK677 28
-        KTJJT 220
-        QQQJA 483
-    """)
-    part1("Camel Cards") {
-        run(this, Hand.Companion::part1)
-    }
-    part2 {
-        run(this, Hand.Companion::part2)
-    }
-}
+val test = TestInput("""
+    32T3K 765
+    T55J5 684
+    KK677 28
+    KTJJT 220
+    QQQJA 483
+""")
+
+@PuzzleName("Camel Cards")
+fun PuzzleInput.part1() = run(this, Hand.Companion::part1)
+fun PuzzleInput.part2() = run(this, Hand.Companion::part2)

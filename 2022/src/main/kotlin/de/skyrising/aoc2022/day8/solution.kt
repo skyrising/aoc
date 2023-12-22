@@ -3,9 +3,6 @@ package de.skyrising.aoc2022.day8
 import de.skyrising.aoc.*
 import java.util.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2022, 8)
-
 private fun parseInput(input: PuzzleInput): Array<IntArray> {
     val rows = mutableListOf<IntArray>()
     for (line in input.byteLines) {
@@ -31,69 +28,69 @@ private fun viewingDistance(limit: Int, lookup: (k: Int) -> Int): Int {
     return count
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        30373
-        25512
-        65332
-        33549
-        35390
-    """)
-    part1("Treetop Tree House") {
-        val rows = parseInput(this)
-        val width = rows[0].size
-        val height = rows.size
-        val visible = BitSet(width * height)
-        val down = 0 until height
-        val right = 0 until width
-        for (i in down) {
-            var highest = -1
-            for (j in right) {
-                if (rows[j][i] > highest) visible.set(j * height + i)
-                highest = maxOf(rows[j][i], highest)
-            }
-            highest = -1
-            for (j in right.reversed()) {
-                if (rows[j][i] > highest) visible.set(j * height + i)
-                highest = maxOf(rows[j][i], highest)
-            }
-        }
+val test = TestInput("""
+    30373
+    25512
+    65332
+    33549
+    35390
+""")
+
+@PuzzleName("Treetop Tree House")
+fun PuzzleInput.part1(): Any {
+    val rows = parseInput(this)
+    val width = rows[0].size
+    val height = rows.size
+    val visible = BitSet(width * height)
+    val down = 0 until height
+    val right = 0 until width
+    for (i in down) {
+        var highest = -1
         for (j in right) {
-            var highest = -1
-            for (i in down) {
-                if (rows[j][i] > highest) visible.set(j * height + i)
-                highest = maxOf(rows[j][i], highest)
-            }
-            highest = -1
-            for (i in down.reversed()) {
-                if (rows[j][i] > highest) visible.set(j * height + i)
-                highest = maxOf(rows[j][i], highest)
-            }
+            if (rows[j][i] > highest) visible.set(j * height + i)
+            highest = maxOf(rows[j][i], highest)
         }
-        /*for (j in 0 until height) {
-            for (i in 0 until width) {
-                if (visible.get(j * width + i)) print(rows[j][i]) else print(' ')
-            }
-            println()
-        }*/
-        visible.cardinality()
-    }
-    part2 {
-        val rows = parseInput(this)
-        val width = rows[0].size
-        val height = rows.size
-        var highscore = 0
-        for (j in 1 until height - 1) {
-            for (i in 1 until width - 1) {
-                val left = viewingDistance(i) { k -> rows[j][k]}
-                val right = viewingDistance(width - i - 1) { k -> rows[j][width - k - 1]}
-                val up = viewingDistance(j) { k -> rows[k][i]}
-                val down = viewingDistance(height - j - 1) { k -> rows[height - k - 1][i]}
-                val score = left * right * up * down
-                highscore = maxOf(highscore, score)
-            }
+        highest = -1
+        for (j in right.reversed()) {
+            if (rows[j][i] > highest) visible.set(j * height + i)
+            highest = maxOf(rows[j][i], highest)
         }
-        highscore
     }
+    for (j in right) {
+        var highest = -1
+        for (i in down) {
+            if (rows[j][i] > highest) visible.set(j * height + i)
+            highest = maxOf(rows[j][i], highest)
+        }
+        highest = -1
+        for (i in down.reversed()) {
+            if (rows[j][i] > highest) visible.set(j * height + i)
+            highest = maxOf(rows[j][i], highest)
+        }
+    }
+    /*for (j in 0 until height) {
+        for (i in 0 until width) {
+            if (visible.get(j * width + i)) print(rows[j][i]) else print(' ')
+        }
+        println()
+    }*/
+    return visible.cardinality()
+}
+
+fun PuzzleInput.part2(): Any {
+    val rows = parseInput(this)
+    val width = rows[0].size
+    val height = rows.size
+    var highscore = 0
+    for (j in 1 until height - 1) {
+        for (i in 1 until width - 1) {
+            val left = viewingDistance(i) { k -> rows[j][k]}
+            val right = viewingDistance(width - i - 1) { k -> rows[j][width - k - 1]}
+            val up = viewingDistance(j) { k -> rows[k][i]}
+            val down = viewingDistance(height - j - 1) { k -> rows[height - k - 1][i]}
+            val score = left * right * up * down
+            highscore = maxOf(highscore, score)
+        }
+    }
+    return highscore
 }

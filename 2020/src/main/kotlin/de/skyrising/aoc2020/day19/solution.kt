@@ -1,14 +1,8 @@
 package de.skyrising.aoc2020.day19
 
-import de.skyrising.aoc.BenchmarkBase
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBase(2020, 19)
 
 private interface PreRule {
     operator fun invoke(rules: (Int) -> String): String
@@ -52,91 +46,92 @@ private fun readPreRules(lines: List<String>): Triple<Int, Int2ObjectMap<String>
     return Triple(rules.size, cache, ::buildRule)
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        0: 4 1 5
-        1: 2 3 | 3 2
-        2: 4 4 | 5 5
-        3: 4 5 | 5 4
-        4: "a"
-        5: "b"
+val test = TestInput("""
+    0: 4 1 5
+    1: 2 3 | 3 2
+    2: 4 4 | 5 5
+    3: 4 5 | 5 4
+    4: "a"
+    5: "b"
 
-        ababbb
-        bababa
-        abbbab
-        aaabbb
-        aaaabbb
-    """)
-    val test2 = TestInput("""
-        42: 9 14 | 10 1
-        9: 14 27 | 1 26
-        10: 23 14 | 28 1
-        1: "a"
-        11: 42 31
-        5: 1 14 | 15 1
-        19: 14 1 | 14 14
-        12: 24 14 | 19 1
-        16: 15 1 | 14 14
-        31: 14 17 | 1 13
-        6: 14 14 | 1 14
-        2: 1 24 | 14 4
-        0: 8 11
-        13: 14 3 | 1 12
-        15: 1 | 14
-        17: 14 2 | 1 7
-        23: 25 1 | 22 14
-        28: 16 1
-        4: 1 1
-        20: 14 14 | 1 15
-        3: 5 14 | 16 1
-        27: 1 6 | 14 18
-        14: "b"
-        21: 14 1 | 1 14
-        25: 1 1 | 1 14
-        22: 14 14
-        8: 42
-        26: 14 22 | 1 20
-        18: 15 15
-        7: 14 5 | 1 21
-        24: 14 1
+    ababbb
+    bababa
+    abbbab
+    aaabbb
+    aaaabbb
+""")
 
-        abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
-        bbabbbbaabaabba
-        babbbbaabbbbbabbbbbbaabaaabaaa
-        aaabbbbbbaaaabaababaabababbabaaabbababababaaa
-        bbbbbbbaaaabbbbaaabbabaaa
-        bbbababbbbaaaaaaaabbababaaababaabab
-        ababaaaaaabaaab
-        ababaaaaabbbaba
-        baabbaaaabbaaaababbaababb
-        abbbbabbbbaaaababbbbbbaaaababb
-        aaaaabbaabaaaaababaa
-        aaaabbaaaabbaaa
-        aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
-        babaaabbbaaabaababbaabababaaab
-        aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
-    """)
-    part1("Monster Messages") {
-        val (rulesCount, _, buildRule) = readPreRules(lines)
-        val rule0 = Regex(buildRule(0))
-        var count = 0
-        for (i in rulesCount + 1 until lines.size) {
-            val message = lines[i]
-            if (rule0.matches(message)) count++
-        }
-        count
+val test2 = TestInput("""
+    42: 9 14 | 10 1
+    9: 14 27 | 1 26
+    10: 23 14 | 28 1
+    1: "a"
+    11: 42 31
+    5: 1 14 | 15 1
+    19: 14 1 | 14 14
+    12: 24 14 | 19 1
+    16: 15 1 | 14 14
+    31: 14 17 | 1 13
+    6: 14 14 | 1 14
+    2: 1 24 | 14 4
+    0: 8 11
+    13: 14 3 | 1 12
+    15: 1 | 14
+    17: 14 2 | 1 7
+    23: 25 1 | 22 14
+    28: 16 1
+    4: 1 1
+    20: 14 14 | 1 15
+    3: 5 14 | 16 1
+    27: 1 6 | 14 18
+    14: "b"
+    21: 14 1 | 1 14
+    25: 1 1 | 1 14
+    22: 14 14
+    8: 42
+    26: 14 22 | 1 20
+    18: 15 15
+    7: 14 5 | 1 21
+    24: 14 1
+
+    abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+    bbabbbbaabaabba
+    babbbbaabbbbbabbbbbbaabaaabaaa
+    aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+    bbbbbbbaaaabbbbaaabbabaaa
+    bbbababbbbaaaaaaaabbababaaababaabab
+    ababaaaaaabaaab
+    ababaaaaabbbaba
+    baabbaaaabbaaaababbaababb
+    abbbbabbbbaaaababbbbbbaaaababb
+    aaaaabbaabaaaaababaa
+    aaaabbaaaabbaaa
+    aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+    babaaabbbaaabaababbaabababaaab
+    aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
+""")
+
+@PuzzleName("Monster Messages")
+fun PuzzleInput.part1(): Any {
+    val (rulesCount, _, buildRule) = readPreRules(lines)
+    val rule0 = Regex(buildRule(0))
+    var count = 0
+    for (i in rulesCount + 1 until lines.size) {
+        val message = lines[i]
+        if (rule0.matches(message)) count++
     }
-    part2 {
-        // 0: 8 11
-        // 8: 42 | 42 8 -> 42+
-        // 11: 42 31 | 42 11 31 -> (42(?-1)?31)
-        // https://regex101.com/r/9CrEQm/1
-        val (_, cache, buildRule) = readPreRules(lines)
-        val rule31 = buildRule(31)
-        val rule42 = buildRule(42)
-        cache[8] = "(?:$rule42)+"
-        cache[11] = "((?:$rule42)(?-1)?(?:$rule31))"
-        "^${buildRule(0)}$"
-    }
+    return count
+}
+
+fun PuzzleInput.part2(): Any {
+    // 0: 8 11
+    // 8: 42 | 42 8 -> 42+
+    // 11: 42 31 | 42 11 31 -> (42(?-1)?31)
+    // https://regex101.com/r/9CrEQm/1
+    val (_, cache, buildRule) = readPreRules(lines)
+    val rule31 = buildRule(31)
+    val rule42 = buildRule(42)
+    cache[8] = "(?:$rule42)+"
+    cache[11] = "((?:$rule42)(?-1)?(?:$rule31))"
+    return "^${buildRule(0)}$"
 }

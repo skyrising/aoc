@@ -1,11 +1,6 @@
 package de.skyrising.aoc2019.day4
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2019, 4)
+import de.skyrising.aoc.*
 
 inline fun valid(password: String, validRun: (Int)->Boolean): Boolean {
     var last = '0'
@@ -24,14 +19,13 @@ inline fun valid(password: String, validRun: (Int)->Boolean): Boolean {
     return hasValidRun || validRun(run)
 }
 
-@Suppress("unused")
-fun register() {
-    part1("Secure Container") {
-        val (min, max) = lines[0].split('-').map(String::toInt)
-        (min..max).count { valid(it.toString()) { it >= 2 } }
-    }
-    part2 {
-        val (min, max) = lines[0].split('-').map(String::toInt)
-        (min..max).count { valid(it.toString()) { it == 2 } }
-    }
+@PuzzleName("Secure Container")
+fun PuzzleInput.part1(): Any {
+    val (min, max) = lines[0].split('-').map(String::toInt)
+    return (min..max).count { valid(it.toString()) { it >= 2 } }
+}
+
+fun PuzzleInput.part2(): Any {
+    val (min, max) = lines[0].split('-').map(String::toInt)
+    return (min..max).count { valid(it.toString()) { it == 2 } }
 }

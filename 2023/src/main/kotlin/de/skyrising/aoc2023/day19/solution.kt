@@ -2,9 +2,6 @@ package de.skyrising.aoc2023.day19
 
 import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2023, 19)
-
 enum class Operator {
     LT, GT;
     companion object {
@@ -111,44 +108,44 @@ inline fun allAccepted(workflows: Map<String, Workflow>): MutableList<Categories
     return accepted
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        px{a<2006:qkq,m>2090:A,rfg}
-        pv{a>1716:R,A}
-        lnx{m>1548:A,A}
-        rfg{s<537:gd,x>2440:R,A}
-        qs{s>3448:A,lnx}
-        qkq{x<1416:A,crn}
-        crn{x>2662:A,R}
-        in{s<1351:px,qqz}
-        qqz{s>2770:qs,m<1801:hdj,R}
-        gd{a>3333:R,R}
-        hdj{m>838:A,pv}
-        
-        {x=787,m=2655,a=1222,s=2876}
-        {x=1679,m=44,a=2067,s=496}
-        {x=2036,m=264,a=79,s=2244}
-        {x=2461,m=1339,a=466,s=291}
-        {x=2127,m=1623,a=2188,s=1013}
-    """)
-    part1("Aplenty") {
-        val (workflows, ratings) = parse(this)
-        var result = 0
-        for (rating in ratings) {
-            var state = "in"
-            while (state != "R" && state != "A") {
-                val workflow = workflows[state]!!
-                state = workflow.rules.first { it.matches(rating) }.next
-            }
-            if (state == "A") {
-                result += rating.x + rating.m + rating.a + rating.s
-            }
+val test = TestInput("""
+    px{a<2006:qkq,m>2090:A,rfg}
+    pv{a>1716:R,A}
+    lnx{m>1548:A,A}
+    rfg{s<537:gd,x>2440:R,A}
+    qs{s>3448:A,lnx}
+    qkq{x<1416:A,crn}
+    crn{x>2662:A,R}
+    in{s<1351:px,qqz}
+    qqz{s>2770:qs,m<1801:hdj,R}
+    gd{a>3333:R,R}
+    hdj{m>838:A,pv}
+    
+    {x=787,m=2655,a=1222,s=2876}
+    {x=1679,m=44,a=2067,s=496}
+    {x=2036,m=264,a=79,s=2244}
+    {x=2461,m=1339,a=466,s=291}
+    {x=2127,m=1623,a=2188,s=1013}
+""")
+
+@PuzzleName("Aplenty")
+fun PuzzleInput.part1(): Any {
+    val (workflows, ratings) = parse(this)
+    var result = 0
+    for (rating in ratings) {
+        var state = "in"
+        while (state != "R" && state != "A") {
+            val workflow = workflows[state]!!
+            state = workflow.rules.first { it.matches(rating) }.next
         }
-        result
+        if (state == "A") {
+            result += rating.x + rating.m + rating.a + rating.s
+        }
     }
-    part2 {
-        val (workflows, _) = parse(this, false)
-        allAccepted(workflows).sumOf(Categories<IntRange>::combinations)
-    }
+    return result
+}
+
+fun PuzzleInput.part2(): Any {
+    val (workflows, _) = parse(this, false)
+    return allAccepted(workflows).sumOf(Categories<IntRange>::combinations)
 }

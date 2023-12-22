@@ -4,9 +4,6 @@ import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2023, 14)
-
 inline fun CharGrid.shift(i: Int, range: IntProgression, rocks: Int, sett: CharGrid.(Int,Int,Char)->Unit) {
     var r = rocks
     val dist = (if (range.step > 0) range.last - range.first else range.first - range.last) + 1
@@ -51,47 +48,48 @@ fun CharGrid.slideEast() {
     slide(0 until height, (0 until width).reversed(), CharGrid::getT, CharGrid::setT)
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        O....#....
-        O.OO#....#
-        .....##...
-        OO.#O....O
-        .O.....O#.
-        O.#..O.#.#
-        ..O..#O..O
-        .......O..
-        #....###..
-        #OO..#....
-    """)
-    val test2 = TestInput("""
-        .#.
-        .O.
-        ...
-    """)
-    part1("Parabolic Reflector Dish") {
-        val grid = charGrid
-        grid.slideNorth()
-        grid.sumOf { if (it.charValue == 'O') grid.height - it.key.y else 0 }
-    }
-    part2 {
-        val grid = charGrid
-        val limit = 1_000_000_000
-        val grids = IntArrayList()
-        val indexes = Object2IntOpenHashMap<String>().apply { defaultReturnValue(-1) }
-        for (i in 1  .. limit) {
-            var sum = 0
-            grid.forEach { _, y, c -> if (c == 'O') sum += grid.height - y }
-            grids.add(sum)
-            grid.slideNorth()
-            grid.slideWest()
-            grid.slideSouth()
-            grid.slideEast()
+val test = TestInput("""
+    O....#....
+    O.OO#....#
+    .....##...
+    OO.#O....O
+    .O.....O#.
+    O.#..O.#.#
+    ..O..#O..O
+    .......O..
+    #....###..
+    #OO..#....
+""")
 
-            val previous = indexes.putIfAbsent(String(grid.data), i)
-            if (previous >= 0) return@part2 grids.getInt( previous + (limit - i) % (i - previous))
-        }
-        error("Expected cycle")
+val test2 = TestInput("""
+    .#.
+    .O.
+    ...
+""")
+
+@PuzzleName("Parabolic Reflector Dish")
+fun PuzzleInput.part1(): Any {
+    val grid = charGrid
+    grid.slideNorth()
+    return grid.sumOf { if (it.charValue == 'O') grid.height - it.key.y else 0 }
+}
+
+fun PuzzleInput.part2(): Any {
+    val grid = charGrid
+    val limit = 1_000_000_000
+    val grids = IntArrayList()
+    val indexes = Object2IntOpenHashMap<String>().apply { defaultReturnValue(-1) }
+    for (i in 1  .. limit) {
+        var sum = 0
+        grid.forEach { _, y, c -> if (c == 'O') sum += grid.height - y }
+        grids.add(sum)
+        grid.slideNorth()
+        grid.slideWest()
+        grid.slideSouth()
+        grid.slideEast()
+
+        val previous = indexes.putIfAbsent(String(grid.data), i)
+        if (previous >= 0) return grids.getInt( previous + (limit - i) % (i - previous))
     }
+    error("Expected cycle")
 }

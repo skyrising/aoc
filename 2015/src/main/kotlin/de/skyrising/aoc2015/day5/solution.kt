@@ -1,11 +1,6 @@
 package de.skyrising.aoc2015.day5
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2015, 5)
+import de.skyrising.aoc.*
 
 private fun isNice1(s: String): Boolean {
     if (!Regex("[aeiou].*[aeiou].*[aeiou]").containsMatchIn(s)) return false
@@ -34,12 +29,7 @@ private fun isNice2(s: String): Boolean {
     return false
 }
 
-@Suppress("unused")
-fun register() {
-    part1("Doesn't He Have Intern-Elves For This?") {
-        lines.count(::isNice1)
-    }
-    part2 {
-        lines.count(::isNice2)
-    }
-}
+@PuzzleName("Doesn't He Have Intern-Elves For This?")
+fun PuzzleInput.part1() = lines.count(::isNice1)
+
+fun PuzzleInput.part2() = lines.count(::isNice2)

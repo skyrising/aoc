@@ -2,37 +2,31 @@ package de.skyrising.aoc2021.day18
 
 import de.skyrising.aoc.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2021, 18)
+val test = TestInput("""
+    [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
+    [[[5,[2,8]],4],[5,[[9,9],0]]]
+    [6,[[[6,2],[5,6]],[[7,6],[4,7]]]]
+    [[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]
+    [[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]
+    [[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]
+    [[[[5,4],[7,7]],8],[[8,3],8]]
+    [[9,3],[[9,9],[6,[4,9]]]]
+    [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
+    [[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]
+""")
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
-        [[[5,[2,8]],4],[5,[[9,9],0]]]
-        [6,[[[6,2],[5,6]],[[7,6],[4,7]]]]
-        [[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]
-        [[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]
-        [[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]
-        [[[[5,4],[7,7]],8],[[8,3],8]]
-        [[9,3],[[9,9],[6,[4,9]]]]
-        [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
-        [[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]
-    """)
-    val test1 = TestInput("""
-        [1,1]
-        [2,2]
-        [3,3]
-        [4,4]
-        [5,5]
-    """)
-    part1("Snailfish") {
-        lines.map(SnailfishNumber::parse).reduce(SnailfishNumber::plus).magnitude()
-    }
-    part2 {
-        lines.map(SnailfishNumber::parse).pairs().map { (a, b) -> a + b }.maxOf(SnailfishNumber::magnitude)
-    }
-}
+val test1 = TestInput("""
+    [1,1]
+    [2,2]
+    [3,3]
+    [4,4]
+    [5,5]
+""")
+
+@PuzzleName("Snailfish")
+fun PuzzleInput.part1() = lines.map(SnailfishNumber::parse).reduce(SnailfishNumber::plus).magnitude()
+
+fun PuzzleInput.part2() = lines.map(SnailfishNumber::parse).pairs().map { (a, b) -> a + b }.maxOf(SnailfishNumber::magnitude)
 
 class SnailfishNumber(var a: Any, var b: Any) {
     init {

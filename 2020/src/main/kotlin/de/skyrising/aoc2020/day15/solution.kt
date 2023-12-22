@@ -1,15 +1,9 @@
 package de.skyrising.aoc2020.day15
 
-import de.skyrising.aoc.BenchmarkBase
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.HashCommon
 import it.unimi.dsi.fastutil.ints.Int2IntMap
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBase(2020, 15)
 
 private fun day15next(mem: Int2IntMap, turn: Int, next: Int): Int {
     val n = turn - mem.getOrDefault(next, turn)
@@ -89,23 +83,15 @@ private fun day15v2(starting: List<Int>, limit: Int): Int {
     return next
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("0,3,6")
-    part1("Rambunctious Recitation") {
-        val starting = chars.trim().split(",").map(String::toInt)
-        day15(starting, 2020)
-    }
-    part1("Rambunctious Recitation") {
-        val starting = chars.trim().split(",").map(String::toInt)
-        day15v2(starting, 2020)
-    }
-    part2 {
-        val starting = chars.trim().split(",").map(String::toInt)
-        day15(starting, 30000000)
-    }
-    part2 {
-        val starting = chars.trim().split(",").map(String::toInt)
-        day15v2(starting, 30000000)
-    }
-}
+
+val test = TestInput("0,3,6")
+
+@PuzzleName("Rambunctious Recitation")
+fun PuzzleInput.part1v0() = day15(chars.trim().split(",").map(String::toInt), 2020)
+
+@PuzzleName("Rambunctious Recitation")
+fun PuzzleInput.part1v1() = day15v2(chars.trim().split(",").map(String::toInt), 2020)
+
+fun PuzzleInput.part2v0() = day15(chars.trim().split(",").map(String::toInt), 30000000)
+
+fun PuzzleInput.part2v1() = day15v2(chars.trim().split(",").map(String::toInt), 30000000)

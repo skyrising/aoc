@@ -1,18 +1,12 @@
 package de.skyrising.aoc2020.day20
 
-import de.skyrising.aoc.BenchmarkBaseV1
-import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.ints.IntSet
 import java.util.*
 import kotlin.math.sqrt
-
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2020, 20)
 
 private class Tile(val id: Int, val width: Int, val height: Int, val flipped: Boolean = false, val rotated: Int = 0) {
     private val data = BooleanArray(width * height)
@@ -300,161 +294,161 @@ private class Tile(val id: Int, val width: Int, val height: Int, val flipped: Bo
     }
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        Tile 2311:
-        ..##.#..#.
-        ##..#.....
-        #...##..#.
-        ####.#...#
-        ##.##.###.
-        ##...#.###
-        .#.#.#..##
-        ..#....#..
-        ###...#.#.
-        ..###..###
+val test = TestInput("""
+    Tile 2311:
+    ..##.#..#.
+    ##..#.....
+    #...##..#.
+    ####.#...#
+    ##.##.###.
+    ##...#.###
+    .#.#.#..##
+    ..#....#..
+    ###...#.#.
+    ..###..###
 
-        Tile 1951:
-        #.##...##.
-        #.####...#
-        .....#..##
-        #...######
-        .##.#....#
-        .###.#####
-        ###.##.##.
-        .###....#.
-        ..#.#..#.#
-        #...##.#..
+    Tile 1951:
+    #.##...##.
+    #.####...#
+    .....#..##
+    #...######
+    .##.#....#
+    .###.#####
+    ###.##.##.
+    .###....#.
+    ..#.#..#.#
+    #...##.#..
 
-        Tile 1171:
-        ####...##.
-        #..##.#..#
-        ##.#..#.#.
-        .###.####.
-        ..###.####
-        .##....##.
-        .#...####.
-        #.##.####.
-        ####..#...
-        .....##...
+    Tile 1171:
+    ####...##.
+    #..##.#..#
+    ##.#..#.#.
+    .###.####.
+    ..###.####
+    .##....##.
+    .#...####.
+    #.##.####.
+    ####..#...
+    .....##...
 
-        Tile 1427:
-        ###.##.#..
-        .#..#.##..
-        .#.##.#..#
-        #.#.#.##.#
-        ....#...##
-        ...##..##.
-        ...#.#####
-        .#.####.#.
-        ..#..###.#
-        ..##.#..#.
+    Tile 1427:
+    ###.##.#..
+    .#..#.##..
+    .#.##.#..#
+    #.#.#.##.#
+    ....#...##
+    ...##..##.
+    ...#.#####
+    .#.####.#.
+    ..#..###.#
+    ..##.#..#.
 
-        Tile 1489:
-        ##.#.#....
-        ..##...#..
-        .##..##...
-        ..#...#...
-        #####...#.
-        #..#.#.#.#
-        ...#.#.#..
-        ##.#...##.
-        ..##.##.##
-        ###.##.#..
+    Tile 1489:
+    ##.#.#....
+    ..##...#..
+    .##..##...
+    ..#...#...
+    #####...#.
+    #..#.#.#.#
+    ...#.#.#..
+    ##.#...##.
+    ..##.##.##
+    ###.##.#..
 
-        Tile 2473:
-        #....####.
-        #..#.##...
-        #.##..#...
-        ######.#.#
-        .#...#.#.#
-        .#########
-        .###.#..#.
-        ########.#
-        ##...##.#.
-        ..###.#.#.
+    Tile 2473:
+    #....####.
+    #..#.##...
+    #.##..#...
+    ######.#.#
+    .#...#.#.#
+    .#########
+    .###.#..#.
+    ########.#
+    ##...##.#.
+    ..###.#.#.
 
-        Tile 2971:
-        ..#.#....#
-        #...###...
-        #.#.###...
-        ##.##..#..
-        .#####..##
-        .#..####.#
-        #..#.#..#.
-        ..####.###
-        ..#.#.###.
-        ...#.#.#.#
+    Tile 2971:
+    ..#.#....#
+    #...###...
+    #.#.###...
+    ##.##..#..
+    .#####..##
+    .#..####.#
+    #..#.#..#.
+    ..####.###
+    ..#.#.###.
+    ...#.#.#.#
 
-        Tile 2729:
-        ...#.#.#.#
-        ####.#....
-        ..#.#.....
-        ....#..#.#
-        .##..##.#.
-        .#.####...
-        ####.#.#..
-        ##.####...
-        ##..#.##..
-        #.##...##.
+    Tile 2729:
+    ...#.#.#.#
+    ####.#....
+    ..#.#.....
+    ....#..#.#
+    .##..##.#.
+    .#.####...
+    ####.#.#..
+    ##.####...
+    ##..#.##..
+    #.##...##.
 
-        Tile 3079:
-        #.#.#####.
-        .#..######
-        ..#.......
-        ######....
-        ####.#..#.
-        .#...#.##.
-        #.#####.##
-        ..#.###...
-        ..#.......
-        ..#.###...
-    """)
-    part1("Jurassic Jigsaw") {
-        val tiles = Tile.parseTiles(lines)
-        val variants = Tile.getVariants(tiles)
-        val size = sqrt(tiles.size.toDouble()).toInt()
-        val borders = Tile.findBorders(variants)
-        val dedup = mutableSetOf<IntSet>()
-        val bordersDedup = mutableListOf<Array<Tile?>>()
-        for ((sBorder, _) in borders) {
-            val corners = IntSet.of(sBorder[0]!!.id, sBorder[size - 1]!!.id, sBorder[(size - 1) * size]!!.id, sBorder[size * size - 1]!!.id)
-            if (dedup.add(corners)) {
-                bordersDedup.add(sBorder)
-            }
+    Tile 3079:
+    #.#.#####.
+    .#..######
+    ..#.......
+    ######....
+    ####.#..#.
+    .#...#.##.
+    #.#####.##
+    ..#.###...
+    ..#.......
+    ..#.###...
+""")
+
+@PuzzleName("Jurassic Jigsaw")
+fun PuzzleInput.part1(): Any {
+    val tiles = Tile.parseTiles(lines)
+    val variants = Tile.getVariants(tiles)
+    val size = sqrt(tiles.size.toDouble()).toInt()
+    val borders = Tile.findBorders(variants)
+    val dedup = mutableSetOf<IntSet>()
+    val bordersDedup = mutableListOf<Array<Tile?>>()
+    for ((sBorder, _) in borders) {
+        val corners = IntSet.of(sBorder[0]!!.id, sBorder[size - 1]!!.id, sBorder[(size - 1) * size]!!.id, sBorder[size * size - 1]!!.id)
+        if (dedup.add(corners)) {
+            bordersDedup.add(sBorder)
         }
-        if (dedup.size == 1) return@part1 dedup.single().map(Int::toLong).reduceRight(Long::times)
-        0
     }
-    part2 {
-        val seaMonster = Tile.parseTiles("""
-            |Tile 1:
-            |                  # 
-            |#    ##    ##    ###
-            | #  #  #  #  #  #   
-        """.trimMargin("|").split("\n"), 60).single()
-        val tiles = Tile.parseTiles(lines)
-        val variants = Tile.getVariants(tiles)
-        val size = sqrt(tiles.size.toDouble()).toInt()
-        val solutions = Tile.solveFull(variants)
-        val allSolutions = mutableSetOf<Tile>()
-        for (solution in solutions) {
-            allSolutions.addAll(Tile.combine(0, solution, size).allRotations())
-        }
-        for (solution in allSolutions) {
-            val monsters = solution.findAll(seaMonster)
-            if (monsters.isEmpty()) continue
-            // println(solution.contentToString())
-            for ((xOff, yOff) in monsters) {
-                for (y in 0 until seaMonster.height) {
-                    for (x in 0 until seaMonster.width) {
-                        if (seaMonster[x, y]) solution[x + xOff, y + yOff] = false
-                    }
+    if (dedup.size == 1) return dedup.single().map(Int::toLong).reduceRight(Long::times)
+    return 0
+}
+
+fun PuzzleInput.part2(): Any {
+    val seaMonster = Tile.parseTiles("""
+        |Tile 1:
+        |                  # 
+        |#    ##    ##    ###
+        | #  #  #  #  #  #   
+    """.trimMargin("|").split("\n"), 60).single()
+    val tiles = Tile.parseTiles(lines)
+    val variants = Tile.getVariants(tiles)
+    val size = sqrt(tiles.size.toDouble()).toInt()
+    val solutions = Tile.solveFull(variants)
+    val allSolutions = mutableSetOf<Tile>()
+    for (solution in solutions) {
+        allSolutions.addAll(Tile.combine(0, solution, size).allRotations())
+    }
+    for (solution in allSolutions) {
+        val monsters = solution.findAll(seaMonster)
+        if (monsters.isEmpty()) continue
+        // println(solution.contentToString())
+        for ((xOff, yOff) in monsters) {
+            for (y in 0 until seaMonster.height) {
+                for (x in 0 until seaMonster.width) {
+                    if (seaMonster[x, y]) solution[x + xOff, y + yOff] = false
                 }
             }
-            return@part2 solution.count()
         }
-        0
+        return solution.count()
     }
+    return 0
 }

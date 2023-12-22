@@ -1,84 +1,81 @@
 package de.skyrising.aoc2020.day2
 
-import de.skyrising.aoc.BenchmarkBase
-import de.skyrising.aoc.part1
-import de.skyrising.aoc.part2
+import de.skyrising.aoc.*
 import java.nio.ByteBuffer
 import java.util.regex.Pattern
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBase(2020, 2)
+@PuzzleName("Password Philosophy")
+fun PuzzleInput.part1v0(): Any {
+    val pattern = Pattern.compile("^(?<min>\\d+)-(?<max>\\d+) (?<char>.): (?<password>.*)$")
+    var valid = 0
+    outer@ for (line in lines) {
+        val match = pattern.matcher(line)
+        if (!match.find()) {
+            println("Could not parse $line")
+            continue
+        }
+        val min = match.group("min").toInt()
+        val max = match.group("max").toInt()
+        val c = match.group("char")[0]
+        val password = match.group("password").toCharArray()
+        var count = 0
+        for (pc in password) {
+            if (pc == c) {
+                count++
+                if (count > max) continue@outer
+            }
+        }
+        if (count >= min) valid++
+    }
+    return valid
+}
 
-@Suppress("unused")
-fun register() {
-    part1("Password Philosophy") {
-        val pattern = Pattern.compile("^(?<min>\\d+)-(?<max>\\d+) (?<char>.): (?<password>.*)$")
-        var valid = 0
-        outer@ for (line in lines) {
-            val match = pattern.matcher(line)
-            if (!match.find()) {
-                println("Could not parse $line")
-                continue
-            }
-            val min = match.group("min").toInt()
-            val max = match.group("max").toInt()
-            val c = match.group("char")[0]
-            val password = match.group("password").toCharArray()
+@PuzzleName("Password Philosophy")
+fun PuzzleInput.part1v1(): Any {
+    var valid = 0
+    for (line in byteLines) {
+        valid += day2(line) { min, max, c, start, end ->
             var count = 0
-            for (pc in password) {
-                if (pc == c) {
+            for (i in start until end) {
+                if (line[i] == c) {
                     count++
-                    if (count > max) continue@outer
+                    if (count > max) return@day2 false
                 }
             }
-            if (count >= min) valid++
+            count >= min
         }
-        valid
     }
-    part1("Password Philosophy") {
-        var valid = 0
-        for (line in byteLines) {
-            valid += day2(line) { min, max, c, start, end ->
-                var count = 0
-                for (i in start until end) {
-                    if (line[i] == c) {
-                        count++
-                        if (count > max) return@day2 false
-                    }
-                }
-                count >= min
-            }
+    return valid
+}
+
+fun PuzzleInput.part2v0(): Any {
+    val pattern = Pattern.compile("^(?<first>\\d+)-(?<second>\\d+) (?<char>.): (?<password>.*)$")
+    var valid = 0
+    for (line in lines) {
+        val match = pattern.matcher(line)
+        if (!match.find()) {
+            println("Could not parse $line")
+            continue
         }
-        valid
-    }
-    part2 {
-        val pattern = Pattern.compile("^(?<first>\\d+)-(?<second>\\d+) (?<char>.): (?<password>.*)$")
-        var valid = 0
-        for (line in lines) {
-            val match = pattern.matcher(line)
-            if (!match.find()) {
-                println("Could not parse $line")
-                continue
-            }
-            val first = match.group("first").toInt()
-            val second = match.group("second").toInt()
-            val c = match.group("char")[0]
-            val password = match.group("password").toCharArray()
-            if ((password[first - 1] == c) xor (password[second - 1] == c)) {
-                valid++
-            }
+        val first = match.group("first").toInt()
+        val second = match.group("second").toInt()
+        val c = match.group("char")[0]
+        val password = match.group("password").toCharArray()
+        if ((password[first - 1] == c) xor (password[second - 1] == c)) {
+            valid++
         }
-        valid
     }
-    part2 {
-        var valid = 0
-        for (line in byteLines) {
-            valid += day2(line) { first, second, c, start, _ ->
-                (line[start + first - 1] == c) xor (line[start + second - 1] == c)
-            }
+    return valid
+}
+
+fun PuzzleInput.part2v1(): Any {
+    var valid = 0
+    for (line in byteLines) {
+        valid += day2(line) { first, second, c, start, _ ->
+            (line[start + first - 1] == c) xor (line[start + second - 1] == c)
         }
-        valid
     }
+    return valid
 }
 
 private inline fun day2(line: ByteBuffer, predicate: (n1: Int, n2: Int, c: Byte, start: Int, end: Int) -> Boolean): Int {

@@ -6,9 +6,6 @@ import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.ObjectArraySet
 import java.util.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBase(2020, 16)
-
 private fun parseInput(input: PuzzleInput, v2: Boolean = false): Triple<Map<String, Set<IntRange>>, IntList, MutableList<IntList>> {
     val classes = mutableMapOf<String, Set<IntRange>>()
     var state = 0
@@ -117,221 +114,225 @@ fun mergeRanges(ranges: Collection<IntRange>): Set<IntRange> {
     return set
 }
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        class: 1-3 or 5-7
-        row: 6-11 or 33-44
-        seat: 13-40 or 45-50
+val test = TestInput("""
+    class: 1-3 or 5-7
+    row: 6-11 or 33-44
+    seat: 13-40 or 45-50
 
-        your ticket:
-        7,1,14
+    your ticket:
+    7,1,14
 
-        nearby tickets:
-        7,3,47
-        40,4,50
-        55,2,20
-        38,6,12
-    """)
-    val test2 = TestInput("""
-        class: 0-1 or 4-19
-        row: 0-5 or 8-19
-        seat: 0-13 or 16-19
+    nearby tickets:
+    7,3,47
+    40,4,50
+    55,2,20
+    38,6,12
+""")
 
-        your ticket:
-        11,12,13
+val test2 = TestInput("""
+    class: 0-1 or 4-19
+    row: 0-5 or 8-19
+    seat: 0-13 or 16-19
 
-        nearby tickets:
-        3,9,18
-        15,1,5
-        5,14,9
-    """)
-    part1("Ticket Translation") {
-        val (classes, _, nearby) = parseInput(this)
-        var sum = 0
-        for (ticket in nearby) {
-            for (i in ticket) {
-                var validClass = false
-                outer@ for (c in classes.values) {
-                    for (r in c) {
-                        if (i in r) {
-                            validClass = true
-                            break@outer
-                        }
+    your ticket:
+    11,12,13
+
+    nearby tickets:
+    3,9,18
+    15,1,5
+    5,14,9
+""")
+
+@PuzzleName("Ticket Translation")
+fun PuzzleInput.part1v0(): Any {
+    val (classes, _, nearby) = parseInput(this)
+    var sum = 0
+    for (ticket in nearby) {
+        for (i in ticket) {
+            var validClass = false
+            outer@ for (c in classes.values) {
+                for (r in c) {
+                    if (i in r) {
+                        validClass = true
+                        break@outer
                     }
                 }
-                if (!validClass) sum += i
             }
+            if (!validClass) sum += i
         }
-        sum
     }
-    part1("Ticket Translation") {
-        val (classes, _, nearby) = parseInput(this, true)
-        val ranges = mutableSetOf<IntRange>()
-        for ((_, r) in classes) ranges.addAll(r)
-        val merged = mergeRanges(ranges)
-        var sum = 0
-        for (ticket in nearby) {
-            val iter = ticket.iterator()
-            while (iter.hasNext()) {
-                val i = iter.nextInt()
+    return sum
+}
+
+@PuzzleName("Ticket Translation")
+fun PuzzleInput.part1v1(): Any {
+    val (classes, _, nearby) = parseInput(this, true)
+    val ranges = mutableSetOf<IntRange>()
+    for ((_, r) in classes) ranges.addAll(r)
+    val merged = mergeRanges(ranges)
+    var sum = 0
+    for (ticket in nearby) {
+        val iter = ticket.iterator()
+        while (iter.hasNext()) {
+            val i = iter.nextInt()
+            var validClass = false
+            for (r in merged) {
+                if (i in r) {
+                    validClass = true
+                    break
+                }
+            }
+            if (!validClass) sum += i
+        }
+    }
+    return sum
+}
+
+fun PuzzleInput.part2v0(): Any {
+    val (classes, yourTicket, nearby) = parseInput(this)
+    val candidates = Array<MutableSet<String>>(yourTicket.size) { HashSet(classes.keys) }
+    ticketLoop@ for (ticket in nearby) {
+        for (i in ticket) {
+            var validClass = false
+            outer@ for (c in classes.values) {
+                for (r in c) {
+                    if (i in r) {
+                        validClass = true
+                        break@outer
+                    }
+                }
+            }
+            if (!validClass) continue@ticketLoop
+        }
+        ticket.forEachIndexed { index, i ->
+            candidates[index].removeIf { className ->
+                val c = classes[className]!!
                 var validClass = false
-                for (r in merged) {
+                for (r in c) {
                     if (i in r) {
                         validClass = true
                         break
                     }
                 }
-                if (!validClass) sum += i
+                !validClass
             }
         }
-        sum
     }
-    part2 {
-        val (classes, yourTicket, nearby) = parseInput(this)
-        val candidates = Array<MutableSet<String>>(yourTicket.size) { HashSet(classes.keys) }
-        ticketLoop@ for (ticket in nearby) {
-            for (i in ticket) {
-                var validClass = false
-                outer@ for (c in classes.values) {
-                    for (r in c) {
-                        if (i in r) {
-                            validClass = true
-                            break@outer
-                        }
-                    }
-                }
-                if (!validClass) continue@ticketLoop
-            }
-            ticket.forEachIndexed { index, i ->
-                candidates[index].removeIf { className ->
-                    val c = classes[className]!!
-                    var validClass = false
-                    for (r in c) {
-                        if (i in r) {
-                            validClass = true
-                            break
-                        }
-                    }
-                    !validClass
-                }
-            }
-        }
 
-        val certain = HashMap<String, Int>()
-        while (certain.size < yourTicket.size) {
-            var changed = false
-            candidates.forEachIndexed { index, c ->
-                if (c.size > 1) {
-                    if (c.removeAll(certain.keys)) changed = true
-                }
-                if (c.size == 1) {
-                    val name = c.elementAt(0)
-                    certain[name] = index
-                }
+    val certain = HashMap<String, Int>()
+    while (certain.size < yourTicket.size) {
+        var changed = false
+        candidates.forEachIndexed { index, c ->
+            if (c.size > 1) {
+                if (c.removeAll(certain.keys)) changed = true
             }
-            if (!changed) break
+            if (c.size == 1) {
+                val name = c.elementAt(0)
+                certain[name] = index
+            }
         }
-        if (certain.size < yourTicket.size) throw IllegalStateException("Could not find a solution")
-        var product = 1L
-        for ((className, i) in certain.entries) {
-            if (!className.startsWith("departure")) continue
-            product *= yourTicket.getInt(i)
-        }
-        product
+        if (!changed) break
     }
-    part2 {
-        val (classes, yourTicket, nearby) = parseInput(this, true)
-        val ranges = mutableSetOf<IntRange>()
-        for ((_, r) in classes) ranges.addAll(r)
-        val merged = mergeRanges(ranges)
-        nearby.removeIf { ticket ->
-            val iter = ticket.iterator()
-            while (iter.hasNext()) {
-                val i = iter.nextInt()
-                var validClass = false
-                for (r in merged) {
-                    if (i in r) {
-                        validClass = true
-                        break
-                    }
+    if (certain.size < yourTicket.size) throw IllegalStateException("Could not find a solution")
+    var product = 1L
+    for ((className, i) in certain.entries) {
+        if (!className.startsWith("departure")) continue
+        product *= yourTicket.getInt(i)
+    }
+    return product
+}
+
+fun PuzzleInput.part2v1(): Any {
+    val (classes, yourTicket, nearby) = parseInput(this, true)
+    val ranges = mutableSetOf<IntRange>()
+    for ((_, r) in classes) ranges.addAll(r)
+    val merged = mergeRanges(ranges)
+    nearby.removeIf { ticket ->
+        val iter = ticket.iterator()
+        while (iter.hasNext()) {
+            val i = iter.nextInt()
+            var validClass = false
+            for (r in merged) {
+                if (i in r) {
+                    validClass = true
+                    break
                 }
-                if (!validClass) return@removeIf true
             }
-            false
+            if (!validClass) return@removeIf true
         }
-        val candidates = Array<MutableCollection<Map.Entry<String, Set<IntRange>>>>(yourTicket.size) { LinkedList(classes.entries) }
-        for (index in candidates.indices) {
-            candidates[index].removeIf { e ->
-                var allValid = true
+        false
+    }
+    val candidates = Array<MutableCollection<Map.Entry<String, Set<IntRange>>>>(yourTicket.size) { LinkedList(classes.entries) }
+    for (index in candidates.indices) {
+        candidates[index].removeIf { e ->
+            var allValid = true
+            val c = e.value
+            for (ticket in nearby) {
+                var ticketValid = false
+                for (r in c) {
+                    if (ticket.getInt(index) in r) ticketValid = true
+                }
+                if (!ticketValid) {
+                    allValid = false
+                    break
+                }
+            }
+            !allValid
+        }
+    }
+    /*
+    ticketLoop@ for (ticket in nearby) {
+        val iter = ticket.iterator()
+        while (iter.hasNext()) {
+            val i = iter.nextInt()
+            var validClass = false
+            for (r in merged) {
+                if (i in r) {
+                    validClass = true
+                    break
+                }
+            }
+            if (!validClass) continue@ticketLoop
+        }
+        ticket.forEachIndexed { index, i ->
+            val classNames = candidates[index]
+            classNames.removeIf { e ->
                 val c = e.value
-                for (ticket in nearby) {
-                    var ticketValid = false
-                    for (r in c) {
-                        if (ticket.getInt(index) in r) ticketValid = true
-                    }
-                    if (!ticketValid) {
-                        allValid = false
-                        break
-                    }
-                }
-                !allValid
-            }
-        }
-        /*
-        ticketLoop@ for (ticket in nearby) {
-            val iter = ticket.iterator()
-            while (iter.hasNext()) {
-                val i = iter.nextInt()
                 var validClass = false
-                for (r in merged) {
+                for (r in c) {
                     if (i in r) {
                         validClass = true
                         break
                     }
                 }
-                if (!validClass) continue@ticketLoop
+                !validClass
             }
-            ticket.forEachIndexed { index, i ->
-                val classNames = candidates[index]
-                classNames.removeIf { e ->
-                    val c = e.value
-                    var validClass = false
-                    for (r in c) {
-                        if (i in r) {
-                            validClass = true
-                            break
-                        }
-                    }
-                    !validClass
-                }
-            }
-        }*/
+        }
+    }*/
 
-        val certain = HashMap<Map.Entry<String, Set<IntRange>>, Int>()
-        while (certain.size < yourTicket.size) {
-            var changed = false
-            candidates.forEachIndexed { index, c ->
-                if (c.size > 1) {
-                    if (c.removeAll(certain.keys)) changed = true
-                }
-                if (c.size == 1) {
-                    certain[c.elementAt(0)] = index
-                }
+    val certain = HashMap<Map.Entry<String, Set<IntRange>>, Int>()
+    while (certain.size < yourTicket.size) {
+        var changed = false
+        candidates.forEachIndexed { index, c ->
+            if (c.size > 1) {
+                if (c.removeAll(certain.keys)) changed = true
             }
-            if (!changed) break
+            if (c.size == 1) {
+                certain[c.elementAt(0)] = index
+            }
         }
-        if (certain.size < yourTicket.size) {
-            println(certain)
-            println(candidates.contentToString())
-            println(nearby.size)
-            throw IllegalStateException("Could not find a solution")
-        }
-        var product = 1L
-        for ((e, i) in certain.entries) {
-            if (!e.key.startsWith("departure")) continue
-            product *= yourTicket.getInt(i)
-        }
-        product
+        if (!changed) break
     }
+    if (certain.size < yourTicket.size) {
+        println(certain)
+        println(candidates.contentToString())
+        println(nearby.size)
+        throw IllegalStateException("Could not find a solution")
+    }
+    var product = 1L
+    for ((e, i) in certain.entries) {
+        if (!e.key.startsWith("departure")) continue
+        product *= yourTicket.getInt(i)
+    }
+    return product
 }

@@ -3,39 +3,36 @@ package de.skyrising.aoc2021.day9
 import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.IntArrayList
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2021, 9)
+val test = TestInput("""
+    2199943210
+    3987894921
+    9856789892
+    8767896789
+    9899965678
+""")
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("""
-        2199943210
-        3987894921
-        9856789892
-        8767896789
-        9899965678
-    """)
-    part1("Smoke Basin") {
-        val (points, width, height) = parseInput(this)
-        var risk = 0
-        forEachLowPoint(points, width, height) { _, _, value ->
-            //println("$x,$y $value")
-            risk += value + 1
-        }
-        risk
+@PuzzleName("Smoke Basin")
+fun PuzzleInput.part1(): Any {
+    val (points, width, height) = parseInput(this)
+    var risk = 0
+    forEachLowPoint(points, width, height) { _, _, value ->
+        //println("$x,$y $value")
+        risk += value + 1
     }
-    part2 {
-        val (points, width, height) = parseInput(this)
-        val basins = IntArrayList()
-        forEachLowPoint(points, width, height) { x, y, _ ->
-            val basin = mutableSetOf<Pair<Int, Int>>()
-            searchBasin(points, width, height, basin, x, y)
-            basins.add(basin.size)
-            //println("$x,$y $v ${basin.size} $basin")
-        }
-        basins.sort()
-        basins.getInt(basins.lastIndex) * basins.getInt(basins.lastIndex - 1) * basins.getInt(basins.lastIndex - 2)
+    return risk
+}
+
+fun PuzzleInput.part2(): Any {
+    val (points, width, height) = parseInput(this)
+    val basins = IntArrayList()
+    forEachLowPoint(points, width, height) { x, y, _ ->
+        val basin = mutableSetOf<Pair<Int, Int>>()
+        searchBasin(points, width, height, basin, x, y)
+        basins.add(basin.size)
+        //println("$x,$y $v ${basin.size} $basin")
     }
+    basins.sort()
+    return basins.getInt(basins.lastIndex) * basins.getInt(basins.lastIndex - 1) * basins.getInt(basins.lastIndex - 2)
 }
 
 private fun parseInput(input: PuzzleInput): Triple<Array<IntArray>, Int, Int> {

@@ -31,7 +31,7 @@ class BenchmarkProcessorProvider : SymbolProcessorProvider {
                             for (part in parts) addImport(file.packageName.asString(), part)
                         }
                         .addType(TypeSpec.classBuilder(benchClassName)
-                            .superclass(ClassName("de.skyrising.aoc", "BenchmarkBaseBase"))
+                            .superclass(ClassName("de.skyrising.aoc", "BenchmarkBase"))
                             .addSuperclassConstructorParameter("%L", year)
                             .addSuperclassConstructorParameter("%L", day)
                             .apply {

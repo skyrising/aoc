@@ -3,9 +3,6 @@ package de.skyrising.aoc2020.day5
 import de.skyrising.aoc.*
 import java.nio.ByteBuffer
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBase(2020, 5)
-
 private fun seatId(s: String): Int {
     val chars = s.toCharArray()
     var id = 0
@@ -47,77 +44,81 @@ fun seatIdVector(b: ByteBuffer, offset: Int): Int {
 }
 */
 
-@Suppress("unused")
-fun register() {
-    //println(seatId(ByteBuffer.wrap("BFFFBBFRRR".toByteArray()), 0))
-    part1("Binary Boarding") {
-        var highest = 0
-        for (line in lines) {
-            highest = maxOf(highest, seatId(line))
-        }
-        highest
+@PuzzleName("Binary Boarding")
+fun PuzzleInput.part1v0(): Any {
+    var highest = 0
+    for (line in lines) {
+        highest = maxOf(highest, seatId(line))
     }
-    part1("Binary Boarding") {
-        var highest = 0
-        for (i in 0 until input.remaining() step 11) {
-            highest = maxOf(highest, seatId(input, i))
-        }
-        highest
-    }
-    /*
-    puzzleB(5, "Binary Boarding v3") {
-        var highest = 0
-        for (i in 0 until it.remaining() step 11) {
-            highest = maxOf(highest, seatIdVector(it, i))
-        }
-        highest
-    }
-    */
-    part2 {
-        var highest = 0
-        var lowest = 1 shl 10
-        val seats = LongArray(lowest shr 6)
-        for (line in lines) {
-            val id = seatId(line)
-            lowest = minOf(lowest, id)
-            highest = maxOf(highest, id)
-            setBit(seats, id)
-        }
-        for (i in lowest + 1 until highest) {
-            if (!isBitSet(seats, i)) return@part2 i
-        }
-        -1
-    }
-    part2 {
-        var highest = 0
-        var lowest = 1 shl 10
-        val seats = LongArray(lowest shr 6)
-        for (i in 0 until input.remaining() step 11) {
-            val id = seatId(input, i)
-            lowest = minOf(lowest, id)
-            highest = maxOf(highest, id)
-            setBit(seats, id)
-        }
-        for (i in lowest + 1 until highest) {
-            if (!isBitSet(seats, i)) return@part2 i
-        }
-        -1
-    }
-    /*
-    part2 {
-        var highest = 0
-        var lowest = 1 shl 10
-        val seats = LongArray(lowest shr 6)
-        for (i in 0 until input.remaining() step 11) {
-            val id = seatIdVector(input, i)
-            lowest = minOf(lowest, id)
-            highest = maxOf(highest, id)
-            setBit(seats, id)
-        }
-        for (i in lowest + 1 until highest) {
-            if (!isBitSet(seats, i)) return@part2 i
-        }
-        -1
-    }
-    */
+    return highest
 }
+
+
+@PuzzleName("Binary Boarding")
+fun PuzzleInput.part1v1(): Any {
+    var highest = 0
+    for (i in 0 until input.remaining() step 11) {
+        highest = maxOf(highest, seatId(input, i))
+    }
+    return highest
+}
+
+/*
+@PuzzleName("Binary Boarding")
+fun PuzzleInput.part1v2(): Any {
+    var highest = 0
+    for (i in 0 until input.remaining() step 11) {
+        highest = maxOf(highest, seatIdVector(it, i))
+    }
+    return highest
+}
+*/
+
+fun PuzzleInput.part2v0(): Any {
+    var highest = 0
+    var lowest = 1 shl 10
+    val seats = LongArray(lowest shr 6)
+    for (line in lines) {
+        val id = seatId(line)
+        lowest = minOf(lowest, id)
+        highest = maxOf(highest, id)
+        setBit(seats, id)
+    }
+    for (i in lowest + 1 until highest) {
+        if (!isBitSet(seats, i)) return i
+    }
+    return -1
+}
+
+fun PuzzleInput.part2v1(): Any {
+    var highest = 0
+    var lowest = 1 shl 10
+    val seats = LongArray(lowest shr 6)
+    for (i in 0 until input.remaining() step 11) {
+        val id = seatId(input, i)
+        lowest = minOf(lowest, id)
+        highest = maxOf(highest, id)
+        setBit(seats, id)
+    }
+    for (i in lowest + 1 until highest) {
+        if (!isBitSet(seats, i)) return i
+    }
+    return -1
+}
+/*
+fun PuzzleInput.part2v2(): Any {
+    var highest = 0
+    var lowest = 1 shl 10
+    val seats = LongArray(lowest shr 6)
+    for (i in 0 until input.remaining() step 11) {
+        val id = seatIdVector(input, i)
+        lowest = minOf(lowest, id)
+        highest = maxOf(highest, id)
+        setBit(seats, id)
+    }
+    for (i in lowest + 1 until highest) {
+        if (!isBitSet(seats, i)) return i
+    }
+    return -1
+}
+*/

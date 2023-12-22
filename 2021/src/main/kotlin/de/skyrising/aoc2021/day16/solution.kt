@@ -3,27 +3,24 @@ package de.skyrising.aoc2021.day16
 import de.skyrising.aoc.*
 import java.util.*
 
-@Suppress("unused")
-class BenchmarkDay : BenchmarkBaseV1(2021, 16)
+val test = TestInput("CE00C43D881120")
 
-@Suppress("unused")
-fun register() {
-    val test = TestInput("CE00C43D881120")
-    part1("Packet Decoder") {
-        val bytes = HexFormat.of().parseHex(chars.trimEnd())
-        val data = BitBuf(bytes)
-        val packets = mutableListOf<Packet>()
-        while (true) {
-            val packet = readPacket(data) ?: break
-            packets.add(packet)
-        }
-        sumPacketVersions(packets)
+@PuzzleName("Packet Decoder")
+fun PuzzleInput.part1(): Any {
+    val bytes = HexFormat.of().parseHex(chars.trimEnd())
+    val data = BitBuf(bytes)
+    val packets = mutableListOf<Packet>()
+    while (true) {
+        val packet = readPacket(data) ?: break
+        packets.add(packet)
     }
-    part2 {
-        val bytes = HexFormat.of().parseHex(chars.trimEnd())
-        val data = BitBuf(bytes)
-        readPacket(data)?.value()
-    }
+    return sumPacketVersions(packets)
+}
+
+fun PuzzleInput.part2(): Any? {
+    val bytes = HexFormat.of().parseHex(chars.trimEnd())
+    val data = BitBuf(bytes)
+    return readPacket(data)?.value()
 }
 
 private fun readPacket(data: BitBuf): Packet? {
