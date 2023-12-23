@@ -10,6 +10,8 @@ class Graph<V, E> {
 
     val size: Int get() = vertexes.size
 
+    val edges get() = outgoing.values.flatMapTo(mutableSetOf()) { it }
+
     fun getVertexes(): Set<V> = vertexes
 
     fun vertex(value: V) {
@@ -28,6 +30,48 @@ class Graph<V, E> {
     fun getOutgoing(v: V): Set<Edge<V, E?>> = outgoing[v] ?: emptySet()
 
     fun getIncoming(v: V): Set<Edge<V, E?>> = incoming[v] ?: emptySet()
+
+    fun simplify(keep: Set<V> = emptySet()) {
+        val queue = ArrayDeque(vertexes)
+        while (queue.isNotEmpty()) {
+            val v = queue.poll()
+            if (v in keep) continue
+            val out = outgoing[v]?.singleOrNull() ?: continue
+            val inc = incoming[v]?.singleOrNull() ?: continue
+            val e = Edge(inc.from, out.to, inc.weight + out.weight, null as E?)
+            outgoing[inc.from]!!.remove(inc)
+            incoming[out.to]!!.remove(out)
+            outgoing[inc.from]!!.add(e)
+            incoming[out.to]!!.add(e)
+            incoming.remove(v)
+            outgoing.remove(v)
+            vertexes.remove(v)
+            queue.add(e.from)
+            queue.add(e.to)
+        }
+    }
+
+    fun getSimplePaths(from: V, to: V) = getSimplePaths(from) {
+        it == to
+    }
+
+    inline fun getSimplePaths(from: V, to: (V)->Boolean): Set<Path<V, E>> {
+        val queue = ArrayDeque<Pair<V, Path<V, E>>>()
+        queue.add(from to Path(emptyList()))
+        val result = mutableSetOf<Path<V, E>>()
+        while (queue.isNotEmpty()) {
+            val (v, path) = queue.removeFirst()
+            if (to(v)) {
+                result.add(path)
+                continue
+            }
+            for (e in getOutgoing(v)) {
+                if (e.to in path) continue
+                queue.add(e.to to path + e)
+            }
+        }
+        return result
+    }
 
     fun dijkstra(from: V, to: V) = dijkstra(from) {
         it == to
@@ -153,7 +197,7 @@ fun <V, E> buildPath(from: V, to: V, inc: Map<V, Edge<V, E?>>): Path<V, E>? {
         }
         edge = inc[eFrom]
         if (edge == null) return null
-        path.addFirst(edge)
+        path.add(edge)
     }
 }
 
@@ -161,11 +205,21 @@ data class Edge<V, E>(val from: V, val to: V, val weight: Int, val value: E) {
     override fun toString() = "$from ==${if (value != null) "$value/" else ""}$weight=> $to"
 }
 data class Path<V, E>(private val edges: List<Edge<V, E?>>) : List<Edge<V, E?>> by edges {
+    val weight get() = edges.sumOf { it.weight }
+
     fun getVertexes(): List<V> {
         if (edges.isEmpty()) return emptyList()
         val vertexes = mutableListOf(edges[0].from)
         for (e in edges) vertexes.add(e.to)
         return vertexes
+    }
+
+    @JvmName("containsVertex")
+    operator fun contains(v: V): Boolean {
+        if (edges.isEmpty()) return false
+        if (edges[0].from == v) return true
+        for (e in edges) if (e.to == v) return true
+        return false
     }
 
     inline fun forEachVertex(callback: (V) -> Unit) {

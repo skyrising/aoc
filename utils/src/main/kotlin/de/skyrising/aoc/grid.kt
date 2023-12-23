@@ -1,5 +1,7 @@
 package de.skyrising.aoc
 
+import it.unimi.dsi.fastutil.chars.CharImmutableList
+import it.unimi.dsi.fastutil.chars.CharList
 import it.unimi.dsi.fastutil.ints.Int2CharOpenHashMap
 import it.unimi.dsi.fastutil.objects.AbstractObject2CharMap
 import it.unimi.dsi.fastutil.objects.Object2CharMap
@@ -220,6 +222,10 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offsetX: Int = 0, o
 
     fun getT(y: Int, x: Int) = this[x, y]
     fun setT(y: Int, x: Int, c: Char) { this[x, y] = c }
+    fun row(r: Int): CharList {
+        if (r < 0 || r >= height) throw IndexOutOfBoundsException("Row $r is not in [0, $height)")
+        return CharImmutableList(data, r * width, width)
+    }
 
     companion object {
         fun parse(lines: List<String>): CharGrid {

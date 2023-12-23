@@ -64,6 +64,7 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
     val southWest get() = Vec2i(x - 1, y + 1)
     val west get() = Vec2i(x - 1, y)
     val northWest get() = Vec2i(x - 1, y - 1)
+    val dir inline get() = if (x == 0) if (y < 0) Direction.N else Direction.S else if (x < 0) Direction.W else Direction.E
 
     fun fourNeighbors() = arrayOf(north, east, south, west)
     fun fiveNeighbors() = arrayOf(north, east, south, west, this)
