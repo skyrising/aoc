@@ -107,5 +107,9 @@ fun PuzzleInput.part2(): Any {
     for (edge in g.edges) {
         g.edge(edge.to, edge.from, edge.weight)
     }
-    return g.getSimplePaths(start, end).maxOf { it.weight }
+    var maxWeight = 0
+    g.forEachSimplePath(start, end) {
+        maxWeight = maxOf(maxWeight, it.weight)
+    }
+    return maxWeight
 }

@@ -1,6 +1,9 @@
 package de.skyrising.aoc2021.day12
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.Graph
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     start-A
@@ -50,7 +53,7 @@ val test3 = TestInput("""
 fun PuzzleInput.part1v0(): Any {
     val g = readInput(this) { s -> s }
     return g.getPathsV1("start", "end") { p ->
-        val caves = p.getVertexes()
+        val caves = p.vertexes
         val small = mutableSetOf<String>()
         for (cave in caves) {
             if (cave.lowercase() == cave) {
@@ -77,7 +80,7 @@ fun PuzzleInput.part1v1(): Any {
 fun PuzzleInput.part2v0(): Any {
     val g = readInput(this) { s -> s }
     return g.getPathsV1("start", "end") { p ->
-        val caves = p.getVertexes()
+        val caves = p.vertexes
         val small = mutableSetOf<String>()
         var smallDouble = false
         for (cave in caves) {

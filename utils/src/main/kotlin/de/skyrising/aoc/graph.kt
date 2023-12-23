@@ -51,18 +51,15 @@ class Graph<V, E> {
         }
     }
 
-    fun getSimplePaths(from: V, to: V) = getSimplePaths(from) {
-        it == to
-    }
+    inline fun forEachSimplePath(from: V, to: V, cb: (Path<V, E>)->Unit) = forEachSimplePath(from, { it == to }, cb)
 
-    inline fun getSimplePaths(from: V, to: (V)->Boolean): Set<Path<V, E>> {
+    inline fun forEachSimplePath(from: V, to: (V)->Boolean, cb: (Path<V, E>)->Unit) {
         val queue = ArrayDeque<Pair<V, Path<V, E>>>()
         queue.add(from to Path(emptyList()))
-        val result = mutableSetOf<Path<V, E>>()
         while (queue.isNotEmpty()) {
-            val (v, path) = queue.removeFirst()
+            val (v, path) = queue.removeLast()
             if (to(v)) {
-                result.add(path)
+                cb(path)
                 continue
             }
             for (e in getOutgoing(v)) {
@@ -70,7 +67,6 @@ class Graph<V, E> {
                 queue.add(e.to to path + e)
             }
         }
-        return result
     }
 
     fun dijkstra(from: V, to: V) = dijkstra(from) {
@@ -204,15 +200,15 @@ fun <V, E> buildPath(from: V, to: V, inc: Map<V, Edge<V, E?>>): Path<V, E>? {
 data class Edge<V, E>(val from: V, val to: V, val weight: Int, val value: E) {
     override fun toString() = "$from ==${if (value != null) "$value/" else ""}$weight=> $to"
 }
-data class Path<V, E>(private val edges: List<Edge<V, E?>>) : List<Edge<V, E?>> by edges {
-    val weight get() = edges.sumOf { it.weight }
-
-    fun getVertexes(): List<V> {
+data class Path<V, E>(internal val edges: List<Edge<V, E?>>) : List<Edge<V, E?>> by edges {
+    val vertexes: List<V> get() {
         if (edges.isEmpty()) return emptyList()
-        val vertexes = mutableListOf(edges[0].from)
-        for (e in edges) vertexes.add(e.to)
-        return vertexes
+        val vertexes = Array<Any?>(edges.size + 1) { null }
+        vertexes[0] = edges[0].from
+        for (i in edges.indices) vertexes[i + 1] = edges[i].to
+        return vertexes.asList() as List<V>
     }
+    val weight get() = edges.sumOf { it.weight }
 
     @JvmName("containsVertex")
     operator fun contains(v: V): Boolean {
@@ -228,7 +224,7 @@ data class Path<V, E>(private val edges: List<Edge<V, E?>>) : List<Edge<V, E?>> 
         for (e in this) callback(e.to)
     }
 
-    override fun toString() = getVertexes().joinToString(separator = ",") { it.toString() }
+    override fun toString() = vertexes.joinToString(separator = ",") { it.toString() }
 }
 
 operator fun <V, E> Edge<V, E?>.plus(path: Path<V, E>): Path<V, E> {
@@ -236,7 +232,7 @@ operator fun <V, E> Edge<V, E?>.plus(path: Path<V, E>): Path<V, E> {
     if (path[0].from != this.to) throw IllegalArgumentException("Cannot connect $this to ${path[0].from}")
     val newEdges = ArrayList<Edge<V, E?>>(path.size + 1)
     newEdges.add(this)
-    newEdges.addAll(path)
+    newEdges.addAll(path.edges)
     return Path(newEdges)
 }
 
@@ -244,7 +240,7 @@ operator fun <V, E> Path<V, E>.plus(edge: Edge<V, E?>): Path<V, E> {
     if (this.isEmpty()) return Path(listOf(edge))
     if (this.last().to != edge.from) throw IllegalArgumentException("Cannot connect ${this.last().to} to $edge")
     val newEdges = ArrayList<Edge<V, E?>>(this.size + 1)
-    newEdges.addAll(this)
+    newEdges.addAll(edges)
     newEdges.add(edge)
     return Path(newEdges)
 }
