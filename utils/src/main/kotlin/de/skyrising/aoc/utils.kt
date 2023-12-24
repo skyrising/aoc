@@ -584,6 +584,7 @@ infix fun Int.minUntilMax(other: Int) = minOf(this, other) until maxOf(this, oth
 
 inline fun Boolean.toInt() = if (this) 1 else 0
 inline fun Boolean.toLong() = if (this) 1L else 0L
+
 fun <T> List<T>.pairs(): Set<Pair<T, T>> {
     val pairs = HashSet<Pair<T, T>>(size * (size - 1))
     for (i in indices) {
@@ -591,6 +592,16 @@ fun <T> List<T>.pairs(): Set<Pair<T, T>> {
             if (i != j) {
                 pairs.add(this[i] to this[j])
             }
+        }
+    }
+    return pairs
+}
+
+fun <T> List<T>.unorderedPairs(): Set<Pair<T, T>> {
+    val pairs = HashSet<Pair<T, T>>(size * (size - 1))
+    for (i in indices) {
+        for (j in i + 1 until size) {
+            pairs.add(this[i] to this[j])
         }
     }
     return pairs

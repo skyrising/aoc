@@ -1,5 +1,6 @@
 package de.skyrising.aoc
 
+import it.unimi.dsi.fastutil.longs.LongList
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -74,6 +75,8 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
 
     infix fun lineTo(other: Vec2i) = Line2i(this, other)
 
+    fun toDouble() = Vec2d(x.toDouble(), y.toDouble())
+
     companion object {
         val ZERO = Vec2i(0, 0)
         val N = Vec2i(0, -1)
@@ -135,6 +138,8 @@ data class Vec2l(val x: Long, val y: Long) {
     fun fourNeighbors() = arrayOf(north, east, south, west)
     fun fiveNeighbors() = arrayOf(north, east, south, west, this)
     fun eightNeighbors() = arrayOf(north, northEast, east, southEast, south, southWest, west, northWest)
+
+    fun toDouble() = Vec2d(x.toDouble(), y.toDouble())
 
     companion object {
         val ZERO = Vec2l(0, 0)
@@ -318,6 +323,54 @@ data class Vec3i(val x: Int, val y: Int, val z: Int) : HasBoundingBox3i {
 
 fun min(a: Vec3i, b: Vec3i) = Vec3i(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z))
 fun max(a: Vec3i, b: Vec3i) = Vec3i(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z))
+
+data class Vec3l(val x: Long, val y: Long, val z: Long) {
+
+    fun distanceSq(other: Vec3l) = (x - other.x) * (x - other.x) + (y - other.y) * (y - other.y) + (z - other.z) * (z - other.z)
+    override fun toString() = "[$x,$y,$z]"
+    operator fun get(i: Int) = when (i) {
+        0 -> x
+        1 -> y
+        2 -> z
+        else -> throw IndexOutOfBoundsException()
+    }
+
+    fun toList(): LongList = LongList.of(x, y, z)
+
+    operator fun plus(v: Vec3l) = Vec3l(x + v.x, y + v.y, z + v.z)
+    operator fun plus(offset: Long) = Vec3l(x + offset, y + offset, z + offset)
+    operator fun minus(v: Vec3l) = Vec3l(x - v.x, y - v.y, z - v.z)
+    operator fun times(v: Vec3l) = Vec3l(x * v.x, y * v.y, z * v.z)
+    operator fun times(v: Long) = Vec3l(x * v, y * v, z * v)
+    operator fun div(v: Vec3l) = Vec3l(x / v.x, y / v.y, z / v.z)
+    operator fun div(v: Long) = Vec3l(x / v, y / v, z / v)
+    operator fun unaryMinus() = Vec3l(-x, -y, -z)
+
+    infix fun dot(v: Vec3l) = x * v.x + y * v.y + z * v.z
+
+    fun manhattanDistance(v: Vec3l) = abs(x - v.x) + abs(y - v.y) + abs(z - v.z)
+
+    fun xy() = Vec2l(x, y)
+    fun xz() = Vec2l(x, z)
+    fun yz() = Vec2l(y, z)
+    fun sixNeighbors() = arrayOf(
+        Vec3l(x - 1, y, z),
+        Vec3l(x + 1, y, z),
+        Vec3l(x, y - 1, z),
+        Vec3l(x, y + 1, z),
+        Vec3l(x, y, z - 1),
+        Vec3l(x, y, z + 1)
+    )
+
+    companion object {
+        val ZERO = Vec3l(0, 0, 0)
+
+        fun parse(input: String): Vec3l {
+            val (x, y, z) = input.longs()
+            return Vec3l(x, y, z)
+        }
+    }
+}
 
 interface HasBoundingBox3i {
     val boundingBox: BoundingBox3i
