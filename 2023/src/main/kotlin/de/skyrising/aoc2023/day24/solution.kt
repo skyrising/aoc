@@ -1,6 +1,7 @@
 package de.skyrising.aoc2023.day24
 
-import com.microsoft.z3.*
+import com.microsoft.z3.Context
+import com.microsoft.z3.Status
 import de.skyrising.aoc.*
 
 val test = TestInput("""
@@ -41,26 +42,20 @@ fun PuzzleInput.part1(): Any {
 fun PuzzleInput.part2(): Any {
     val hailstones = parse(this)
     val (rp, rv) = Context().run {
-        operator fun <T: ArithSort> ArithExpr<T>.plus(other: ArithExpr<T>) = mkAdd(this, other)
-        operator fun <T: ArithSort> ArithExpr<T>.times(other: ArithExpr<T>) = mkMul(this, other)
-        infix fun <T: ArithSort> ArithExpr<T>.eq(other: ArithExpr<T>) = mkEq(this, other)
-        operator fun Solver.plusAssign(constraint: Expr<BoolSort>) = add(constraint)
         val solver = mkSolver()
-        val (x, y, z, vx, vy, vz) = listOf("x", "y", "z", "vx", "vy", "vz").map { mkRealConst(it) }
+        val (x, y, z, vx, vy, vz) = mkRealConst("x", "y", "z", "vx", "vy", "vz")
         for (i in 0..2) {
-            val (xi, yi, zi) = hailstones[i].first.toList().map { mkReal(it) }
-            val (vxi, vyi, vzi) = hailstones[i].second.toList().map { mkReal(it) }
+            val (xi, yi, zi) = mkReal(hailstones[i].first)
+            val (vxi, vyi, vzi) = mkReal(hailstones[i].second)
             val ti = mkRealConst("t$i")
+            solver += ti gt 0
             solver += (xi + vxi * ti) eq (x + vx * ti)
             solver += (yi + vyi * ti) eq (y + vy * ti)
             solver += (zi + vzi * ti) eq (z + vz * ti)
         }
         if (solver.check() != Status.SATISFIABLE) error("Not satisfiable")
         val m = solver.model
-        // log(m)
-        fun RatNum.toLong() = if (denominator.int64 != 1L) throw IllegalArgumentException() else numerator.int64
-        fun get(expr: Expr<*>) = (m.getConstInterp(expr) as RatNum).toLong()
-        Vec3l(get(x), get(y), get(z)) to Vec3l(get(vx), get(vy), get(vz))
+        Vec3l(m[x].toLong(), m[y].toLong(), m[z].toLong()) to Vec3l(m[vx].toLong(), m[vy].toLong(), m[vz].toLong())
     }
     // val durations = hailstones.mapNotNull { (p, v) ->
     //     intersectRays(rp.xy(), rv.xy(), p.xy(), v.xy())?.x?.toDuration(DurationUnit.NANOSECONDS)

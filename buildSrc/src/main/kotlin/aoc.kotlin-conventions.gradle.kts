@@ -33,5 +33,8 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "21"
+    kotlinOptions {
+        jvmTarget = "21"
+        freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+    }
 }
