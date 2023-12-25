@@ -156,6 +156,20 @@ class Graph<V, E> {
         return paths
     }
 
+    fun getConnected(start: V): Set<V> {
+        val connected = mutableSetOf<V>()
+        val queue = ArrayDeque<V>()
+        queue.add(start)
+        while (queue.isNotEmpty()) {
+            val v = queue.removeFirst()
+            if (!connected.add(v)) continue
+            for (e in getOutgoing(v)) {
+                queue.add(e.to)
+            }
+        }
+        return connected
+    }
+
     override fun toString(): String {
         val sb = StringBuilder()
         for (v in vertexes) {
