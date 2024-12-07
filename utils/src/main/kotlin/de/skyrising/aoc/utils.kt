@@ -614,3 +614,34 @@ inline fun String.split2(c: Char): Pair<String, String>? {
 
 inline fun IntRange.count() = last - first + 1
 inline fun LongRange.count() = last - first + 1
+
+fun <T> List<T>.toPair(): Pair<T, T> {
+    if (size != 2) throw IllegalArgumentException("List must have exactly 2 elements")
+    return this[0] to this[1]
+}
+
+fun <A, B> List<Pair<A, B>>.pivot(): Pair<List<A>, List<B>> {
+    val a = ArrayList<A>(size)
+    val b = ArrayList<B>(size)
+    for (pair in this) {
+        a.add(pair.first)
+        b.add(pair.second)
+    }
+    return a to b
+}
+
+fun <A, B> Pair<List<A>, List<B>>.pivot(): List<Pair<A, B>> {
+    val a = first
+    val b = second
+    val size = a.size
+    if (b.size != size) throw IllegalArgumentException("Lists must have the same size")
+    val result = ArrayList<Pair<A, B>>(size)
+    for (i in 0 until size) {
+        result.add(a[i] to b[i])
+    }
+    return result
+}
+
+fun <T, S> Pair<T, T>.map(fn: (T) -> S): Pair<S, S> {
+    return fn(first) to fn(second)
+}

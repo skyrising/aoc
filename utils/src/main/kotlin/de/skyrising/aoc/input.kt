@@ -105,7 +105,7 @@ inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer
 }
 
 private val inputs: Int2ObjectMap<Int2ObjectMap<PuzzleInput>> = Int2ObjectOpenHashMap()
-private val cookie: String by lazy { Files.readString(java.nio.file.Path.of("COOKIE.txt")) }
+private val cookie: String by lazy { Files.readString(java.nio.file.Path.of("COOKIE.txt")).trim() }
 
 fun getInput(year: Int, day: Int): PuzzleInput = inputs.computeIfAbsent(year, Int2ObjectFunction {
     Int2ObjectOpenHashMap()
