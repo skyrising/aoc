@@ -77,12 +77,18 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
 
     fun toDouble() = Vec2d(x.toDouble(), y.toDouble())
 
+    fun ray(direction: Vec2i, length: Int) = (0..<length).map { this + direction * it }
+
     companion object {
         val ZERO = Vec2i(0, 0)
         val N = Vec2i(0, -1)
         val E = Vec2i(1, 0)
         val S = Vec2i(0, 1)
         val W = Vec2i(-1, 0)
+        val NE = Vec2i(1, -1)
+        val SE = Vec2i(1, 1)
+        val SW = Vec2i(-1, 1)
+        val NW = Vec2i(-1, -1)
         val KNOWN = mapOf(
             "U" to N,
             "R" to E,

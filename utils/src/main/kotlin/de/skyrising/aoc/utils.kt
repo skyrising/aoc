@@ -645,3 +645,10 @@ fun <A, B> Pair<List<A>, List<B>>.pivot(): List<Pair<A, B>> {
 fun <T, S> Pair<T, T>.map(fn: (T) -> S): Pair<S, S> {
     return fn(first) to fn(second)
 }
+
+fun <T> List<T>.allIndexed(predicate: (Int, T) -> Boolean): Boolean {
+    for ((index, value) in withIndex()) {
+        if (!predicate(index, value)) return false
+    }
+    return true
+}
