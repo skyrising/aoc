@@ -3,14 +3,18 @@ package de.skyrising.aoc
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import java.util.*
 
-class Graph<V, E> {
-    private val vertexes = mutableSetOf<V>()
-    private val outgoing = mutableMapOf<V, MutableSet<Edge<V, E?>>>()
-    private val incoming = mutableMapOf<V, MutableSet<Edge<V, E?>>>()
+abstract class BaseGraph<V, E> {
+    @get:JvmName("getInternalVertexes")
+    protected val vertexes = mutableSetOf<V>()
+    protected val outgoing = mutableMapOf<V, MutableSet<Edge<V, E?>>>()
 
     val size: Int get() = vertexes.size
 
     val edges get() = outgoing.values.flatMapTo(mutableSetOf()) { it }
+
+    fun getOutgoing(v: V): Set<Edge<V, E?>> = outgoing[v] ?: emptySet()
+
+    abstract fun getIncoming(v: V): Set<Edge<V, E?>>
 
     fun getVertexes(): Set<V> = vertexes
 
@@ -18,38 +22,7 @@ class Graph<V, E> {
         vertexes.add(value)
     }
 
-    fun edge(from: V, to: V, weight: Int, value: E? = null) = edge(Edge(from, to, weight, value))
-    fun edge(e: Edge<V, E?>): Edge<V, E?> {
-        vertex(e.from)
-        vertex(e.to)
-        outgoing.computeIfAbsent(e.from) { mutableSetOf() }.add(e)
-        incoming.computeIfAbsent(e.to) { mutableSetOf() }.add(e)
-        return e
-    }
-
-    fun getOutgoing(v: V): Set<Edge<V, E?>> = outgoing[v] ?: emptySet()
-
-    fun getIncoming(v: V): Set<Edge<V, E?>> = incoming[v] ?: emptySet()
-
-    fun simplify(keep: Set<V> = emptySet()) {
-        val queue = ArrayDeque(vertexes)
-        while (queue.isNotEmpty()) {
-            val v = queue.poll()
-            if (v in keep) continue
-            val out = outgoing[v]?.singleOrNull() ?: continue
-            val inc = incoming[v]?.singleOrNull() ?: continue
-            val e = Edge(inc.from, out.to, inc.weight + out.weight, null as E?)
-            outgoing[inc.from]!!.remove(inc)
-            incoming[out.to]!!.remove(out)
-            outgoing[inc.from]!!.add(e)
-            incoming[out.to]!!.add(e)
-            incoming.remove(v)
-            outgoing.remove(v)
-            vertexes.remove(v)
-            queue.add(e.from)
-            queue.add(e.to)
-        }
-    }
+    abstract fun edge(from: V, to: V, weight: Int, value: E? = null)
 
     inline fun forEachSimplePath(from: V, to: V, cb: (Path<V, E>)->Unit) = forEachSimplePath(from, { it == to }, cb)
 
@@ -183,6 +156,79 @@ class Graph<V, E> {
             }
         }
         return sb.toString()
+    }
+}
+
+class UndirectedGraph<V, E> : BaseGraph<V, E>() {
+    override fun getIncoming(v: V): Set<Edge<V, E?>> = getOutgoing(v).mapTo(mutableSetOf()) { Edge(it.to, it.from, it.weight, it.value) }
+
+    override fun edge(from: V, to: V, weight: Int, value: E?) {
+        vertex(from)
+        vertex(to)
+        outgoing.computeIfAbsent(from) { mutableSetOf() }.add(Edge(from, to, weight, value))
+        outgoing.computeIfAbsent(to) { mutableSetOf() }.add(Edge(to, from, weight, value))
+    }
+
+    fun simplify(keep: Set<V> = emptySet()) {
+        val queue = ArrayDeque(vertexes)
+        while (queue.isNotEmpty()) {
+            val v = queue.poll()
+            if (v in keep) continue
+            val outEdges = outgoing[v] ?: continue
+            if (outEdges.size != 2) continue
+            val (e1, e2) = outEdges.toTypedArray()
+            edge(e1.to, e2.to, e1.weight + e2.weight, null as E?)
+            outgoing.remove(v)
+            vertexes.remove(v)
+            queue.add(e1.to)
+            queue.add(e2.to)
+        }
+    }
+
+    companion object {
+        inline fun <V, E> build(init: UndirectedGraph<V, E>.() -> Unit): UndirectedGraph<V, E> {
+            val graph = UndirectedGraph<V, E>()
+            init(graph)
+            return graph
+        }
+    }
+}
+
+class Graph<V, E> : BaseGraph<V, E>() {
+    private val incoming = mutableMapOf<V, MutableSet<Edge<V, E?>>>()
+
+    override fun edge(from: V, to: V, weight: Int, value: E?) {
+        edge(Edge(from, to, weight, value))
+    }
+
+    fun edge(e: Edge<V, E?>): Edge<V, E?> {
+        vertex(e.from)
+        vertex(e.to)
+        outgoing.computeIfAbsent(e.from) { mutableSetOf() }.add(e)
+        incoming.computeIfAbsent(e.to) { mutableSetOf() }.add(e)
+        return e
+    }
+
+    override fun getIncoming(v: V): Set<Edge<V, E?>> = incoming[v] ?: emptySet()
+
+    fun simplify(keep: Set<V> = emptySet()) {
+        val queue = ArrayDeque(vertexes)
+        while (queue.isNotEmpty()) {
+            val v = queue.poll()
+            if (v in keep) continue
+            val out = outgoing[v]?.singleOrNull() ?: continue
+            val inc = incoming[v]?.singleOrNull() ?: continue
+            val e = Edge(inc.from, out.to, inc.weight + out.weight, null as E?)
+            outgoing[inc.from]!!.remove(inc)
+            incoming[out.to]!!.remove(out)
+            outgoing[inc.from]!!.add(e)
+            incoming[out.to]!!.add(e)
+            incoming.remove(v)
+            outgoing.remove(v)
+            vertexes.remove(v)
+            queue.add(e.from)
+            queue.add(e.to)
+        }
     }
 
     companion object {

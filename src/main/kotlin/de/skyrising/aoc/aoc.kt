@@ -28,15 +28,19 @@ fun main(args: Array<String>) {
             if (BENCHMARK) {
                 input.benchmark = true
                 var result: Any? = null
-                val allTimes = DoubleArray(WARMUP + MEASURE_ITERS) { a ->
-                    measure(RUNS) { b ->
-                        if (a == WARMUP + MEASURE_ITERS - 1 && b == RUNS - 1) input.benchmark = false
+                val runs = if (puzzle.part == 2) 1 else RUNS
+                val warmup = if (puzzle.part == 2) 1 else WARMUP
+                val totalIters = warmup + if (puzzle.part == 2) 2 else MEASURE_ITERS
+                val allTimes = DoubleArray(totalIters) { a ->
+                    println(if (a < warmup) "Warming up..." else "Measuring...")
+                    measure(runs) { b ->
+                        if (a == totalIters - 1 && b == runs - 1) input.benchmark = false
                         input.use {
                             puzzle.runPuzzle(input).also { result = it }
                         }
-                    }
+                    }.also { println(formatTime(it)) }
                 }
-                val times = allTimes.copyOfRange(WARMUP, allTimes.size)
+                val times = allTimes.copyOfRange(warmup, allTimes.size)
                 val avg = times.average()
                 val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
                 println(
