@@ -447,6 +447,9 @@ fun <T> List<T>.splitOn(limit: Int = 0, predicate: (T) -> Boolean): List<List<T>
 
 fun List<String>.splitOnEmpty(limit: Int = 0) = splitOn(limit) { it.isEmpty() }
 
+@JvmName("splitOnEmptyCollection")
+fun <T: Collection<*>> List<T>.splitOnEmpty(limit: Int = 0): List<List<T>> = splitOn(limit) { it.isEmpty() }
+
 operator fun <E> List<E>.component6() = this[5]
 operator fun <E> List<E>.component7() = this[6]
 operator fun <E> List<E>.component8() = this[7]
@@ -458,6 +461,11 @@ operator fun <E> List<E>.component13() = this[12]
 operator fun <E> List<E>.component14() = this[13]
 operator fun <E> List<E>.component15() = this[14]
 operator fun <E> List<E>.component16() = this[15]
+
+val <E> List<E>.middleElement: E get() {
+    if (size % 2 == 0) throw IllegalStateException("List must have an odd number of elements")
+    return this[size / 2]
+}
 
 inline fun <reified T, TI : Iterator<T>, R : Comparable<R>> maxBy(iterator: TI, next: (TI)->T, selector: (T) -> R): T {
     if (!iterator.hasNext()) throw NoSuchElementException()
