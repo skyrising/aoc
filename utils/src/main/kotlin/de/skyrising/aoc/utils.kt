@@ -467,6 +467,11 @@ val <E> List<E>.middleElement: E get() {
     return this[size / 2]
 }
 
+fun <E> List<E>.splitOffFirst(): Pair<E, List<E>> {
+    if (isEmpty()) throw NoSuchElementException("List is empty")
+    return first() to subList(1, size)
+}
+
 inline fun <reified T, TI : Iterator<T>, R : Comparable<R>> maxBy(iterator: TI, next: (TI)->T, selector: (T) -> R): T {
     if (!iterator.hasNext()) throw NoSuchElementException()
     var maxElem = next(iterator)
