@@ -63,7 +63,6 @@ val allPuzzles = PuzzleCollection()
 
 var currentDay = PuzzleDay(0, 0)
 var lastPart = 0
-var currentIndex = 0
 
 data class DefaultPuzzle<T>(
     override val name: String,
@@ -77,10 +76,10 @@ data class DefaultPuzzle<T>(
 
 inline fun <T> puzzle(name: String, part: Int = 0, noinline run: PuzzleInput.() -> T): Puzzle<T> {
     if (part != lastPart) {
-        currentIndex = 0
         lastPart = part
     }
-    return DefaultPuzzle(name, currentDay, part, currentIndex++, run).also(allPuzzles::add)
+    val index = allPuzzles[currentDay]?.count { it.part == part } ?: 0
+    return DefaultPuzzle(name, currentDay, part, index, run).also(allPuzzles::add)
 }
 
 private inline fun <reified T> convertMethod(lookup: MethodHandles.Lookup, method: Method): T {

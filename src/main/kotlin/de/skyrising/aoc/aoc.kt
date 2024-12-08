@@ -30,15 +30,15 @@ fun main(args: Array<String>) {
                 var result: Any? = null
                 val runs = if (puzzle.part == 2) 1 else RUNS
                 val warmup = if (puzzle.part == 2) 1 else WARMUP
-                val totalIters = warmup + if (puzzle.part == 2) 2 else MEASURE_ITERS
+                val totalIters = warmup + if (puzzle.part == 2) 3 else MEASURE_ITERS
                 val allTimes = DoubleArray(totalIters) { a ->
-                    println(if (a < warmup) "Warming up..." else "Measuring...")
+                    //println(if (a < warmup) "Warming up..." else "Measuring...")
                     measure(runs) { b ->
                         if (a == totalIters - 1 && b == runs - 1) input.benchmark = false
                         input.use {
                             puzzle.runPuzzle(input).also { result = it }
                         }
-                    }.also { println(formatTime(it)) }
+                    }//.also { println(formatTime(it)) }
                 }
                 val times = allTimes.copyOfRange(warmup, allTimes.size)
                 val avg = times.average()

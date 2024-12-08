@@ -29,17 +29,67 @@ fun canBuild(target: Long, values: List<Long>, fn: (Long, Long) -> Sequence<Long
     return false
 }
 
-@PuzzleName("Bridge Repair")
-fun PuzzleInput.part1() = lines.sumOf {
+fun PuzzleInput.sumPossible(predicate: (Long, List<Long>) -> Boolean) = lines.sumOf {
     val (result, inputs) = it.longs().splitOffFirst()
-    if (canBuild(result, inputs) { a, b -> sequenceOf(a + b, a * b) }) result else 0
+    if (predicate(result, inputs)) result else 0
 }
 
-fun PuzzleInput.part2() = lines.sumOf {
-    val (result, inputs) = it.longs().splitOffFirst()
-    if (canBuild(result, inputs) { a, b -> sequence {
+@PuzzleName("Bridge Repair")
+fun PuzzleInput.part1() = sumPossible { result, inputs ->
+    canBuild(result, inputs) { a, b -> sequenceOf(a + b, a * b) }
+}
+
+fun PuzzleInput.part2() = sumPossible { result, inputs ->
+    canBuild(result, inputs) { a, b -> sequence {
         yield(a + b)
         yield(a * b)
         yield("$a$b".toLong())
-    } }) result else 0
+    } }
+}
+
+interface NextStep
+data class Solved(val possible: Boolean) : NextStep
+data class NewTarget(val value: Long) : NextStep
+
+fun testAdd(target: Long, nums: List<Long>): NextStep {
+    val n = target - nums[0]
+    if (nums.size == 1) return Solved(n == 0L)
+    return NewTarget(n)
+}
+
+fun testMul(target: Long, nums: List<Long>): NextStep {
+    if (target % nums[0] != 0L) return Solved(false)
+    val n = target / nums[0]
+    if (nums.size == 1) return Solved(n == 1L)
+    return NewTarget(n)
+}
+
+fun testConcat(target: Long, nums: List<Long>): NextStep {
+    val t = target.toString()
+    val o = nums[0].toString()
+    if (nums.size < 2 || !t.endsWith(o)) return Solved(false)
+    val ns = t.substring(0, t.length - o.length)
+    if (ns.isEmpty() || ns == "-") return Solved(false)
+    val n = ns.toLong()
+    if (nums.size == 2) return Solved(n == nums[1])
+    return NewTarget(n)
+}
+
+fun canBuildReverse(target: Long, values: List<Long>, nextFuns: List<(Long, List<Long>) -> NextStep>): Boolean {
+    for (fn in nextFuns) {
+        when (val next = fn(target, values)) {
+            is Solved -> if (next.possible) return true
+            is NewTarget -> if (canBuildReverse(next.value, values.subList(1, values.size), nextFuns)) return true
+        }
+    }
+    return false
+}
+
+@PuzzleName("Bridge Repair")
+fun PuzzleInput.part1v1() = sumPossible { result, inputs ->
+    canBuildReverse(result, inputs.reversed(), listOf(::testAdd, ::testMul))
+}
+
+fun PuzzleInput.part2v1() = sumPossible { result, inputs ->
+    canBuildReverse(result, inputs.reversed(), listOf(::testAdd, ::testMul, ::testConcat))
 }
