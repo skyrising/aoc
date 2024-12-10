@@ -293,6 +293,20 @@ fun CharSequence.longs(): LongList {
     return ints
 }
 
+fun CharSequence.digits(): IntList {
+    val digits = IntArrayList(length)
+    for (c in this) {
+        if (c in '0'..'9') digits.add(c - '0')
+    }
+    return digits
+}
+
+fun CharSequence.digits2() = sequence {
+    for (c in this@digits2) {
+        if (c in '0'..'9') yield(c - '0')
+    }
+}
+
 fun String.histogram(): Char2IntMap {
     val map = Char2IntOpenHashMap()
     for (c in this) {
@@ -501,6 +515,33 @@ inline fun <T> Iterable<T>.sumOfWithIndex(selector: (Int,T) -> Int): Int {
     return sum
 }
 
+inline fun <T> Iterable<T>.sumToLongWithIndex(selector: (Int,T) -> Long): Long {
+    var sum = 0L
+    var index = 0
+    for (element in this) {
+        sum += selector(index++, element)
+    }
+    return sum
+}
+
+inline fun IntList.sumToLongWithIndex(selector: (Int,Int) -> Long): Long {
+    var sum = 0L
+    var index = 0
+    for (i in indices) {
+        sum += selector(index++, getInt(i))
+    }
+    return sum
+}
+
+inline fun IntArray.sumToLongWithIndex(selector: (Int,Int) -> Long): Long {
+    var sum = 0L
+    var index = 0
+    for (i in indices) {
+        sum += selector(index++, get(i))
+    }
+    return sum
+}
+
 inline fun Long.toIntExact() = Math.toIntExact(this)
 
 inline infix fun Int.gcd(other: Int) = ArithmeticUtils.gcd(this, other)
@@ -565,6 +606,8 @@ value class PackedIntPair(val longValue: Long) {
 
     inline fun toPair() = Pair(first, second)
     inline fun toVec2i() = Vec2i(first, second)
+
+    override fun toString() = "($first, $second)"
 
     companion object {
         inline fun pack(first: Int, second: Int) = (first.toLong() shl 32) or (second.toLong() and 0xffffffffL)
