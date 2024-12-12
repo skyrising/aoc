@@ -2,7 +2,6 @@
 year=$1
 day=$2
 filter=part2
-exoprt LANG=en_US.UTF-8
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk/
 JAR=$year/build/benchmarks/main/jars/aoc-$year-main-jmh-JMH.jar
 PROF='perfasm:intelSyntax=true;hotThreshold=0.1;tooBigThreshold=2000;ecycles'

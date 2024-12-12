@@ -4,52 +4,92 @@ import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.PuzzleName
 import de.skyrising.aoc.TestInput
 import de.skyrising.aoc.longs
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import java.util.function.LongFunction
 
 val test = TestInput("""
 125 17
 """)
 
-fun Long2ObjectMap<LongArray>.memo(stone: Long): LongArray = computeIfAbsent(stone, LongFunction {
-    if (stone == 0L) longArrayOf(1)
-    else {
-        val s = stone.toString()
-        if (s.length and 1 == 0) longArrayOf(
-            s.substring(0, s.length / 2).toLong(),
-            s.substring(s.length / 2).toLong()
-        ) else longArrayOf(stone * 2024)
-    }
-})
+@JvmInline
+value class Stones(val value: Long) {
+    val hasTwo: Boolean get() = value < 0
+    val first: Long get() = if (value < 0) (value shr 32 and 0x7fffffff) else value
+    val second: Long get() = if (value < 0) (value and 0xffffffff) else 0
+    constructor(a: Int, b: Int) : this((1L shl 63) or (a.toLong() shl 32) or b.toLong())
 
-fun Long2ObjectMap<LongArray>.memo(next: Long2ObjectMap<LongArray>, stone: Long, blinks: Int, maxBlinks: Int = blinks + 1): Long {
-    val subMap = get(stone) ?: LongArray(maxBlinks).also { put(stone, it) }
-    val oldValue = subMap[blinks]
-    if (oldValue != 0L) return oldValue
-    val value = if (blinks == 0) 1 else {
-        var sum = 0L
-        val n = next.memo(stone)
-        for (i in n.indices) {
-            sum += memo(next, n[i], blinks - 1, maxBlinks)
+    override fun toString() = if (hasTwo) "($first, $second)" else "($first)"
+}
+
+fun getNextStones(stone: Long): Stones {
+    if (stone == 0L) return Stones(1L)
+    var i = 1L
+    while (i < Int.MAX_VALUE / 10) {
+        val div = i * 10
+        val sq = i * div
+        if (sq > stone) break
+        if (stone <= minOf(10*sq-1, Long.MAX_VALUE)) {
+            val a = (stone / div).toInt()
+            val b = (stone - a * div).toInt()
+            return Stones(a, b)
         }
-        sum
+        i *= 10
     }
-    subMap[blinks] = value
-    return value
+    return Stones(stone * 2024)
+}
+
+private const val SIZE = 1 shl 11
+class SumStorage(val maxBlinks: Int) {
+    private val array = LongArray(SIZE * (maxBlinks + 1))
+    val map = Long2ObjectOpenHashMap<LongArray>(36 * maxBlinks) // 25->31, 75->36, max@45->53
+
+    fun memo(stone: Long, blinks: Int = maxBlinks): Long {
+        val index = when {
+            stone < SIZE / 2 -> stone
+            stone % 2024L == 0L -> SIZE / 2 + (stone / 2024L)
+            else -> -stone
+        }
+        var arrayIndex = blinks
+        val subMap = if (index in 0L until SIZE) {
+            arrayIndex = blinks * SIZE + index.toInt()
+            array
+        } else {
+            map[index] ?: LongArray(maxBlinks + 1).also { map.put(index, it) }
+        }
+        val oldValue = subMap[arrayIndex]
+        if (oldValue != 0L) return oldValue
+        val value = if (blinks == 0) 1 else {
+            val n = getNextStones(stone)
+            var sum = memo(n.first, blinks - 1)
+            if (n.hasTwo) {
+                sum += memo(n.second, blinks - 1)
+            }
+            sum
+        }
+        subMap[arrayIndex] = value
+        return value
+    }
 }
 
 @PuzzleName("Plutonian Pebbles")
 fun PuzzleInput.part1(): Any {
-    val next = Long2ObjectOpenHashMap<LongArray>()
-    val sums = Long2ObjectOpenHashMap<LongArray>()
-    return chars.longs().sumOf { sums.memo(next, it, 25) }
+    val sums = SumStorage(25)
+    return chars.longs().sumOf { sums.memo(it) }
 }
 
 fun PuzzleInput.part2(): Any {
-    val next = Long2ObjectOpenHashMap<LongArray>()
-    val sums = Long2ObjectOpenHashMap<LongArray>()
-    return chars.longs().sumOf {
-        sums.memo(next, it, 75)
+    val sums = SumStorage(75)
+    return chars.longs().sumOf { sums.memo(it) }
+}
+
+fun PuzzleInput.part2b(): Any {
+    if (!benchmark) {
+        for (i in 1..150) {
+            val s = SumStorage(i)
+            println("$i ${chars.longs().sumOf {
+                s.memo(it)
+            }} ${s.map.size} ${(s.map.size + i - 1) / i}")
+        }
     }
+    val sums = SumStorage(150)
+    return chars.longs().sumOf { sums.memo(it) }
 }
