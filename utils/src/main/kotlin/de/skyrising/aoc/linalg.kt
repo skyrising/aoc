@@ -107,18 +107,24 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
     }
 }
 
+operator fun Int.times(other: Vec2i) = other * this
+
 data class Vec2l(val x: Long, val y: Long) {
     override fun toString() = "[$x, $y]"
     inline operator fun plus(other: Vec2l) = Vec2l(x + other.x, y + other.y)
     inline operator fun plus(offset: Int) = Vec2l(x + offset, y + offset)
+    inline operator fun plus(offset: Long) = Vec2l(x + offset, y + offset)
     inline operator fun plus(direction: Direction) = Vec2l(x + direction.x, y + direction.y)
     inline operator fun minus(other: Vec2l) = Vec2l(x - other.x, y - other.y)
     inline operator fun minus(offset: Int) = Vec2l(x - offset, y - offset)
+    inline operator fun minus(offset: Long) = Vec2l(x - offset, y - offset)
     inline operator fun minus(direction: Direction) = Vec2l(x - direction.x, y - direction.y)
     inline operator fun times(other: Vec2l) = Vec2l(x * other.x, y * other.y)
     inline operator fun times(other: Int) = Vec2l(x * other, y * other)
+    inline operator fun times(other: Long) = Vec2l(x * other, y * other)
     inline operator fun div(other: Vec2l) = Vec2l(x / other.x, y / other.y)
     inline operator fun div(other: Int) = Vec2l(x / other, y / other)
+    inline operator fun div(other: Long) = Vec2l(x / other, y / other)
     inline operator fun unaryMinus() = Vec2l(-x, -y)
     operator fun get(i: Int) = when (i) {
         0 -> x
@@ -170,6 +176,8 @@ data class Vec2l(val x: Long, val y: Long) {
         }
     }
 }
+
+operator fun Long.times(other: Vec2l) = other * this
 
 data class Vec2d(val x: Double, val y: Double) {
     override fun toString() = "[$x, $y]"
@@ -327,6 +335,7 @@ data class Vec3i(val x: Int, val y: Int, val z: Int) : HasBoundingBox3i {
     }
 }
 
+operator fun Int.times(other: Vec3i) = other * this
 fun min(a: Vec3i, b: Vec3i) = Vec3i(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z))
 fun max(a: Vec3i, b: Vec3i) = Vec3i(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z))
 
@@ -421,9 +430,6 @@ data class BoundingBox3i(val min: Vec3i, val max: Vec3i): HasBoundingBox3i {
         return true
     }
 }
-
-operator fun Int.times(other: Vec2i) = other * this
-operator fun Int.times(other: Vec3i) = other * this
 
 data class Cube(var x: Int, var y: Int, var z: Int, var dx: Int, var dy: Int, var dz: Int) : HasBoundingBox3i {
     fun intersects(other: Cube): Boolean {

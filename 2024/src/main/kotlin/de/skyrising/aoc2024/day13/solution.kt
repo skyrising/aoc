@@ -1,10 +1,7 @@
 package de.skyrising.aoc2024.day13
 
-import com.microsoft.z3.ArithExpr
-import com.microsoft.z3.Context
-import com.microsoft.z3.IntSort
-import com.microsoft.z3.Status
 import de.skyrising.aoc.*
+import kotlin.math.roundToLong
 
 val test = TestInput("""
 Button A: X+94, Y+34
@@ -24,32 +21,24 @@ Button B: X+27, Y+71
 Prize: X=18641, Y=10279
 """)
 
+fun solveGame(a: Vec2l, b: Vec2l, prize: Vec2l): Vec2l? {
+    val invDet = 1.0 / (a.x * b.y - b.x * a.y)
+    val numA = ((b.y * prize.x - b.x * prize.y) * invDet).roundToLong()
+    val numB = ((-a.y * prize.x + a.x * prize.y) * invDet).roundToLong()
+    return if (numA * a + numB * b == prize) Vec2l(numA, numB) else null
+}
+
 @PuzzleName("Claw Contraption")
 fun PuzzleInput.part1(): Any {
-    val games = lines.splitOnEmpty().map { it.map { val (x, y) = it.ints(); Vec2i(x, y) } }
+    val games = lines.splitOnEmpty().map { it.map { val (x, y) = it.longs(); Vec2l(x, y) } }
     return games.sumOf {(a, b, prize) ->
-        val maxA = minOf(prize.x / a.x, prize.y / a.y)
-        for (numA in maxA downTo 0) {
-            val numB = (prize.x - numA * a.x) / b.x
-            if (numA * a + numB * b == prize) return@sumOf numA * 3 + numB
-        }
-        0
+        (solveGame(a, b, prize) ?: Vec2l.ZERO).dot(Vec2l(3, 1))
     }
 }
 
 fun PuzzleInput.part2(): Any {
-    val games = lines.splitOnEmpty().map { it.map { val (x, y) = it.ints(); Vec2i(x, y) } }
-    val offset = 10000000000000L
-    Context().run {
-        val (numA, numB) = mkIntConst("numA", "numB")
-        return games.sumOf { (a, b, prize) ->
-            val opt = mkOptimize()
-            val realPrizeX = offset + prize.x
-            val realPrizeY = offset + prize.y
-            opt += numA * a.x + numB * b.x eq realPrizeX
-            opt += numA * a.y + numB * b.y eq realPrizeY
-            val handle = opt.MkMinimize((numA * 3) as ArithExpr<IntSort> + numB)
-            if (opt.Check() != Status.SATISFIABLE) 0 else handle.value.toLong()
-        }
+    val games = lines.splitOnEmpty().map { it.map { val (x, y) = it.longs(); Vec2l(x, y) } }
+    return games.sumOf {(a, b, prize) ->
+        (solveGame(a, b, prize + 10000000000000L) ?: Vec2l.ZERO).dot(Vec2l(3, 1))
     }
 }
