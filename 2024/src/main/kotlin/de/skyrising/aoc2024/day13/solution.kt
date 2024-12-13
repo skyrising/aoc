@@ -1,7 +1,7 @@
 package de.skyrising.aoc2024.day13
 
 import de.skyrising.aoc.*
-import kotlin.math.roundToLong
+import java.nio.ByteBuffer
 
 val test = TestInput("""
 Button A: X+94, Y+34
@@ -21,24 +21,38 @@ Button B: X+27, Y+71
 Prize: X=18641, Y=10279
 """)
 
-fun solveGame(a: Vec2l, b: Vec2l, prize: Vec2l): Vec2l? {
-    val invDet = 1.0 / (a.x * b.y - b.x * a.y)
-    val numA = ((b.y * prize.x - b.x * prize.y) * invDet).roundToLong()
-    val numB = ((-a.y * prize.x + a.x * prize.y) * invDet).roundToLong()
-    return if (numA * a + numB * b == prize) Vec2l(numA, numB) else null
+inline fun List<ByteBuffer>.sumGames(block: (Vec2l, Vec2l, Vec2l) -> Long): Long {
+    var sum = 0L
+    for (index in 0 until (size + 1) / 4) {
+        val j = index * 4
+        val aLine = get(j)
+        val a = Vec2l(aLine.toLong(12, 14), aLine.toLong(18, 20))
+        val bLine = get(j + 1)
+        val b = Vec2l(bLine.toLong(12, 14), bLine.toLong(18, 20))
+        val prizeLine = get(j + 2)
+        val pxStart = 9
+        val pxEnd = prizeLine.indexOf(','.code.toByte(), pxStart)
+        val pyStart = pxEnd + 4
+        val pyEnd = prizeLine.remaining()
+        val prize = Vec2l(prizeLine.toLong(pxStart, pxEnd), prizeLine.toLong(pyStart, pyEnd))
+        sum += block(a, b, prize)
+    }
+    return sum
+}
+
+fun solveGame(a: Vec2l, b: Vec2l, prize: Vec2l): Long {
+    val det = a.x * b.y - b.x * a.y
+    // (numA, numB) = adj(M) * prize / det(M), rounded to nearest integer
+    val numA = ((b.y * prize.x - b.x * prize.y) + det / 2) / det
+    val numB = ((-a.y * prize.x + a.x * prize.y) + det / 2) / det
+    return if (numA * a + numB * b == prize) numA * 3 + numB else 0
 }
 
 @PuzzleName("Claw Contraption")
-fun PuzzleInput.part1(): Any {
-    val games = lines.splitOnEmpty().map { it.map { val (x, y) = it.longs(); Vec2l(x, y) } }
-    return games.sumOf {(a, b, prize) ->
-        (solveGame(a, b, prize) ?: Vec2l.ZERO).dot(Vec2l(3, 1))
-    }
+fun PuzzleInput.part1() = byteLines.sumGames { a, b, prize ->
+    solveGame(a, b, prize)
 }
 
-fun PuzzleInput.part2(): Any {
-    val games = lines.splitOnEmpty().map { it.map { val (x, y) = it.longs(); Vec2l(x, y) } }
-    return games.sumOf {(a, b, prize) ->
-        (solveGame(a, b, prize + 10000000000000L) ?: Vec2l.ZERO).dot(Vec2l(3, 1))
-    }
+fun PuzzleInput.part2() = byteLines.sumGames { a, b, prize ->
+    solveGame(a, b, prize + 10000000000000L)
 }

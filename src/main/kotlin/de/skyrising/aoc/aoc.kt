@@ -1,12 +1,13 @@
 package de.skyrising.aoc
 
 import java.util.*
-import kotlin.math.sqrt
+import kotlin.time.Duration.Companion.milliseconds
 
-const val RUNS = 10
-const val WARMUP = 5
-const val MEASURE_ITERS = 10
+const val RUNS = 8
+const val WARMUP = 2
 const val BENCHMARK = false
+var BENCHMARK_MODE: BenchMode? = if (BENCHMARK) BenchMode.Duration(500.milliseconds) else null
+const val QUICK_PART2 = true
 
 fun buildFilter(args: Array<String>): PuzzleFilter {
     if (args.isEmpty()) return PuzzleFilter.all().copy(latestOnly = true)
@@ -25,67 +26,39 @@ fun main(args: Array<String>) {
     for (puzzle in puzzlesToRun) {
         val input = puzzle.getRealInput()
         try {
-            if (BENCHMARK) {
-                input.benchmark = true
-                var result: Any? = null
-                val runs = if (puzzle.part == 2) 1 else RUNS
-                val warmup = if (puzzle.part == 2) 1 else WARMUP
-                val totalIters = warmup + if (puzzle.part == 2) 3 else MEASURE_ITERS
-                val allTimes = DoubleArray(totalIters) { a ->
-                    //println(if (a < warmup) "Warming up..." else "Measuring...")
-                    measure(runs) { b ->
-                        if (a == totalIters - 1 && b == runs - 1) input.benchmark = false
-                        input.use {
-                            puzzle.runPuzzle(input).also { result = it }
+            val benchmark = BENCHMARK_MODE
+            if (benchmark != null) {
+                input.benchmark = false
+                var warmup = WARMUP
+                var measure = RUNS
+                val mode = when (benchmark) {
+                    is BenchMode.Iterations -> {
+                        if (QUICK_PART2 && puzzle.part == 2) {
+                            warmup = 1
+                            measure = 3
                         }
-                    }//.also { println(formatTime(it)) }
+                        BenchMode.Iterations(if (QUICK_PART2 && puzzle.part == 2) 3 else benchmark.iterations)
+                    }
+                    is BenchMode.Duration -> benchmark
                 }
-                val times = allTimes.copyOfRange(warmup, allTimes.size)
-                val avg = times.average()
-                val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
-                println(
-                    String.format(
-                        Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s ± %4.1f%%",
-                        puzzle.day.year,
-                        puzzle.day.day,
-                        puzzle.part,
-                        puzzle.index,
-                        puzzle.name,
-                        result,
-                        formatTime(avg),
-                        stddev * 100 / avg
-                    )
-                )
+                val (result, avg, stddev) = benchmark(warmup, measure, mode) { a, b ->
+                    input.use { puzzle.runPuzzle(input) }.also {
+                        input.benchmark = true
+                        if (b == 0) {
+                            print(if (a < 0) '-' else '+')
+                        }
+                    }
+                }
+                print("\r\u001b[K")
+                println(formatResult(puzzle, result, avg, stddev * 100 / avg))
             } else {
                 val start = System.nanoTime()
                 val result = input.use { puzzle.runPuzzle(input) }
                 val time = (System.nanoTime() - start) / 1000.0
-                println(
-                    String.format(
-                        Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s ± ?",
-                        puzzle.day.year,
-                        puzzle.day.day,
-                        puzzle.part,
-                        puzzle.index,
-                        puzzle.name,
-                        result,
-                        formatTime(time)
-                    )
-                )
+                println(formatResult(puzzle, result, time))
             }
         } catch (e: Exception) {
-            println(
-                String.format(
-                    Locale.ROOT, "%d/%02d/%d.%d %-32s: %16s, %s",
-                    puzzle.day.year,
-                    puzzle.day.day,
-                    puzzle.part,
-                    puzzle.index,
-                    puzzle.name,
-                    e.javaClass.simpleName,
-                    e.message
-                )
-            )
+            println(formatResult(puzzle, e))
             e.printStackTrace()
         }
     }
@@ -97,4 +70,43 @@ private fun formatTime(us: Double): String {
     val ms = us / 1000
     if (ms < 1000) return "%7.3fms".format(ms)
     return "%7.3fs ".format(ms / 1000)
+}
+
+const val NAME_LENGTH = 32
+const val RESULT_LENGTH = 19
+fun formatResult(puzzle: Puzzle<*>, result: Any?, us: Double = 0.0, stddev: Double? = null) = buildString {
+    append(puzzle.day.year)
+    append('/')
+    append("%02d".format(puzzle.day.day))
+    append('/')
+    append(puzzle.part)
+    append('.')
+    append(puzzle.index)
+    append(' ')
+    append(puzzle.name)
+    repeat(NAME_LENGTH - puzzle.name.length) { append(' ') }
+    append(": ")
+    val resultString = if (result is Throwable) result.javaClass.simpleName else result.toString()
+    if (resultString.length <= RESULT_LENGTH) {
+        repeat(RESULT_LENGTH - resultString.length) { append(' ') }
+        append(resultString)
+    } else {
+        repeat(RESULT_LENGTH) { append(' ') }
+    }
+    append(", ")
+    if (result is Throwable) {
+        append(result.message)
+    } else {
+        append(formatTime(us))
+        append(" ± ")
+        if (stddev != null) {
+            append(String.format(Locale.ROOT, "%4.1f%%", stddev * 100 / us))
+        } else {
+            append("?")
+        }
+    }
+    if (resultString.length > RESULT_LENGTH) {
+        append("\n")
+        append(resultString)
+    }
 }

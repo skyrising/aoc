@@ -80,16 +80,3 @@ fun PuzzleInput.part2(): Any {
     val sums = SumStorage(75)
     return chars.longs().sumOf { sums.memo(it) }
 }
-
-fun PuzzleInput.part2b(): Any {
-    if (!benchmark) {
-        for (i in 1..150) {
-            val s = SumStorage(i)
-            println("$i ${chars.longs().sumOf {
-                s.memo(it)
-            }} ${s.map.size} ${(s.map.size + i - 1) / i}")
-        }
-    }
-    val sums = SumStorage(150)
-    return chars.longs().sumOf { sums.memo(it) }
-}

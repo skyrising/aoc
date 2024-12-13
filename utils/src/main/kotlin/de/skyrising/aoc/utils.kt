@@ -41,21 +41,6 @@ fun lineList(buf: ByteBuffer): List<ByteBuffer> {
     return lines
 }
 
-// Poor man's JMH
-
-private var blackhole: Unit? = Unit
-fun blackhole(o: Any?) {
-    blackhole = if (o == null || o != blackhole) Unit else blackhole
-}
-
-fun <T> measure(runs: Int, fn: (Int) -> T?): Double {
-    val start = System.nanoTime()
-    repeat(runs) {
-        blackhole(fn(it))
-    }
-    return (System.nanoTime() - start) / (1000.0 * runs)
-}
-
 fun isBitSet(longs: LongArray, i: Int): Boolean {
     return (longs[i shr 6] shr (i and 0x3f)) and 1 != 0L
 }
@@ -136,6 +121,15 @@ fun ByteBuffer.positionAfter(delimiter: Byte): Boolean {
     return false
 }
 
+fun ByteBuffer.indexOf(delimiter: Byte, startIndex: Int = position()): Int {
+    for (i in startIndex until limit()) {
+        if (this.get(i) == delimiter) {
+            return i
+        }
+    }
+    return -1
+}
+
 fun ByteBuffer.until(delimiter: Byte): Boolean {
     for (i in position() until limit()) {
         if (this.get(i) == delimiter) {
@@ -179,14 +173,35 @@ inline fun CharSequence.splitRanges(predicate: (Char) -> Boolean): List<IntRange
     return result
 }
 
-fun ByteBuffer.toInt(): Int {
-    var result = 0
-    var pow = 1
-    for (i in remaining() - 1 downTo 0) {
-        val c = this[i].toInt().toChar()
-        if (c == '-') return -result
-        if (c !in '0'..'9') return result
-        result += (c - '0') * pow
+fun ByteBuffer.toInt(from: Int = position(), to: Int = limit()) = toLong(from, to).toInt()
+
+fun ByteBuffer.toLong(from: Int = position(), to: Int = limit()): Long {
+    if (hasArray()) {
+        val offset = arrayOffset()
+        return array().toLong(from + offset, to + offset)
+    }
+    var result = 0L
+    var pow = 1L
+    for (i in to - 1 downTo from) {
+        val c = this[i].toInt()
+        if (c == '-'.code) return -result
+        val digit = c - '0'.code
+        if (digit < 0 || digit > 9) return result
+        result += digit * pow
+        pow *= 10
+    }
+    return result
+}
+
+fun ByteArray.toLong(from: Int, to: Int): Long {
+    var result = 0L
+    var pow = 1L
+    for (i in to - 1 downTo from) {
+        val c = this[i].toInt()
+        if (c == '-'.code) return -result
+        val digit = c - '0'.code
+        if (digit < 0 || digit > 9) return result
+        result += digit * pow
         pow *= 10
     }
     return result
