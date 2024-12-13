@@ -431,14 +431,13 @@ fun <T> Collection<T>.subsets(): Iterable<Set<T>> {
     }
 }
 
-inline fun <T> floodFill(origin: T, step: (T) -> Collection<T>): Set<T> {
+inline fun <T> floodFill(origin: T, step: (T) -> Iterable<T>): Set<T> {
     val result = mutableSetOf<T>()
     val queue = ArrayDeque<T>()
     queue.add(origin)
     while (queue.isNotEmpty()) {
         val current = queue.removeFirst()
-        if (current !in result) {
-            result.add(current)
+        if (result.add(current)) {
             queue.addAll(step(current))
         }
     }
