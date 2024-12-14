@@ -1,0 +1,17 @@
+[versions]
+kotlin = "2.0.0"
+ksp = "2.0.0-1.0.21"
+kotlinx-benchmark = "0.4.10"
+jmh = "1.37"
+
+[libraries]
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-allopen = { module = "org.jetbrains.kotlin:kotlin-allopen", version.ref = "kotlin" }
+ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+kotlinx-benchmark-plugin = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-plugin", version.ref = "kotlinx-benchmark" }
+
+kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
+fastutil = { module = "it.unimi.dsi:fastutil", version = "8.5.13" }
+commons-math3 = { module = "org.apache.commons:commons-math3", version = "3.6.1" }
+z3-turnkey = { module = "tools.aqua:z3-turnkey", version = "4.13.0" }
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }

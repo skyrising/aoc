@@ -55,9 +55,10 @@ interface PuzzleInput : AutoCloseable {
         }
     }
 
-    fun visualization(block: Visualization.() -> Unit) {
-        if (benchmark) return
+    fun visualization(block: Visualization.() -> Unit): Visualization? {
+        if (benchmark) throw IllegalStateException()
         viz.block()
+        return viz
     }
 }
 

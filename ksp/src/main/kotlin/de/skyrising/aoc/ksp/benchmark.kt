@@ -4,7 +4,16 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassifierReference
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.*
+
+val KSType.isVisualization: Boolean
+    get() = declaration.qualifiedName?.getQualifier() == "de.skyrising.aoc.visualization" && declaration.qualifiedName?.getShortName() == "Visualization"
+
+fun KSType.asClassName(): TypeName {
+    val qName = declaration.qualifiedName ?: return ClassName("kotlin", "Any").copy(nullable = true)
+    return ClassName(qName.getQualifier(), qName.getShortName()).copy(nullable = isMarkedNullable)
+}
 
 class BenchmarkProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
@@ -17,30 +26,39 @@ class BenchmarkProcessorProvider : SymbolProcessorProvider {
                     val pkg = file.packageName.asString()
                     if (!pkg.startsWith("$packageName.day")) continue
                     val day = pkg.substring(packageName.length + 4).toInt()
-                    val parts = mutableListOf<String>()
+                    val parts = mutableMapOf<String, KSType>()
                     for (decl in file.declarations) {
                         if (decl !is KSFunctionDeclaration) continue
                         if (!decl.simpleName.asString().startsWith("part")) continue
                         val rec = decl.extensionReceiver?.element as? KSClassifierReference ?: continue
                         if (rec.referencedName() != "PuzzleInput") continue
-                        parts.add(decl.simpleName.asString())
+                        parts[decl.simpleName.asString()] = decl.returnType!!.resolve()
                     }
                     val benchClassName = ClassName(packageName, "BenchmarkDay$day")
                     val fileSpec = FileSpec.builder(benchClassName)
                         .apply {
-                            for (part in parts) addImport(file.packageName.asString(), part)
+                            for ((part, retType) in parts) if (!retType.isVisualization) addImport(file.packageName.asString(), part)
                         }
                         .addType(TypeSpec.classBuilder(benchClassName)
                             .superclass(ClassName("de.skyrising.aoc", "BenchmarkBase"))
                             .addSuperclassConstructorParameter("%L", year)
                             .addSuperclassConstructorParameter("%L", day)
+                            .addAnnotation(AnnotationSpec.builder(ClassName("kotlin", "Suppress")).addMember("%S", "INAPPLICABLE_JVM_NAME").build())
                             .apply {
-                                for (part in parts) {
-                                    addFunction(FunSpec.builder(part)
-                                        .addAnnotation(ClassName("kotlinx.benchmark", "Benchmark"))
-                                        .returns(Any::class.asClassName().copy(nullable = true))
-                                        .addStatement("return input.%N()", part)
-                                        .build())
+                                for ((part, returnType) in parts) {
+                                    if (returnType.isVisualization) continue
+                                    addFunction(FunSpec.builder(part).apply {
+                                        addAnnotation(ClassName("kotlinx.benchmark", "Benchmark"))
+                                        addAnnotation(AnnotationSpec.builder(ClassName("kotlin.jvm", "JvmName"))
+                                            .addMember("%S", part)
+                                            .build())
+                                        //addAnnotation(AnnotationSpec.builder(ClassName("org.openjdk.jmh.annotations", "Group"))
+                                        //    .addMember("%S", "aoc${year}_day${day}_$part")
+                                        //    .build())
+                                        //returns(ClassName("kotlin", "Any").copy(nullable = true))
+                                        returns(returnType.asClassName())
+                                        addStatement("return input.%N()", part)
+                                    }.build())
                                 }
                             }
                             .build())

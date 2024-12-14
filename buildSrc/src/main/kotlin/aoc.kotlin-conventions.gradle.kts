@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -11,21 +12,8 @@ java {
     }
 }
 
-kotlin {
-    sourceSets.all {
-        languageSettings {
-            languageVersion = "2.0"
-        }
-    }
-}
-
 repositories {
     mavenCentral()
-}
-
-dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -33,8 +21,8 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "21"
-        freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+        freeCompilerArgs.add("-Xcontext-receivers")
     }
 }

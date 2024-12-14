@@ -1,5 +1,6 @@
 package de.skyrising.aoc
 
+import de.skyrising.aoc.visualization.Visualization
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -25,6 +26,10 @@ fun main(args: Array<String>) {
     val puzzlesToRun = allPuzzles.filter(filter)
     for (puzzle in puzzlesToRun) {
         val input = puzzle.getRealInput()
+        if (puzzle.resultType == Visualization::class.java) {
+            input.use(puzzle::runPuzzle)
+            continue
+        }
         try {
             val benchmark = BENCHMARK_MODE
             if (benchmark != null) {

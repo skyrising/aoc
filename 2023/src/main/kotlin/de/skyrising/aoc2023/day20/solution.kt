@@ -187,14 +187,11 @@ fun PuzzleInput.part2(): Any {
     }
 }
 
-fun PuzzleInput.part2viz(): Any {
-    if (benchmark) return -1L
-    val state = parse(this)
+fun PuzzleInput.part2viz() = visualization {
+    val state = parse(this@part2viz)
     val svg = renderGraphToSVG(state.dot())
-    visualization {
-        //video = true
-        size = Vec2i(ceil(svg.width * 1.5).toInt(), ceil(svg.height * 1.5).toInt())
-    }
+    //video = true
+    size = Vec2i(ceil(svg.width * 1.5).toInt(), ceil(svg.height * 1.5).toInt())
     val g = viz.g
     g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
@@ -278,7 +275,7 @@ fun PuzzleInput.part2viz(): Any {
                     repeat(120) {
                         viz.present()
                     }
-                    return result
+                    return@visualization
                 }
             }
         }

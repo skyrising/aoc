@@ -30,6 +30,7 @@ interface Puzzle<T> : Comparable<Puzzle<T>> {
     val day: PuzzleDay
     val part: Int
     val index: Int
+    val resultType: Class<T>
     fun getRealInput() = getInput(day.year, day.day)
     fun runPuzzle(input: PuzzleInput): T
 
@@ -69,17 +70,18 @@ data class DefaultPuzzle<T>(
     override val day: PuzzleDay,
     override val part: Int,
     override val index: Int,
+    override val resultType: Class<T>,
     val run: PuzzleInput.() -> T
 ) : Puzzle<T> {
     override fun runPuzzle(input: PuzzleInput): T = run(input)
 }
 
-inline fun <T> puzzle(name: String, part: Int = 0, noinline run: PuzzleInput.() -> T): Puzzle<T> {
+inline fun <reified T> puzzle(name: String, part: Int = 0, resultType: Class<T> = T::class.java, noinline run: PuzzleInput.() -> T): Puzzle<T> {
     if (part != lastPart) {
         lastPart = part
     }
     val index = allPuzzles[currentDay]?.count { it.part == part } ?: 0
-    return DefaultPuzzle(name, currentDay, part, index, run).also(allPuzzles::add)
+    return DefaultPuzzle(name, currentDay, part, index, resultType, run).also(allPuzzles::add)
 }
 
 private inline fun <reified T> convertMethod(lookup: MethodHandles.Lookup, method: Method): T {
@@ -114,7 +116,7 @@ fun registerDay(day: PuzzleDay) {
                     name = it.name
                 }
                 if (name.isEmpty() && part == 2) name = "Part Two"
-                puzzle(name, part, convertMethod<Function1<PuzzleInput, Any?>>(lookup, method))
+                puzzle(name, part, method.returnType as Class<Any?>, convertMethod<Function1<PuzzleInput, Any?>>(lookup, method))
             }
         }
     } catch (ignored: ClassNotFoundException) {}
