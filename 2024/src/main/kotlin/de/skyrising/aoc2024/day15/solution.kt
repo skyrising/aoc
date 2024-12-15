@@ -26,7 +26,7 @@ vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
 v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
 """)
 
-@PuzzleName("")
+@PuzzleName("Warehouse Woes")
 fun PuzzleInput.part1(): Any {
     val (room, moves) = lines.splitOnEmpty()
     val roomGrid = CharGrid.parse(room)
@@ -55,8 +55,8 @@ fun PuzzleInput.part2(): Any {
     val roomGrid = CharGrid.parse(room)
     val scale = Vec2i(2, 1)
     var robotPos = roomGrid.where { it == '@' }.first() * scale
-    val walls = roomGrid.where { it == '#' }.flatMapTo(mutableSetOf()) { listOf(it * scale, it * scale + Vec2i.E) }
-    val boxes = roomGrid.where { it == 'O' }.mapTo(mutableSetOf()) { it * scale }
+    val walls = roomGrid.where { it == '#' }.flatMap { listOf(it * scale, it * scale + Vec2i.E) }
+    val boxes = roomGrid.where { it == 'O' }.map { it * scale }
     val scaledGrid = walls.charGrid('.') { '#' }.also {
         it[boxes] = '['
         it[boxes.map { it.east }] = ']'
