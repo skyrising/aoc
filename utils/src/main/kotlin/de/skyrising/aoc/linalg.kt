@@ -52,6 +52,8 @@ data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
     }
     operator fun rem(other: Vec2i) = Vec2i(x % other.x, y % other.y)
     operator fun rem(other: Int) = Vec2i(x % other, y % other)
+    infix fun mod(other: Vec2i) = Vec2i(x.mod(other.x), y.mod(other.y))
+    infix fun mod(other: Int) = Vec2i(x.mod(other), y.mod(other))
 
     infix fun dot(other: Vec2i) = x * other.x + y * other.y
 

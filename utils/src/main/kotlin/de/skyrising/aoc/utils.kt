@@ -722,3 +722,8 @@ fun <T> List<T>.allIndexed(predicate: (Int, T) -> Boolean): Boolean {
     }
     return true
 }
+
+inline fun <T> List<T>.varianceOf(selector: (T) -> Double): Double {
+    val mean = sumOf { selector(it) } / size
+    return sumOf { val diff = (selector(it) - mean); diff * diff } / size
+}
