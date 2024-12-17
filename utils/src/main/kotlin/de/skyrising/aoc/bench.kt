@@ -21,11 +21,8 @@ data class BenchmarkResult(val result: Any?, val meanUs: Double, val stddevUs: D
 private inline fun benchmarkCommon(warmup: Int, measure: Int, run: (Int) -> Double): BenchmarkResult {
     val allTimes = DoubleArray(warmup + measure) { run(it - warmup) }
     val times = allTimes.copyOfRange(warmup, allTimes.size)
-    println(times.contentToString())
     val avg = times.average()
-    println(times.map { (it - avg) * (it - avg) })
     val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
-    println(stddev)
     return BenchmarkResult(null, avg, stddev)
 }
 

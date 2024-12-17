@@ -55,7 +55,7 @@ fun main(args: Array<String>) {
                     }
                 }
                 print("\r\u001b[K")
-                println(formatResult(puzzle, result, avg, stddev * 100 / avg))
+                println(formatResult(puzzle, result, avg, stddev))
             } else {
                 val start = System.nanoTime()
                 val result = input.use { puzzle.runPuzzle(input) }
