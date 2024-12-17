@@ -27,6 +27,7 @@ value class Direction(val ordinal: Int) {
         val E = Direction(1)
         val S = Direction(2)
         val W = Direction(3)
+        val values = arrayOf(N, E, S, W)
     }
 }
 

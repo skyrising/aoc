@@ -3,19 +3,13 @@ package de.skyrising.aoc
 import de.skyrising.aoc.visualization.DummyVisualization
 import de.skyrising.aoc.visualization.RealVisualization
 import de.skyrising.aoc.visualization.Visualization
-import it.unimi.dsi.fastutil.ints.Int2ObjectFunction
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.net.URL
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.time.LocalDate
 import kotlin.io.path.exists
-
-var lastInputLB = MutableBox<Pair<ByteBuffer, List<ByteBuffer>>?>(null)
-var lastInputS = MutableBox<Pair<ByteBuffer, CharBuffer>?>(null)
-var lastInputLS = MutableBox<Pair<ByteBuffer, List<String>>?>(null)
 
 fun ByteBuffer.toLatin1String(): String {
     if (hasArray()) return String(array(), arrayOffset() + position(), remaining(), StandardCharsets.ISO_8859_1)
@@ -63,9 +57,9 @@ interface PuzzleInput : AutoCloseable {
 }
 
 class RealInput(override val day: PuzzleDay, override val input: ByteBuffer, override var benchmark: Boolean = false) : PuzzleInput {
-    override val lines by lazy { getInput(input, lastInputLS, ::calcInputLS) }
-    override val byteLines by lazy { getInput(input, lastInputLB, ::lineList) }
-    override val chars by lazy { getInput(input, lastInputS, ::calcInputS) }
+    override val lines by lazy { calcInputLS(input) }
+    override val byteLines by lazy { lineList(input) }
+    override val chars by lazy { calcInputS(input) }
     override val string by lazy { chars.toString() }
     private var lazyViz: Visualization? = null
     override val viz: Visualization
@@ -95,24 +89,14 @@ class TestInput(str: String) : PuzzleInput {
     override fun close() {}
 }
 
-inline fun <T> getInput(input: ByteBuffer, lastInput: MutableBox<Pair<ByteBuffer, T>?>, fn: (ByteBuffer) -> T): T {
-    val value = lastInput.value
-    if (value == null || value.first !== input) {
-        val result = fn(input)
-        lastInput.value = Pair(input, result)
-        return result
-    }
-    return value.second
-}
-
-private val inputs: Int2ObjectMap<Int2ObjectMap<PuzzleInput>> = Int2ObjectOpenHashMap()
+private val years = LocalDate.now().year - 2015 + 1
+private val inputs = arrayOfNulls<PuzzleInput>(years * 25)
 private val cookie: String by lazy { Files.readString(java.nio.file.Path.of("COOKIE.txt")).trim() }
 
-fun getInput(year: Int, day: Int): PuzzleInput = inputs.computeIfAbsent(year, Int2ObjectFunction {
-    Int2ObjectOpenHashMap()
-}).computeIfAbsent(day, Int2ObjectFunction {
-    getInput0(year, it)
-})
+fun getInput(year: Int, day: Int): PuzzleInput {
+    val idx = (year - 2015) * 25 + day - 1
+    return inputs[idx] ?: getInput0(year, day).also { inputs[idx] = it }
+}
 
 private fun getInput0(year: Int, day: Int): PuzzleInput {
     val cachePath = java.nio.file.Path.of("inputs", year.toString(), "$day.txt")

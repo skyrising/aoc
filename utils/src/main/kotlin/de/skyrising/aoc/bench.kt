@@ -18,33 +18,34 @@ abstract class BenchmarkBase(year: Int, day: Int) {
 
 data class BenchmarkResult(val result: Any?, val meanUs: Double, val stddevUs: Double)
 
+private inline fun benchmarkCommon(warmup: Int, measure: Int, run: (Int) -> Double): BenchmarkResult {
+    val allTimes = DoubleArray(warmup + measure) { run(it - warmup) }
+    val times = allTimes.copyOfRange(warmup, allTimes.size)
+    println(times.contentToString())
+    val avg = times.average()
+    println(times.map { (it - avg) * (it - avg) })
+    val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
+    println(stddev)
+    return BenchmarkResult(null, avg, stddev)
+}
+
 fun benchmark(warmup: Int, measure: Int, iterations: Int, block: (Int, Int) -> Any?): BenchmarkResult {
     var result: Any? = null
-    val totalIters = warmup + measure
-    val allTimes = DoubleArray(totalIters) { a ->
+    return benchmarkCommon(warmup, measure) { a ->
         measure(iterations) { b ->
-            block(a - warmup, b).also { result = it }
+            block(a, b).also { result = it }
         }
-    }
-    val times = allTimes.copyOfRange(warmup, allTimes.size)
-    val avg = times.average()
-    val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
-    return BenchmarkResult(result, avg, stddev)
+    }.copy(result = result)
 }
 
 fun benchmark(warmup: Int, measure: Int, duration: Duration, block: (Int, Int) -> Any?): BenchmarkResult {
     var result: Any? = null
-    val totalIters = warmup + measure
-    val allTimes = DoubleArray(totalIters) { a ->
+    return benchmarkCommon(warmup, measure) { a ->
         var b = 0
         measureForDuration(duration) {
-            block(a - warmup, b++).also { result = it }
+            block(a, b++).also { result = it }
         }
-    }
-    val times = allTimes.copyOfRange(warmup, allTimes.size)
-    val avg = times.average()
-    val stddev = sqrt(times.map { (it - avg) * (it - avg) }.average())
-    return BenchmarkResult(result, avg, stddev)
+    }.copy(result = result)
 }
 
 sealed interface BenchMode {

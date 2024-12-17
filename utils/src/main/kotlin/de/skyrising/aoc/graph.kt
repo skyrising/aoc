@@ -157,6 +157,19 @@ abstract class BaseGraph<V, E> {
         }
         return sb.toString()
     }
+
+    fun dot(): String = buildString {
+        append("digraph G {\n")
+        val vertexList = vertexes.toList()
+        val vertexIds = vertexList.withIndex().associate { it.value to it.index }
+        for ((v, id) in vertexIds) {
+            append("  $id [label=\"$v\"];\n")
+        }
+        for (e in edges) {
+            append("  ${vertexIds[e.from]} -> ${vertexIds[e.to]} [label=\"${e.weight}\"];\n")
+        }
+        append("}\n")
+    }
 }
 
 class UndirectedGraph<V, E> : BaseGraph<V, E>() {
