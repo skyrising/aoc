@@ -318,7 +318,9 @@ operator fun <V, E> Path<V, E>.plus(edge: Edge<V, E?>): Path<V, E> {
     return Path(newEdges)
 }
 
-inline fun <T> bfsPath(start: T, end: (T) -> Boolean, step: (T) -> Iterable<T>): List<T>? {
+inline fun <T> bfsPath(start: T, end: (T) -> Boolean, step: (T) -> Iterable<T>) = bfsPath(start, end) { v, cb -> step(v).forEach(cb) }
+
+inline fun <T> bfsPath(start: T, end: (T) -> Boolean, step: (T, (T) -> Unit) -> Unit): List<T>? {
     val visited = mutableSetOf(start)
     var queue = mutableListOf(start)
     val prev = mutableMapOf<T, T>()
@@ -334,7 +336,7 @@ inline fun <T> bfsPath(start: T, end: (T) -> Boolean, step: (T) -> Iterable<T>):
                 }
                 return path.reversed()
             }
-            for (n in step(v)) {
+            step(v) { n ->
                 if (visited.add(n)) {
                     next.add(n)
                     prev[n] = v
@@ -350,7 +352,7 @@ data class VertexWithDistance<V>(val vertex: V, val dist: Int): Comparable<Verte
     override fun compareTo(other: VertexWithDistance<V>) = dist.compareTo(other.dist)
 }
 
-inline fun <V, E> dijkstra(from: V, to: (V) -> Boolean, getOutgoing: (V)->Collection<Edge<V, E?>>): Path<V, E>? {
+inline fun <V, E> dijkstra(from: V, to: (V) -> Boolean, getOutgoing: (V)->Iterable<Edge<V, E?>>): Path<V, E>? {
     val unvisited = PriorityQueue<VertexWithDistance<V>>()
     unvisited.add(VertexWithDistance(from, 0))
     val inc = mutableMapOf<V, Edge<V, E?>>()
@@ -373,7 +375,7 @@ inline fun <V, E> dijkstra(from: V, to: (V) -> Boolean, getOutgoing: (V)->Collec
     return null
 }
 
-inline fun <V, E> astar(from: V, h: (V) -> Int, to: (V) -> Boolean, getOutgoing: (V)->Collection<Edge<V, E?>>): Path<V, E>? {
+inline fun <V, E> astar(from: V, h: (V) -> Int, to: (V) -> Boolean, getOutgoing: (V)->Iterable<Edge<V, E?>>): Path<V, E>? {
     val unvisited = PriorityQueue<VertexWithDistance<V>>()
     unvisited.add(VertexWithDistance(from, h(from)))
     val inc = mutableMapOf<V, Edge<V, E?>>()

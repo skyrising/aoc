@@ -727,3 +727,20 @@ inline fun <T> List<T>.varianceOf(selector: (T) -> Double): Double {
     val mean = sumOf { selector(it) } / size
     return sumOf { val diff = (selector(it) - mean); diff * diff } / size
 }
+inline fun binarySearch(fromIndex: Int, toIndex: Int, comparison: (Int) -> Int): Int {
+    var low = fromIndex
+    var high = toIndex - 1
+
+    while (low <= high) {
+        val mid = (low + high).ushr(1)
+        val cmp = comparison(mid)
+
+        if (cmp < 0)
+            low = mid + 1
+        else if (cmp > 0)
+            high = mid - 1
+        else
+            return mid
+    }
+    return -(low + 1)
+}
