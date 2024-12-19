@@ -2,12 +2,13 @@ package de.skyrising.aoc
 
 import de.skyrising.aoc.visualization.Visualization
 import java.util.*
+import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 
 const val RUNS = 8
 const val WARMUP = 2
 const val BENCHMARK = false
-var BENCHMARK_MODE: BenchMode? = if (BENCHMARK) BenchMode.Duration(500.milliseconds) else null
+var BENCHMARK_MODE: BenchMode? = if (BENCHMARK) BenchMode.Duration(100.milliseconds) else null
 const val QUICK_PART2 = true
 
 fun buildFilter(args: Array<String>): PuzzleFilter {
@@ -26,6 +27,8 @@ fun main(args: Array<String>) {
     val filter = buildFilter(args)
     registerFiltered(filter)
     val puzzlesToRun = allPuzzles.filter(filter)
+    var totalTime = 0.0
+    var totalVariance = 0.0
     for (puzzle in puzzlesToRun) {
         val input = puzzle.getRealInput()
         if (puzzle.resultType == Visualization::class.java) {
@@ -35,7 +38,7 @@ fun main(args: Array<String>) {
         try {
             val benchmark = BENCHMARK_MODE
             if (benchmark != null) {
-                input.benchmark = false
+                input.benchmark = true
                 var warmup = WARMUP
                 var measure = RUNS
                 val mode = when (benchmark) {
@@ -57,11 +60,14 @@ fun main(args: Array<String>) {
                     }
                 }
                 print("\r\u001b[K")
+                totalTime += avg
+                totalVariance += stddev * stddev
                 println(formatResult(puzzle, result, avg, stddev))
             } else {
                 val start = System.nanoTime()
                 val result = input.use { puzzle.runPuzzle(input) }
                 val time = (System.nanoTime() - start) / 1000.0
+                totalTime += time
                 println(formatResult(puzzle, result, time))
             }
         } catch (e: Exception) {
@@ -69,7 +75,13 @@ fun main(args: Array<String>) {
             e.printStackTrace()
         }
     }
-    println("Done")
+    println(buildString {
+        append("Done: ")
+        append(formatTime(totalTime).trim())
+        if (BENCHMARK) {
+            append(String.format(Locale.ROOT, " ± %.1f%%", sqrt(totalVariance) * 100 / totalTime))
+        }
+    })
 }
 
 private fun formatTime(us: Double): String {
