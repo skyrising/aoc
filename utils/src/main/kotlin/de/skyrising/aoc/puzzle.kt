@@ -53,10 +53,17 @@ value class PuzzleCollection(private val puzzles: SortedMap<PuzzleDay, MutableLi
         puzzles.computeIfAbsent(puzzle.day) { mutableListOf() }.add(puzzle)
     }
 
-    fun filter(filter: PuzzleFilter) = if (filter.latestOnly) {
-        puzzles.reversed().entries.find { it.key in filter.days && it.key.released }?.value ?: emptyList()
-    } else {
-        puzzles.filterKeys { it in filter.days }.values.flatten()
+    fun filter(filter: PuzzleFilter): List<Puzzle<*>> {
+        val days = if (filter.latestOnly) {
+            puzzles.reversed().entries.find { it.key in filter.days && it.key.released }?.value ?: emptyList()
+        } else {
+            puzzles.filterKeys { it in filter.days }.values.flatten()
+        }
+        return if (filter.bestVersionOnly) {
+            days.groupBy { it.day to it.part }.values.map { it.maxBy(Puzzle<*>::index) }
+        } else {
+            days
+        }
     }
 }
 
@@ -122,7 +129,7 @@ fun registerDay(day: PuzzleDay) {
     } catch (ignored: ClassNotFoundException) {}
 }
 
-data class PuzzleFilter(val days: SortedSet<PuzzleDay>, val latestOnly: Boolean = false) {
+data class PuzzleFilter(val days: SortedSet<PuzzleDay>, val latestOnly: Boolean = false, val bestVersionOnly: Boolean = false) {
     companion object {
         fun all() = PuzzleFilter((2015..LocalDate.now().year).flatMap { year -> (1..25).map { day -> PuzzleDay(year, day) } }.toSortedSet(), false)
         fun year(year: Int) = PuzzleFilter((1..25).map { PuzzleDay(year, it) }.toSortedSet(), false)

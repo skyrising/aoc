@@ -13,10 +13,12 @@ const val QUICK_PART2 = true
 fun buildFilter(args: Array<String>): PuzzleFilter {
     if (args.isEmpty()) return PuzzleFilter.all().copy(latestOnly = true)
     if (args[0] == "all") return PuzzleFilter.all()
+    if (args[0] == "best") return PuzzleFilter.all().copy(bestVersionOnly = true)
     val year = args[0].toInt()
     val filter = PuzzleFilter.year(year)
     if (args.size <= 1) return filter.copy(latestOnly = true)
     if (args[1] == "all") return filter
+    if (args[1] == "best") return filter.copy(bestVersionOnly = true)
     return PuzzleFilter(sortedSetOf(PuzzleDay(year, args[1].toInt())))
 }
 
