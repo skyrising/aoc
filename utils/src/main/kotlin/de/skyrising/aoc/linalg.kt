@@ -31,8 +31,15 @@ value class Direction(val ordinal: Int) {
     }
 }
 
-data class Vec2i(val x: Int, val y: Int): HasBoundingBox2i {
+@JvmInline
+value class Vec2i(val longValue: Long): HasBoundingBox2i {
+    constructor(x: Int, y: Int): this(packToLong(x, y))
+    val x inline get() = unpackFirstInt(longValue)
+    val y inline get() = unpackSecondInt(longValue)
     override val boundingBox get() = BoundingBox2i(this, this)
+
+    inline operator fun component1() = x
+    inline operator fun component2() = y
 
     override fun toString() = "[$x, $y]"
     inline operator fun plus(other: Vec2i) = Vec2i(x + other.x, y + other.y)

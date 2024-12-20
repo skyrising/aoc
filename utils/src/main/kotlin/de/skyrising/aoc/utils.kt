@@ -17,6 +17,7 @@ import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.Charset
 import java.util.*
+import java.util.concurrent.StructuredTaskScope
 import kotlin.collections.ArrayDeque
 
 fun lineList(buf: ByteBuffer): List<ByteBuffer> {
@@ -606,7 +607,6 @@ operator fun <T> Pair<T,T>.get(index: Int) = when(index) {
 value class PackedIntPair(val longValue: Long) {
     constructor(first: Int, second: Int) : this(pack(first, second))
     constructor(pair: Pair<Int, Int>) : this(pack(pair.first, pair.second))
-    constructor(vec: Vec2i) : this(pack(vec.x, vec.y))
     inline val first get() = unpackFirst(longValue)
     inline val second get() = unpackSecond(longValue)
 
@@ -624,11 +624,11 @@ value class PackedIntPair(val longValue: Long) {
     override fun toString() = "($first, $second)"
 
     companion object {
-        inline fun pack(first: Int, second: Int) = (first.toLong() shl 32) or (second.toLong() and 0xffffffffL)
+        inline fun pack(first: Int, second: Int) = packToLong(first, second)
         inline fun pack(pair: Pair<Int, Int>) = pack(pair.first, pair.second)
-        inline fun pack(vec: Vec2i) = pack(vec.x, vec.y)
-        inline fun unpackFirst(value: Long) = (value shr 32).toInt()
-        inline fun unpackSecond(value: Long) = value.toInt()
+        inline fun pack(vec: Vec2i) = vec.longValue
+        inline fun unpackFirst(value: Long) = unpackFirstInt(value)
+        inline fun unpackSecond(value: Long) = unpackSecondInt(value)
     }
 
     object HASH_STRATEGY : LongHash.Strategy {
@@ -637,6 +637,10 @@ value class PackedIntPair(val longValue: Long) {
         override fun hashCode(e: Long) = (e xor (e ushr 16)).toInt()
     }
 }
+
+inline fun packToLong(first: Int, second: Int) = (first.toLong() shl 32) or (second.toLong() and 0xffffffffL)
+inline fun unpackFirstInt(value: Long) = (value shr 32).toInt()
+inline fun unpackSecondInt(value: Long) = value.toInt()
 
 inline fun <T, R, C : MutableCollection<in R>> Iterable<T>.zipWithNextTo(destination: C, transform: (a: T, b: T) -> R): C {
     val iterator = iterator()
@@ -743,4 +747,8 @@ inline fun binarySearch(fromIndex: Int, toIndex: Int, comparison: (Int) -> Int):
             return mid
     }
     return -(low + 1)
+}
+
+inline fun <T, S> Iterable<T>.mapParallel(scope: StructuredTaskScope<in S>, crossinline mapper: (T) -> S): List<StructuredTaskScope.Subtask<S>> = map {
+    scope.fork { mapper(it) }
 }
