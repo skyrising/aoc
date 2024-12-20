@@ -105,15 +105,9 @@ fun formatResult(puzzle: Puzzle<*>, result: Any?, us: Double = 0.0, stddev: Doub
     append(puzzle.name)
     repeat(NAME_LENGTH - puzzle.name.length) { append(' ') }
     append(": ")
-    val resultString = if (result is Throwable) result.javaClass.simpleName else result.toString()
-    if (resultString.length <= RESULT_LENGTH) {
-        repeat(RESULT_LENGTH - resultString.length) { append(' ') }
-        append(resultString)
-    } else {
-        repeat(RESULT_LENGTH) { append(' ') }
-    }
-    append(", ")
     if (result is Throwable) {
+        append(result.javaClass.simpleName)
+        append(": ")
         append(result.message)
     } else {
         append(formatTime(us))
@@ -123,9 +117,17 @@ fun formatResult(puzzle: Puzzle<*>, result: Any?, us: Double = 0.0, stddev: Doub
         } else {
             append("?")
         }
-    }
-    if (resultString.length > RESULT_LENGTH) {
-        append("\n")
-        append(resultString)
+        append(' ')
+        val resultString = result.toString()
+        if (resultString.length <= RESULT_LENGTH) {
+            repeat(RESULT_LENGTH - resultString.length) { append(' ') }
+            append(resultString)
+        } else {
+            repeat(RESULT_LENGTH) { append(' ') }
+        }
+        if (resultString.length > RESULT_LENGTH) {
+            append("\n")
+            append(resultString)
+        }
     }
 }

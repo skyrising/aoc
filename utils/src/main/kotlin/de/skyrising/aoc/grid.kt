@@ -117,6 +117,7 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offsetX: Int = 0, o
     }
 
     inline fun forEach(action: (Int, Int, Char) -> Unit) {
+        val data = data
         for (y in 0 until height) {
             for (x in 0 until width) {
                 action(x + offsetX, y + offsetY, data[localIndex(x, y)])
@@ -162,6 +163,8 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offsetX: Int = 0, o
         }
         return sb.toString()
     }
+
+    fun copy() = CharGrid(width, height, data.copyOf(), offsetX, offsetY)
 
     fun translatedView(translation: Vec2i): CharGrid {
         return CharGrid(width, height, data, offsetX + translation.x, offsetY + translation.y)

@@ -52,11 +52,11 @@ fun PuzzleInput.part2(): Any {
         val positions = startPositions.mapIndexed { i, pos -> (pos + velocities[i] * n) mod roomSize }
         val varX = positions.varianceOf { it.x.toDouble() }
         val varY = positions.varianceOf { it.y.toDouble() }
-        log("n=%d varX=%.1f varY=%.1f".format(n, varX, varY))
+        //log("n=%d varX=%.1f varY=%.1f".format(n, varX, varY))
         if (varX < initVarX / 2 && varY < initVarY / 2) {
             val grid = CharGrid(roomSize.x, roomSize.y, CharArray(roomSize.x * roomSize.y) { ' ' })
             grid[positions] = '#'
-            log(grid)
+            //log(grid)
             return n
         }
         n++
