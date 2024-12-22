@@ -51,8 +51,7 @@ class IntArrayDeque(capacity: Int) : IntPriorityQueue {
 
     override fun dequeueInt(): Int {
         if (start == end) throw NoSuchElementException()
-        if (end == 0) end = length
-        return data[--end]
+        return data[start++].also { if (start == length) start = 0 }
     }
 
     fun dequeueLastInt(): Int {
@@ -71,5 +70,8 @@ class IntArrayDeque(capacity: Int) : IntPriorityQueue {
         return data[(if (end == 0) length else end) - 1]
     }
 
-
+    operator fun get(index: Int): Int {
+        if (index < 0 || index >= size()) throw IndexOutOfBoundsException()
+        return data[(start + index) % length]
+    }
 }

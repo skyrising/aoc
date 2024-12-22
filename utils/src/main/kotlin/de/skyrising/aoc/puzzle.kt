@@ -50,7 +50,10 @@ value class PuzzleCollection(private val puzzles: SortedMap<PuzzleDay, MutableLi
     operator fun get(year: Int) = this[PuzzleDay(year, 1)..PuzzleDay(year, 25)]
 
     fun add(puzzle: Puzzle<*>) {
-        puzzles.computeIfAbsent(puzzle.day) { mutableListOf() }.add(puzzle)
+        puzzles.computeIfAbsent(puzzle.day) { mutableListOf() }.run {
+            add(puzzle)
+            sortBy { it.part }
+        }
     }
 
     fun filter(filter: PuzzleFilter): List<Puzzle<*>> {
