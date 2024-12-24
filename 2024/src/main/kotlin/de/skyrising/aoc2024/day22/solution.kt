@@ -1,11 +1,10 @@
 package de.skyrising.aoc2024.day22
 
-import de.skyrising.aoc.IntArrayDeque
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.PuzzleName
-import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.*
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
+import jdk.incubator.vector.IntVector
+import jdk.incubator.vector.VectorOperators
 
 val test = TestInput("""
 1
@@ -27,6 +26,33 @@ fun PuzzleInput.part1() = lines.sumOf {
         num = next(num)
     }
     num
+}
+
+private val SPECIES = IntVector.SPECIES_PREFERRED
+
+@PuzzleName("Monkey Market")
+fun PuzzleInput.part1vec(): Any {
+    val l = lines
+    val count = l.size
+    val longs = IntArray(count) { l[it].toInt() }
+    val mask24 = IntVector.fromArray(SPECIES, IntArray(SPECIES.length()) { 0xffffff }, 0)
+    var sum = 0L
+    for (i in 0 until count step SPECIES.length() * 2) {
+        val mask1 = SPECIES.indexInRange(i, count)
+        val mask2 = SPECIES.indexInRange(i + SPECIES.length(), count)
+        var vec1 = IntVector.fromArray(SPECIES, longs, i, mask1)
+        var vec2 = IntVector.fromArray(SPECIES, longs, i + SPECIES.length(), mask2)
+        repeat(2000) {
+            val a1 = (vec1 xor (vec1 shl 6)) and mask24
+            val b1 = (a1 xor (a1 ushr 5)) and mask24
+            vec1 = (b1 xor (b1 shl 11)) and mask24
+            val a2 = (vec2 xor (vec2 shl 6)) and mask24
+            val b2 = (a2 xor (a2 ushr 5)) and mask24
+            vec2 = (b2 xor (b2 shl 11)) and mask24
+        }
+        sum += (vec1 + vec2).reduceLanes(VectorOperators.ADD).toLong()
+    }
+    return sum
 }
 
 fun PuzzleInput.part2(): Any {
