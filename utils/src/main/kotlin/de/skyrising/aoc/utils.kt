@@ -753,6 +753,18 @@ inline fun <T, S> Iterable<T>.mapParallel(scope: StructuredTaskScope<in S>, cros
     scope.fork { mapper(it) }
 }
 
+inline fun <T, S> Iterable<T>.mapParallel(crossinline mapper: (T) -> S): List<S> {
+    val single = singleOrNull()
+    if (single != null) {
+        return listOf(mapper(single))
+    }
+    return StructuredTaskScope.ShutdownOnFailure().use { scope ->
+        val tasks = mapParallel(scope, mapper)
+        scope.join()
+        tasks.map { it.get() }
+    }
+}
+
 operator fun <T: Enum<T>> EnumSet<T>.minus(element: T) = if (element in this) {
     val copy = clone() as EnumSet<T>
     copy.remove(element)

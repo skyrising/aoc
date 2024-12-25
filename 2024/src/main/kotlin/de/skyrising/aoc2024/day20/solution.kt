@@ -1,10 +1,9 @@
 package de.skyrising.aoc2024.day20
 
 import de.skyrising.aoc.*
-import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap
-import it.unimi.dsi.fastutil.longs.Long2IntMap
-import java.util.concurrent.StructuredTaskScope
-import kotlin.math.abs
+import it.unimi.dsi.fastutil.longs.LongArrayList
+import it.unimi.dsi.fastutil.longs.LongList
+import kotlin.math.absoluteValue
 
 val test = TestInput("""
 ###############
@@ -24,80 +23,66 @@ val test = TestInput("""
 ###############
 """)
 
-fun walk(grid: CharGrid): Long2IntMap {
+fun walk(grid: CharGrid): Pair<IntGrid, LongList> {
     val start = grid.indexOfFirst { it == 'S' }
     val end = grid.indexOfFirst { it == 'E' }
-    val visited = Long2IntLinkedOpenHashMap()
+    val time = IntGrid(grid.width, grid.height) { _, _ -> Int.MAX_VALUE }
     var pos = start
     var steps = 0
+    val path = LongArrayList()
     while (pos != end) {
-        visited[PackedIntPair.pack(pos)] = steps++
+        time[pos] = steps++
+        path.add(pos.longValue)
         for (next in pos.fourNeighbors()) {
-            if (next !in grid || grid[next] == '#' || visited.containsKey(next.longValue)) continue
+            if (next !in grid || grid[next] == '#' || time[next] < Int.MAX_VALUE) continue
             pos = next
         }
     }
-    visited[PackedIntPair.pack(pos)] = steps
-    return visited
+    time[pos] = steps
+    path.add(pos.longValue)
+    return time to path
+}
+
+fun IntGrid.checkCheat(fromX: Int, fromY: Int, deltaX: Int, deltaY: Int): Int {
+    val toX = fromX + deltaX
+    val toY = fromY + deltaY
+    if (!contains(toX, toY)) return 0
+    val toValue = this[toX, toY]
+    if (toValue == Int.MAX_VALUE) return 0
+    return ((this[fromX, fromY] - toValue).absoluteValue - deltaX.absoluteValue - deltaY.absoluteValue >= 100).toInt()
 }
 
 @PuzzleName("Race Condition")
 fun PuzzleInput.part1(): Int {
-    val grid = charGrid
-    val walk = walk(grid)
+    val time = walk(charGrid).first
     var count = 0
-    for ((posL, steps) in walk) {
-        val pos = Vec2i(posL)
-        for (dir in Direction.values) {
-            if (grid[pos + dir] != '#') continue
-            val next = pos + dir * 2
-            val nextSteps = walk[next.longValue]
-            val saved = nextSteps - 2 - steps
-            if (saved >= 100) count++
-        }
+    time.forEach { x, y, steps ->
+        if (steps == Int.MAX_VALUE) return@forEach
+        count += time.checkCheat(x, y, 2, 0)
+        count += time.checkCheat(x, y, 0, 2)
     }
     return count
 }
 
-fun PuzzleInput.part2(): Int {
-    val grid = charGrid
-    val walk = walk(grid)
-    val posList = LongArray(walk.size)
-    val stepsList = IntArray(walk.size)
-    for ((i, e) in walk.long2IntEntrySet().withIndex()) {
-        val (pos, steps) = e
-        posList[i] = pos
-        stepsList[i] = steps
-    }
-    val size = walk.size
-    return StructuredTaskScope.ShutdownOnFailure().use { scope ->
-        val chunkSize = 100
-        val tasks = (0 until size step chunkSize).mapParallel(scope) { startI ->
-            var localCount = 0
-            for (i in startI until minOf(startI + chunkSize, size)) {
-                val pos1 = posList[i]
-                val x1 = unpackFirstInt(pos1)
-                val y1 = unpackSecondInt(pos1)
-                val steps1 = stepsList[i]
-                for (j in i + 100 until size) {
-                    val pos2 = posList[j]
-                    val x2 = unpackFirstInt(pos2)
-                    val distX = x1 - x2
-                    if (distX > 20 || distX < -20) continue
-                    val y2 = unpackSecondInt(pos2)
-                    val distY = y1 - y2
-                    if (distY > 20 || distY < -20) continue
-                    val dist = abs(distX) + abs(distY)
-                    if (dist > 20) continue
-                    val steps2 = stepsList[j]
-                    val saved = steps2 - steps1 - dist
-                    if (saved >= 100) localCount++
+fun PuzzleInput.part2(): Any {
+    val (time, posList) = walk(charGrid)
+    val size = posList.size
+    val chunkSize = if (benchmark) 100 else Int.MAX_VALUE
+    return (0 until size step chunkSize).mapParallel { startI ->
+        var localCount = 0
+        for (i in startI until minOf(startI + chunkSize, size)) {
+            val posL = posList.getLong(i)
+            val posX = unpackFirstInt(posL)
+            val posY = unpackSecondInt(posL)
+            for (x in 2..20) {
+                localCount += time.checkCheat(posX, posY, x, 0)
+            }
+            for (y in 1..20) {
+                for (x in (y-20)..(20-y)) {
+                    localCount += time.checkCheat(posX, posY, x, y)
                 }
             }
-            localCount
         }
-        scope.join()
-        tasks.sumOf { it.get() }
-    }
+        localCount
+    }.sum()
 }
-

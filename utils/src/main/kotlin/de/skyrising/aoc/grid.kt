@@ -4,7 +4,9 @@ import it.unimi.dsi.fastutil.chars.CharImmutableList
 import it.unimi.dsi.fastutil.chars.CharList
 import it.unimi.dsi.fastutil.ints.Int2CharOpenHashMap
 import it.unimi.dsi.fastutil.objects.AbstractObject2CharMap
+import it.unimi.dsi.fastutil.objects.AbstractObject2IntMap
 import it.unimi.dsi.fastutil.objects.Object2CharMap
+import it.unimi.dsi.fastutil.objects.Object2IntMap
 
 val characters = mapDisplayToInts("""
  ██  ███   ██  ███  ████ ████  ██  █  █ ███    ██ █  █ █    █   ██   █ ██  ███   ██  ███   ███ ██████  █ █   ██   ██  █ █   █████
@@ -66,7 +68,9 @@ abstract class Grid(val offsetX: Int, val offsetY: Int, val width: Int, val heig
     operator fun contains(point: Vec2i) = contains(point.x, point.y)
 }
 
-class IntGrid(width: Int, height: Int, val data: IntArray, offsetX: Int = 0, offsetY: Int = 0) : Grid(offsetX, offsetY, width, height) {
+class IntGrid(width: Int, height: Int, val data: IntArray, offsetX: Int = 0, offsetY: Int = 0) : Grid(offsetX, offsetY, width, height), Sequence<Object2IntMap.Entry<Vec2i>> {
+    constructor(width: Int, height: Int) : this(width, height, IntArray(width * height))
+    constructor(width: Int, height: Int, init: (x: Int, y: Int) -> Int) : this(width, height, IntArray(width * height) { init(it % width, it / width) })
     operator fun get(point: Vec2i) = get(point.x, point.y)
     operator fun get(x: Int, y: Int) = data[index(x, y)]
     operator fun set(point: Vec2i, value: Int) = set(point.x, point.y, value)
@@ -79,6 +83,10 @@ class IntGrid(width: Int, height: Int, val data: IntArray, offsetX: Int = 0, off
         }
     }
 
+    override fun iterator() = iterator {
+        forEach { x, y, c -> yield(AbstractObject2IntMap.BasicEntry(Vec2i(x, y), c)) }
+    }
+
     inline fun forEach(action: (Int, Int, Int) -> Unit) {
         for (y in 0 until height) {
             for (x in 0 until width) {
@@ -89,6 +97,7 @@ class IntGrid(width: Int, height: Int, val data: IntArray, offsetX: Int = 0, off
 }
 
 class CharGrid(width: Int, height: Int, val data: CharArray, offsetX: Int = 0, offsetY: Int = 0) : Grid(offsetX, offsetY, width, height), Sequence<Object2CharMap.Entry<Vec2i>> {
+    constructor(width: Int, height: Int) : this(width, height, CharArray(width * height))
     operator fun get(point: Vec2i) = get(point.x, point.y)
     operator fun get(x: Int, y: Int) = data[index(x, y)]
     operator fun get(x: IntRange, y: Int) = String(data, index(x.first, y), x.last - x.first + 1)
