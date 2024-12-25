@@ -1,10 +1,9 @@
 package de.skyrising.aoc2024.day22
 
 import de.skyrising.aoc.*
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import jdk.incubator.vector.IntVector
 import jdk.incubator.vector.VectorOperators
+import java.util.*
 
 val test = TestInput("""
 1
@@ -57,29 +56,30 @@ fun PuzzleInput.part1vec(): Any {
 }
 
 fun PuzzleInput.part2(): Any {
-    val count = Int2IntOpenHashMap()
-    fun pack(a: Int, b: Int, c: Int, d: Int) = (a shl 24) or ((b and 0xff) shl 16) or ((c and 0xff) shl 8) or (d and 0xff)
-    fun unpack(n: Int) = listOf((n shr 24).toByte().toInt(), (n shr 16).toByte().toInt(), (n shr 8).toByte().toInt(), n.toByte().toInt())
-    val history = IntArrayDeque()
+    val count = ShortArray(19*19*19*19)
     var maxCount = 0
     for (init in lines) {
-        history.clear()
+        var hist = 0
         var num = init.toLong()
-        val seen = IntOpenHashSet(2000)
+        val seen = BitSet(count.size)
         repeat(2001) {
             val n = next(num)
-            history.enqueue((n % 10 - num % 10).toInt())
-            while (history.size() > 4) {
-                val packed = pack(history[0], history[1], history[2], history[3])
-                if (seen.add(packed)) {
-                    val oldCount = count.addTo(packed, (num % 10).toInt())
-                    val newCount = oldCount + (num % 10).toInt()
+            val delta = (n % 10 - num % 10).toInt()
+            if (it > 3) {
+                var packed = ((hist shr 24) and 0xff)
+                packed = packed * 19 + ((hist shr 16) and 0xff)
+                packed = packed * 19 + ((hist shr 8) and 0xff)
+                packed = packed * 19 + (hist and 0xff)
+                if (!seen.get(packed)) {
+                    seen.set(packed)
+                    val newCount = count[packed] + (num % 10).toInt()
+                    count[packed] = newCount.toShort()
                     if (newCount > maxCount) {
                         maxCount = newCount
                     }
                 }
-                history.dequeueInt()
             }
+            hist = (hist shl 8) or (delta + 9)
             num = n
         }
     }

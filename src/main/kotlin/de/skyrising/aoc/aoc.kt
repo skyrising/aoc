@@ -10,6 +10,7 @@ const val WARMUP = 2
 const val BENCHMARK = false
 var BENCHMARK_MODE: BenchMode? = if (BENCHMARK) BenchMode.Duration(100.milliseconds) else null
 const val QUICK_PART2 = true
+const val PRINT_RESULT = true
 
 fun buildFilter(args: MutableList<String>): PuzzleFilter {
     var filter = PuzzleFilter.all()
@@ -128,17 +129,15 @@ fun formatResult(puzzle: Puzzle<*>, result: Any?, us: Double = 0.0, stddev: Doub
         } else {
             append("?")
         }
-        append(' ')
-        val resultString = result.toString()
-        if (resultString.length <= RESULT_LENGTH) {
-            repeat(RESULT_LENGTH - resultString.length) { append(' ') }
-            append(resultString)
-        } else {
-            repeat(RESULT_LENGTH) { append(' ') }
-        }
-        if (resultString.length > RESULT_LENGTH) {
-            append("\n")
-            append(resultString)
+        if (PRINT_RESULT) {
+            append(' ')
+            val resultString = result.toString()
+            if (resultString.length <= RESULT_LENGTH) {
+                repeat(RESULT_LENGTH - resultString.length) { append(' ') }
+                append(resultString)
+            } else {
+                append(resultString)
+            }
         }
     }
 }
