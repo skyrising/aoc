@@ -1,6 +1,10 @@
+@file:PuzzleName("Hydrothermal Venture")
+
 package de.skyrising.aoc2021.day5
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 fun coord(s: String): Pair<Int, Int> {
     val (x, y) = s.split(',')
@@ -20,7 +24,6 @@ val test = TestInput("""
     5,5 -> 8,2
 """)
 
-@PuzzleName("Hydrothermal Venture")
 fun PuzzleInput.part1(): Any {
     val width = 1000
     val height = 1000

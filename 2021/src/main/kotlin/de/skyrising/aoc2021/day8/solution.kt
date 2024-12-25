@@ -1,6 +1,18 @@
+@file:PuzzleName("Seven Segment Search")
+
 package de.skyrising.aoc2021.day8
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.contains
+import kotlin.collections.indices
+import kotlin.collections.map
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
+import kotlin.collections.sort
 
 val test = TestInput("""
     be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
@@ -15,7 +27,6 @@ val test = TestInput("""
     gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagc
 """)
 
-@PuzzleName("Seven Segment Search")
 fun PuzzleInput.part1(): Any {
     var count = 0
     for (line in lines) {

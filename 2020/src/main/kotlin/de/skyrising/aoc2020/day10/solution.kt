@@ -1,6 +1,11 @@
+@file:PuzzleName("Adapter Array")
+
 package de.skyrising.aoc2020.day10
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.Graph
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 
 val test = TestInput("""
@@ -37,7 +42,6 @@ val test = TestInput("""
     3
 """)
 
-@PuzzleName("Adapter Array")
 fun PuzzleInput.part1(): Any {
     val numbers = lines.map(String::toInt).sorted()
     val diffs = IntArray(3)

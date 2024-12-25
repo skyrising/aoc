@@ -1,6 +1,11 @@
+@file:PuzzleName("Binary Boarding")
+
 package de.skyrising.aoc2020.day5
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.isBitSet
+import de.skyrising.aoc.setBit
 import java.nio.ByteBuffer
 
 private fun seatId(s: String): Int {
@@ -44,7 +49,6 @@ fun seatIdVector(b: ByteBuffer, offset: Int): Int {
 }
 */
 
-@PuzzleName("Binary Boarding")
 fun PuzzleInput.part1v0(): Any {
     var highest = 0
     for (line in lines) {
@@ -54,7 +58,6 @@ fun PuzzleInput.part1v0(): Any {
 }
 
 
-@PuzzleName("Binary Boarding")
 fun PuzzleInput.part1v1(): Any {
     var highest = 0
     for (i in 0 until input.remaining() step 11) {
@@ -64,7 +67,6 @@ fun PuzzleInput.part1v1(): Any {
 }
 
 /*
-@PuzzleName("Binary Boarding")
 fun PuzzleInput.part1v2(): Any {
     var highest = 0
     for (i in 0 until input.remaining() step 11) {

@@ -1,6 +1,10 @@
+@file:PuzzleName("Matchsticks")
+
 package de.skyrising.aoc2015.day8
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     ""
@@ -9,7 +13,6 @@ val test = TestInput("""
     "\x27"
 """)
 
-@PuzzleName("Matchsticks")
 fun PuzzleInput.part1(): Any {
     var totalChars = 0
     var memChars = 0

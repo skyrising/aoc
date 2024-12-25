@@ -1,6 +1,10 @@
+@file:PuzzleName("Giant Squid")
+
 package de.skyrising.aoc2021.day4
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
         7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
@@ -40,7 +44,6 @@ fun readInput(input: PuzzleInput): Pair<List<Int>, List<IntArray>> {
     return numbers to boards
 }
 
-@PuzzleName("Giant Squid")
 fun PuzzleInput.part1(): Any {
     val (numbers, boards) = readInput(this)
     val markedByRow = ByteArray(boards.size * 5)

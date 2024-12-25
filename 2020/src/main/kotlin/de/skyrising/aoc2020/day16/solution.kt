@@ -1,10 +1,34 @@
+@file:PuzzleName("Ticket Translation")
+
 package de.skyrising.aoc2020.day16
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.ObjectArraySet
 import java.util.*
+import kotlin.collections.Collection
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+import kotlin.collections.Map
+import kotlin.collections.MutableCollection
+import kotlin.collections.MutableList
+import kotlin.collections.MutableSet
+import kotlin.collections.Set
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.contentToString
+import kotlin.collections.elementAt
+import kotlin.collections.forEachIndexed
+import kotlin.collections.indices
+import kotlin.collections.iterator
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.mutableSetOf
+import kotlin.collections.set
+import kotlin.collections.toTypedArray
 
 private fun parseInput(input: PuzzleInput, v2: Boolean = false): Triple<Map<String, Set<IntRange>>, IntList, MutableList<IntList>> {
     val classes = mutableMapOf<String, Set<IntRange>>()
@@ -143,7 +167,6 @@ val test2 = TestInput("""
     5,14,9
 """)
 
-@PuzzleName("Ticket Translation")
 fun PuzzleInput.part1v0(): Any {
     val (classes, _, nearby) = parseInput(this)
     var sum = 0
@@ -164,7 +187,6 @@ fun PuzzleInput.part1v0(): Any {
     return sum
 }
 
-@PuzzleName("Ticket Translation")
 fun PuzzleInput.part1v1(): Any {
     val (classes, _, nearby) = parseInput(this, true)
     val ranges = mutableSetOf<IntRange>()

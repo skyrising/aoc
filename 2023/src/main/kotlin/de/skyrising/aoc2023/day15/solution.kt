@@ -1,6 +1,10 @@
+@file:PuzzleName("Lens Library")
+
 package de.skyrising.aoc2023.day15
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
 
 fun hash(s: String) = s.fold(0) { a, b -> (a + b.code) * 17} and 0xff
@@ -9,7 +13,6 @@ val test = TestInput("""
     rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7
 """)
 
-@PuzzleName("Lens Library")
 fun PuzzleInput.part1(): Any {
     return string.trim().split(',').sumOf(::hash)
 }

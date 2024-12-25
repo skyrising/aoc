@@ -1,6 +1,11 @@
+@file:PuzzleName("Transparent Origami")
+
 package de.skyrising.aoc2021.day13
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.parseDisplay
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 
@@ -28,7 +33,6 @@ val test = TestInput("""
     fold along x=5
 """)
 
-@PuzzleName("Transparent Origami")
 fun PuzzleInput.part1(): Any {
     val (points, instructions) = readInput(this)
     return fold(points, instructions.getInt(0)).size

@@ -1,6 +1,10 @@
+@file:PuzzleName("Full of Hot Air")
+
 package de.skyrising.aoc2022.day25
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntArrayList
 
 private fun snafuDecode(number: String): Long {
@@ -66,5 +70,4 @@ val test = TestInput("""
     122
 """)
 
-@PuzzleName("Full of Hot Air")
 fun PuzzleInput.part1() = snafuEncode(lines.map(::snafuDecode).sum())

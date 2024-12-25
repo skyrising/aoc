@@ -1,6 +1,10 @@
+@file:PuzzleName("Combo Breaker")
+
 package de.skyrising.aoc2020.day25
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 private fun findLoop(pk: Long): Int {
     var a = 1L
@@ -18,7 +22,6 @@ val test = TestInput("""
     5764801
     17807724
 """)
-@PuzzleName("Combo Breaker")
 fun PuzzleInput.part1(): Any {
     val (pk1, pk2) = lines.map(String::toLong)
     val loop1 = findLoop(pk1)

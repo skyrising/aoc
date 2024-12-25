@@ -1,3 +1,5 @@
+@file:PuzzleName("Pipe Maze")
+
 package de.skyrising.aoc2023.day10
 
 import de.skyrising.aoc.*
@@ -63,7 +65,6 @@ val test = TestInput(
 """
 )
 
-@PuzzleName("Pipe Maze")
 fun PuzzleInput.part1(): Any {
     var length = 0
     walk(this) { _, _ ->

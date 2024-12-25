@@ -1,3 +1,5 @@
+@file:PuzzleName("Beacon Exclusion Zone")
+
 package de.skyrising.aoc2022.day15
 
 import de.skyrising.aoc.*
@@ -45,7 +47,6 @@ val test = TestInput("""
     Sensor at x=20, y=1: closest beacon is at x=15, y=3
 """)
 
-@PuzzleName("Beacon Exclusion Zone")
 fun PuzzleInput.part1(): Any {
     val pairs = parseInput(this)
     val row = 2000000

@@ -1,3 +1,5 @@
+@file:PuzzleName("Regolith Reservoir")
+
 package de.skyrising.aoc2022.day14
 
 import de.skyrising.aoc.*
@@ -27,7 +29,6 @@ val test = TestInput("""
     503,4 -> 502,4 -> 502,9 -> 494,9
 """)
 
-@PuzzleName("Regolith Reservoir")
 fun PuzzleInput.part1(): Any {
     val grid = parseInput(this)
     return countWhile {

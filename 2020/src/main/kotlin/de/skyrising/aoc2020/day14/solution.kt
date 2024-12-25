@@ -1,3 +1,5 @@
+@file:PuzzleName("Docking Data")
+
 package de.skyrising.aoc2020.day14
 
 import de.skyrising.aoc.*
@@ -66,7 +68,6 @@ val test2 = TestInput("""
     mem[26] = 1
 """)
 
-@PuzzleName("Docking Data")
 fun PuzzleInput.part1v0(): Any {
     val mem = Long2LongOpenHashMap()
     var mask = -1L
@@ -87,7 +88,6 @@ fun PuzzleInput.part1v0(): Any {
     return mem.values.sum()
 }
 
-@PuzzleName("Docking Data")
 fun PuzzleInput.part1v1(): Any {
     val mem = Long2LongOpenHashMap()
     var mask = -1L

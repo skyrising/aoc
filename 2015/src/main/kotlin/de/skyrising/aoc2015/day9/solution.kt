@@ -1,6 +1,11 @@
+@file:PuzzleName("All in a Single Night")
+
 package de.skyrising.aoc2015.day9
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.Graph
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     London to Dublin = 464
@@ -8,7 +13,6 @@ val test = TestInput("""
     Dublin to Belfast = 141
 """)
 
-@PuzzleName("All in a Single Night")
 fun PuzzleInput.part1(): Any? {
     val g = Graph<String, Nothing>()
     for (line in lines) {

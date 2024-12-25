@@ -1,11 +1,14 @@
+@file:PuzzleName("Lanternfish")
+
 package de.skyrising.aoc2021.day6
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.bytes.ByteArrayList
 
 val test = TestInput("3,4,3,1,2")
 
-@PuzzleName("Lanternfish")
 fun PuzzleInput.part1(): Any {
     val fish = ByteArrayList(chars.trim().split(',').map(String::toByte))
     for (day in 1..80) {

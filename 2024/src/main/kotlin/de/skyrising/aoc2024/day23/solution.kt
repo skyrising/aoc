@@ -1,3 +1,5 @@
+@file:PuzzleName("LAN Party")
+
 package de.skyrising.aoc2024.day23
 
 import de.skyrising.aoc.PuzzleInput
@@ -67,7 +69,6 @@ private fun makeTriple(a: Int, b: Int, c: Int): Long {
     return (n1.toLong() shl (SHIFT * 4)) or (n2.toLong() shl (SHIFT * 2)) or n3.toLong()
 }
 
-@PuzzleName("LAN Party")
 fun PuzzleInput.part1(): Any {
     val g = makeGraph(lines)
     val triples = LongOpenHashSet()

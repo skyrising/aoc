@@ -1,7 +1,21 @@
+@file:PuzzleName("Crab Combat")
+
 package de.skyrising.aoc2020.day22
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.MutableSet
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.mutableMapOf
+import kotlin.collections.mutableSetOf
+import kotlin.collections.set
+import kotlin.collections.withIndex
 
 private fun readInput(input: PuzzleInput): Map<Int, LinkedList<Int>> {
     val map = mutableMapOf<Int, LinkedList<Int>>()
@@ -104,7 +118,6 @@ val test2 = TestInput("""
     14
 """)
 
-@PuzzleName("Crab Combat")
 fun PuzzleInput.part1(): Any {
     val (p1, p2) = ArrayList(readInput(this).values)
     while (!round(p1, p2)) {}

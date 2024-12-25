@@ -1,6 +1,10 @@
+@file:PuzzleName("Dumbo Octopus")
+
 package de.skyrising.aoc2021.day11
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     5483143223
@@ -23,7 +27,6 @@ val test2 = TestInput("""
     11111
 """)
 
-@PuzzleName("Dumbo Octopus")
 fun PuzzleInput.part1(): Any {
     val octopuses = Array<IntArray>(lines.size) { line -> lines[line].chars().map { n -> n - '0'.code }.toArray() }
     val width = octopuses[0].size

@@ -1,3 +1,5 @@
+@file:PuzzleName("Keypad Conundrum")
+
 package de.skyrising.aoc2024.day21
 
 import de.skyrising.aoc.*
@@ -101,6 +103,5 @@ fun solve(codes: List<String>, robots: Int): Long {
     }
 }
 
-@PuzzleName("Keypad Conundrum")
 fun PuzzleInput.part1() = solve(lines, 2)
 fun PuzzleInput.part2()= solve(lines, 25)

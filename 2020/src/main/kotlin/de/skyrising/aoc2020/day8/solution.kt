@@ -1,7 +1,17 @@
+@file:PuzzleName("Handheld Halting")
+
 package de.skyrising.aoc2020.day8
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.Graph
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.forEachIndexed
+import kotlin.collections.mutableListOf
+import kotlin.collections.set
 
 val test = TestInput("""
     nop +0
@@ -15,7 +25,6 @@ val test = TestInput("""
     acc +6
 """)
 
-@PuzzleName("Handheld Halting")
 fun PuzzleInput.part1(): Any {
     var acc = 0
     var pc = 0

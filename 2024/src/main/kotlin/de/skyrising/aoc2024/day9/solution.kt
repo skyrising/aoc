@@ -1,3 +1,5 @@
+@file:PuzzleName("Disk Fragmenter")
+
 package de.skyrising.aoc2024.day9
 
 import de.skyrising.aoc.*
@@ -6,7 +8,6 @@ val test = TestInput("""
 2333133121414131402
 """)
 
-@PuzzleName("Disk Fragmenter")
 fun PuzzleInput.part1(): Any {
     var firstFree = 0
     var fileId = 0

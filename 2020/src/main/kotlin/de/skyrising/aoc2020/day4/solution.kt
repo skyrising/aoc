@@ -1,8 +1,10 @@
+@file:PuzzleName("Passport Processing")
+
 package de.skyrising.aoc2020.day4
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 
-@PuzzleName("Passport Processing")
 fun PuzzleInput.part1v0(): Any {
     val fields = mutableSetOf<String>()
     val required = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
@@ -22,7 +24,6 @@ fun PuzzleInput.part1v0(): Any {
     return valid
 }
 
-@PuzzleName("Passport Processing")
 fun PuzzleInput.part1v1(): Any {
     val fields = mutableSetOf<String>()
     val required = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")

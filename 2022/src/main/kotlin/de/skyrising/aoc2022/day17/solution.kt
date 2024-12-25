@@ -1,3 +1,5 @@
+@file:PuzzleName("Pyroclastic Flow")
+
 package de.skyrising.aoc2022.day17
 
 import de.skyrising.aoc.*
@@ -86,6 +88,5 @@ private fun dropRocks(input: PuzzleInput, rockCount: Long): Long {
 }
 
 val test = TestInput(">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>")
-@PuzzleName("Pyroclastic Flow")
 fun PuzzleInput.part1() = dropRocks(this, 2022)
 fun PuzzleInput.part2() = dropRocks(this, 1000000000000L)

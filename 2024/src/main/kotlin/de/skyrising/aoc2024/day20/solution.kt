@@ -1,3 +1,5 @@
+@file:PuzzleName("Race Condition")
+
 package de.skyrising.aoc2024.day20
 
 import de.skyrising.aoc.*
@@ -52,7 +54,6 @@ fun IntGrid.checkCheat(fromX: Int, fromY: Int, deltaX: Int, deltaY: Int): Int {
     return ((this[fromX, fromY] - toValue).absoluteValue - deltaX.absoluteValue - deltaY.absoluteValue >= 100).toInt()
 }
 
-@PuzzleName("Race Condition")
 fun PuzzleInput.part1(): Int {
     val time = walk(charGrid).first
     var count = 0

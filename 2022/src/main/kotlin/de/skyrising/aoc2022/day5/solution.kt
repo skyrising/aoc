@@ -1,6 +1,10 @@
+@file:PuzzleName("Supply Stacks")
+
 package de.skyrising.aoc2022.day5
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.ints
 import it.unimi.dsi.fastutil.chars.CharArrayList
 
 private fun parseInput(input: PuzzleInput): Pair<List<String>, Array<CharArrayList>> {
@@ -27,7 +31,6 @@ private fun Array<CharArrayList>.toResult(): String {
     return result.toString()
 }
 
-@PuzzleName("Supply Stacks")
 fun PuzzleInput.part1(): Any {
     val (moves, stacks) = parseInput(this)
     for (move in moves) {

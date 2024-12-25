@@ -1,3 +1,5 @@
+@file:PuzzleName("Gear Ratios")
+
 package de.skyrising.aoc2023.day3
 
 import de.skyrising.aoc.*
@@ -25,7 +27,6 @@ fun findNumbers(grid: CharGrid, pos: Vec2i, numbers: MutableMap<Vec2i, Int>) =
         }
     }
 
-@PuzzleName("Gear Ratios")
 fun PuzzleInput.part1(): Any {
     val grid = charGrid
     val numbers = mutableMapOf<Vec2i, Int>()

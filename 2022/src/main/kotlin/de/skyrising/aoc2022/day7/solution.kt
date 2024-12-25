@@ -1,9 +1,16 @@
+@file:PuzzleName("No Space Left On Device")
+
 package de.skyrising.aoc2022.day7
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 import it.unimi.dsi.fastutil.objects.Object2LongMap
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap
 import java.nio.file.Path
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.mutableListOf
+import kotlin.collections.set
 
 private fun parseInput(input: PuzzleInput): Object2LongMap<Path> {
     val commands = mutableListOf<Pair<String, List<String>>>()
@@ -44,7 +51,6 @@ private fun parseInput(input: PuzzleInput): Object2LongMap<Path> {
     return spaceUsed
 }
 
-@PuzzleName("No Space Left On Device")
 fun PuzzleInput.part1(): Any {
     val spaceUsed = parseInput(this)
     var sum = 0L

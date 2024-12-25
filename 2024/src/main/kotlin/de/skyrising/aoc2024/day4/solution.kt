@@ -1,3 +1,5 @@
+@file:PuzzleName("Ceres Search")
+
 package de.skyrising.aoc2024.day4
 
 import de.skyrising.aoc.*
@@ -15,7 +17,6 @@ MAMMMXMMMM
 MXMXAXMASX
 """)
 
-@PuzzleName("Ceres Search")
 fun PuzzleInput.part1(): Any {
     val grid = charGrid
     val search = "XMAS"

@@ -1,6 +1,10 @@
+@file:PuzzleName("Binary Diagnostic")
+
 package de.skyrising.aoc2021.day3
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     00100
@@ -17,7 +21,6 @@ val test = TestInput("""
     01010
 """)
 
-@PuzzleName("Binary Diagnostic")
 fun PuzzleInput.part1(): Any {
     val input = lines
     val count = IntArray(input[0].length)

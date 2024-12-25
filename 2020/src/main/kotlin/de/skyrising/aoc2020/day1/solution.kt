@@ -1,6 +1,11 @@
+@file:PuzzleName("Report Repair")
+
 package de.skyrising.aoc2020.day1
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.isBitSet
+import de.skyrising.aoc.setBit
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import java.nio.ByteBuffer
 
@@ -12,7 +17,6 @@ private fun parseInt4(s: ByteBuffer) = when (s.remaining()) {
     else -> throw IllegalArgumentException()
 }
 
-@PuzzleName("Report Repair")
 fun PuzzleInput.part1v0(): Any {
     val numbers = IntOpenHashSet()
     for (line in lines) {
@@ -24,7 +28,6 @@ fun PuzzleInput.part1v0(): Any {
     return 0
 }
 
-@PuzzleName("Report Repair")
 fun PuzzleInput.part1v1(): Any {
     val numbers = LongArray(2048 shr 6)
     for (line in byteLines) {

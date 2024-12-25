@@ -1,3 +1,5 @@
+@file:PuzzleName("Hoof It")
+
 package de.skyrising.aoc2024.day10
 
 import de.skyrising.aoc.*
@@ -25,7 +27,6 @@ fun walk(grid: CharGrid, pos: Vec2i, ends: MutableCollection<Vec2i>) {
     }
 }
 
-@PuzzleName("Hoof It")
 fun PuzzleInput.part1(): Any {
     val grid = charGrid
     return grid.where { it == '0' }.sumOf { head ->

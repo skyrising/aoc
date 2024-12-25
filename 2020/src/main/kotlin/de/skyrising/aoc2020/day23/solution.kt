@@ -1,8 +1,14 @@
+@file:PuzzleName("Crab Cups")
+
 package de.skyrising.aoc2020.day23
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 import it.unimi.dsi.fastutil.ints.Int2IntMap
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
+import kotlin.collections.contains
+import kotlin.collections.last
+import kotlin.collections.set
 
 /*
 private fun move(cups: IntArray, count: Int): IntArray {
@@ -67,7 +73,6 @@ private fun move(cups: Int2IntMap, current: Int) {
 
 val test = "389125467\n"
 
-@PuzzleName("Crab Cups")
 fun PuzzleInput.part1(): Any {
     val base = IntArray(chars.length - 1) { i -> chars[i] - '0' }
     val cups = Int2IntOpenHashMap(base.size)

@@ -1,11 +1,15 @@
+@file:PuzzleName("Packet Decoder")
+
 package de.skyrising.aoc2021.day16
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.BitBuf
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import java.util.*
 
 val test = TestInput("CE00C43D881120")
 
-@PuzzleName("Packet Decoder")
 fun PuzzleInput.part1(): Any {
     val bytes = HexFormat.of().parseHex(chars.trimEnd())
     val data = BitBuf(bytes)

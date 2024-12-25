@@ -1,3 +1,5 @@
+@file:PuzzleName("Clumsy Crucible")
+
 package de.skyrising.aoc2023.day17
 
 import de.skyrising.aoc.*
@@ -87,6 +89,5 @@ val test = TestInput("""
     4322674655533
 """)
 
-@PuzzleName("Clumsy Crucible")
 fun PuzzleInput.part1() = run(IntGrid::getOutgoing) { true }
 fun PuzzleInput.part2() = run(IntGrid::getOutgoing2) { it.dirCount >= 4 }

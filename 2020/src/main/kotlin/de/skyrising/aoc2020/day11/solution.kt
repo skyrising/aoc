@@ -1,6 +1,10 @@
+@file:PuzzleName("Seating System")
+
 package de.skyrising.aoc2020.day11
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 private inline fun scanQueenMove(row: Int, column: Int, grid: List<CharArray>, width: Int, fn: (Char, Int, Int) -> Boolean) {
     for (i in 1 .. minOf(row, column)) if(fn(grid[row - i][column - i], row - i, column - i)) break // NW
@@ -37,7 +41,6 @@ val test2 = TestInput("""
     ...#.....
 """)
 
-@PuzzleName("Seating System")
 fun PuzzleInput.part1(): Any {
     var grid = mutableListOf<CharArray>()
     for (line in lines) {

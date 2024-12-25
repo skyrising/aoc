@@ -1,3 +1,5 @@
+@file:PuzzleName("Beacon Scanner")
+
 package de.skyrising.aoc2021.day19
 
 import de.skyrising.aoc.*
@@ -141,7 +143,6 @@ val test = TestInput("""
     30,-46,-14
 """)
 
-@PuzzleName("Beacon Scanner")
 fun PuzzleInput.part1() = solve(parseInput(this)).first.size
 
 fun PuzzleInput.part2(): Any? {

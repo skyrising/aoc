@@ -1,3 +1,5 @@
+@file:PuzzleName("Monkey Map")
+
 package de.skyrising.aoc2022.day22
 
 import de.skyrising.aoc.*
@@ -130,6 +132,5 @@ val test = TestInput("""
     10R5L5R10L4R5L5
 """)
 
-@PuzzleName("Monkey Map")
 fun PuzzleInput.part1() = run(this)
 fun PuzzleInput.part2() = run(this, buildTransitions(cubeNetReal(50)))

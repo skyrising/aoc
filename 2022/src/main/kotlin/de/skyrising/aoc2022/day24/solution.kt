@@ -1,3 +1,5 @@
+@file:PuzzleName("Blizzard Basin")
+
 package de.skyrising.aoc2022.day24
 
 import de.skyrising.aoc.*
@@ -44,7 +46,6 @@ val test = TestInput("""
     ######.#
 """)
 
-@PuzzleName("Blizzard Basin")
 fun PuzzleInput.part1(): Any {
     return parseInput(this).run {
         dist(start, end, 0)

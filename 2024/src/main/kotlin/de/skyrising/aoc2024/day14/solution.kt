@@ -1,3 +1,5 @@
+@file:PuzzleName("Restroom Redoubt")
+
 package de.skyrising.aoc2024.day14
 
 import de.skyrising.aoc.*
@@ -22,7 +24,6 @@ fun List<String>.getRobots() = map {
     Vec2i(px, py) to Vec2i(vx, vy)
 }
 
-@PuzzleName("Restroom Redoubt")
 fun PuzzleInput.part1(): Any {
     val roomSize = Vec2i(101, 103)
     //val roomSize = Vec2i(11, 7)

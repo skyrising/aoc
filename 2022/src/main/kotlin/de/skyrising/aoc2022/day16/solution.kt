@@ -1,3 +1,5 @@
+@file:PuzzleName("Probosciedea Volcanium")
+
 package de.skyrising.aoc2022.day16
 
 import de.skyrising.aoc.*
@@ -47,7 +49,6 @@ val test = TestInput("""
     Valve JJ has flow rate=21; tunnel leads to valve II
 """)
 
-@PuzzleName("Probosciedea Volcanium")
 fun PuzzleInput.part1(): Any {
     val (flows, paths, closed) = parseInput(this)
     return findBestValve(paths, flows, "AA", 0, closed, 30)

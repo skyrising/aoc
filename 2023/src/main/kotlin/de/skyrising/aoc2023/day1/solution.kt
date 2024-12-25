@@ -1,6 +1,10 @@
+@file:PuzzleName("Trebuchet?!")
+
 package de.skyrising.aoc2023.day1
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 fun digitToInt(s: String) = when (s) {
     "0", "zero" -> 0
@@ -37,7 +41,6 @@ val test2 = TestInput(
 """.trimIndent()
 )
 
-@PuzzleName("Trebuchet?!")
 fun PuzzleInput.part1() = lines.sumOf {
     val digits = it.filter(Char::isDigit)
     digits[0].digitToInt() * 10 + digits.last().digitToInt()

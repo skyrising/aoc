@@ -1,3 +1,5 @@
+@file:PuzzleName("Garden Groups")
+
 package de.skyrising.aoc2024.day12
 
 import de.skyrising.aoc.*
@@ -52,7 +54,6 @@ fun CharGrid.regions(): List<Set<Vec2i>> {
     return regions
 }
 
-@PuzzleName("Garden Groups")
 fun PuzzleInput.part1(): Any {
     val grid = charGrid
     val regions = grid.regions()

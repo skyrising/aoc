@@ -1,9 +1,26 @@
+@file:PuzzleName("Amphipod")
+
 package de.skyrising.aoc2021.day23
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
+import kotlin.collections.ArrayDeque
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.MutableMap
+import kotlin.collections.contentEquals
+import kotlin.collections.contentHashCode
+import kotlin.collections.copyOf
+import kotlin.collections.indices
+import kotlin.collections.isNotEmpty
+import kotlin.collections.listOf
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
 private const val DUMP_PATH = false
 
@@ -15,7 +32,6 @@ val test = TestInput("""
       #########
 """)
 
-@PuzzleName("Amphipod")
 fun PuzzleInput.part1() = solve(parseInput(lines), AmphipodLayout.SOLVED1)
 
 fun PuzzleInput.part2(): Any {

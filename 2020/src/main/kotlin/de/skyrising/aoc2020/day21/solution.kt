@@ -1,7 +1,26 @@
+@file:PuzzleName("Allergen Assessment")
+
 package de.skyrising.aoc2020.day21
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import java.util.*
+import kotlin.collections.HashSet
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.MutableSet
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.contains
+import kotlin.collections.count
+import kotlin.collections.isNotEmpty
+import kotlin.collections.iterator
+import kotlin.collections.joinToString
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
+import kotlin.collections.single
 
 private fun solve(input: PuzzleInput): Pair<List<String>, Map<String, String>> {
     val allIngredients = mutableListOf<String>()
@@ -40,7 +59,6 @@ val test = TestInput("""
     sqjhc mxmxvkd sbzzf (contains fish)
 """)
 
-@PuzzleName("Allergen Assessment")
 fun PuzzleInput.part1(): Any {
     val (allIngredients, found) = solve(this)
     return allIngredients.count { it !in found.values }

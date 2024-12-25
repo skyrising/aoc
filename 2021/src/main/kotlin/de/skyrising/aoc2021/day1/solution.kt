@@ -1,6 +1,10 @@
+@file:PuzzleName("Sonar Sweep")
+
 package de.skyrising.aoc2021.day1
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     199
@@ -15,7 +19,6 @@ val test = TestInput("""
     263
 """)
 
-@PuzzleName("Sonar Sweep")
 fun PuzzleInput.part1(): Any {
     val numbers = lines.map(String::toInt)
     var increasing = 0

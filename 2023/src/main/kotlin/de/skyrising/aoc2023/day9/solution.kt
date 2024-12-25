@@ -1,6 +1,11 @@
+@file:PuzzleName("Mirage Maintenance")
+
 package de.skyrising.aoc2023.day9
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.ints
 import it.unimi.dsi.fastutil.ints.IntList
 
 inline fun generate(list: IntList, pick: IntList.()->Int): IntList {
@@ -24,7 +29,6 @@ val test = TestInput("""
     10 13 16 21 30 45
 """)
 
-@PuzzleName("Mirage Maintenance")
 fun PuzzleInput.part1() = lines.sumOf {
     generate(it.ints()) { getInt(lastIndex) }.sum()
 }

@@ -1,6 +1,10 @@
+@file:PuzzleName("Trench Map")
+
 package de.skyrising.aoc2021.day20
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import java.util.*
 
 val test = TestInput("""
@@ -13,7 +17,6 @@ val test = TestInput("""
     ..###
 """)
 
-@PuzzleName("Trench Map")
 fun PuzzleInput.part1(): Any {
     val (algorithm, image) = parseInput(this)
     var img = InfiniteBitImage(image, 0, 0, false)

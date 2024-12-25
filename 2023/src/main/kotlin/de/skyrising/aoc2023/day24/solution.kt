@@ -1,3 +1,5 @@
+@file:PuzzleName("Never Tell Me The Odds")
+
 package de.skyrising.aoc2023.day24
 
 import com.microsoft.z3.Context
@@ -25,7 +27,6 @@ fun intersectRays(p1: Vec2l, v1: Vec2l, p2: Vec2l, v2: Vec2l): Vec2d? {
 
 fun parse(input: PuzzleInput) = input.lines.map { val (x, y, z, vx, vy, vz) = it.longs(); Vec3l(x, y, z) to Vec3l(vx, vy, vz) }
 
-@PuzzleName("Never Tell Me The Odds")
 fun PuzzleInput.part1(): Any {
     val hailstones = parse(this)
     val area = 200000000000000.0..400000000000000.0 //7.0..27.0

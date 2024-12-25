@@ -1,6 +1,10 @@
+@file:PuzzleName("Rope Bridge")
+
 package de.skyrising.aoc2022.day9
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.Vec2i
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -24,6 +28,5 @@ private fun simulateRope(input: PuzzleInput, knots: Int): Int {
     return path.size
 }
 
-@PuzzleName("Rope Bridge")
 fun PuzzleInput.part1() = simulateRope(this, 2)
 fun PuzzleInput.part2() = simulateRope(this, 10)

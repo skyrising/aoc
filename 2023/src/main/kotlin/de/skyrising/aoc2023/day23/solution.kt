@@ -1,3 +1,5 @@
+@file:PuzzleName("A Long Walk")
+
 package de.skyrising.aoc2023.day23
 
 import de.skyrising.aoc.*
@@ -66,7 +68,6 @@ private fun parse(input: PuzzleInput): Pair<Map<Vec2i, Segment>, CharGrid> {
     return segments to cg
 }
 
-@PuzzleName("A Long Walk")
 fun PuzzleInput.part1(): Any {
     val (segments, cg) = parse(this)
     val g = Graph.build<Vec2i, Any> {

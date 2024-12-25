@@ -1,3 +1,5 @@
+@file:PuzzleName("Hill Climbing Algorithm")
+
 package de.skyrising.aoc2022.day12
 
 import de.skyrising.aoc.*
@@ -28,7 +30,6 @@ private fun parseInput(input: PuzzleInput): Triple<IntGrid, Vec2i, Vec2i> {
     return Triple(grid, start!!, end!!)
 }
 
-@PuzzleName("Hill Climbing Algorithm")
 fun PuzzleInput.part1(): Any {
     val g = Graph<Vec2i, Nothing>()
     val (grid, start, end) = parseInput(this)

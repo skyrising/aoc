@@ -1,3 +1,5 @@
+@file:PuzzleName("Warehouse Woes")
+
 package de.skyrising.aoc2024.day15
 
 import de.skyrising.aoc.*
@@ -26,7 +28,6 @@ vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
 v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
 """)
 
-@PuzzleName("Warehouse Woes")
 fun PuzzleInput.part1(): Any {
     val (room, moves) = lines.splitOnEmpty()
     val roomGrid = CharGrid.parse(room)

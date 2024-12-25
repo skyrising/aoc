@@ -1,6 +1,10 @@
+@file:PuzzleName("Cathode-Ray Tube")
+
 package de.skyrising.aoc2022.day10
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.parseDisplay
 import kotlin.math.abs
 
 private inline fun runProgram(input: PuzzleInput, cycle: (x: Int) -> Unit) {
@@ -19,7 +23,6 @@ private inline fun runProgram(input: PuzzleInput, cycle: (x: Int) -> Unit) {
     }
 }
 
-@PuzzleName("Cathode-Ray Tube")
 fun PuzzleInput.part1(): Any {
     var result = 0
     var cycle = 0

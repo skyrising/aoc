@@ -1,6 +1,10 @@
+@file:PuzzleName("Grove Positioning System")
+
 package de.skyrising.aoc2022.day20
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 class CircularLongListItem(val value: Long) {
     var next = this
@@ -74,6 +78,5 @@ val test = TestInput("""
     4
 """)
 
-@PuzzleName("Grove Positioning System")
 fun PuzzleInput.part1() = groveCoordinates(this, 1, 1)
 fun PuzzleInput.part2() = groveCoordinates(this, 811589153, 10)

@@ -1,13 +1,16 @@
+@file:PuzzleName("I Was Told There Would Be No Math")
+
 package de.skyrising.aoc2015.day2
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     2x3x4
     1x1x10
 """)
 
-@PuzzleName("I Was Told There Would Be No Math")
 fun PuzzleInput.part1(): Any {
     var total = 0
     for (line in lines) {

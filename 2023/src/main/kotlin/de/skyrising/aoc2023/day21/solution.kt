@@ -1,3 +1,5 @@
+@file:PuzzleName("Step Counter")
+
 package de.skyrising.aoc2023.day21
 
 import de.skyrising.aoc.*
@@ -40,7 +42,6 @@ val test = TestInput("""
     ...........
 """)
 
-@PuzzleName("Step Counter")
 fun PuzzleInput.part1(): Any {
     return charGrid.goOutwards(64)
 }

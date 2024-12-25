@@ -1,3 +1,5 @@
+@file:PuzzleName("Hot Springs")
+
 package de.skyrising.aoc2023.day12
 
 import de.skyrising.aoc.*
@@ -142,7 +144,6 @@ data class State(
     private inline fun memoize(cache: Object2LongMap<State>, state: State) = state.computePossibilities(cache).also { cache[this] = it }
 }
 
-@PuzzleName("Hot Springs")
 fun PuzzleInput.part1() = parse(this).sumOf { (springs, counts) ->
     State(Springs(springs), counts).computePossibilities()
 }

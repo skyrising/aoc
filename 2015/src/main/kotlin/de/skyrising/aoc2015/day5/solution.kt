@@ -1,6 +1,9 @@
+@file:PuzzleName("Doesn't He Have Intern-Elves For This?")
+
 package de.skyrising.aoc2015.day5
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 
 private fun isNice1(s: String): Boolean {
     if (!Regex("[aeiou].*[aeiou].*[aeiou]").containsMatchIn(s)) return false
@@ -29,7 +32,6 @@ private fun isNice2(s: String): Boolean {
     return false
 }
 
-@PuzzleName("Doesn't He Have Intern-Elves For This?")
 fun PuzzleInput.part1() = lines.count(::isNice1)
 
 fun PuzzleInput.part2() = lines.count(::isNice2)

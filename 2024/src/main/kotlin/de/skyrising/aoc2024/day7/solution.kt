@@ -1,3 +1,5 @@
+@file:PuzzleName("Bridge Repair")
+
 package de.skyrising.aoc2024.day7
 
 import de.skyrising.aoc.*
@@ -34,7 +36,6 @@ fun PuzzleInput.sumPossible(predicate: (Long, List<Long>) -> Boolean) = lines.su
     if (predicate(result, inputs)) result else 0
 }
 
-@PuzzleName("Bridge Repair")
 fun PuzzleInput.part1() = sumPossible { result, inputs ->
     canBuild(result, inputs) { a, b -> sequenceOf(a + b, a * b) }
 }
@@ -85,7 +86,6 @@ fun canBuildReverse(target: Long, values: List<Long>, nextFuns: List<(Long, List
     return false
 }
 
-@PuzzleName("Bridge Repair")
 fun PuzzleInput.part1v1() = sumPossible { result, inputs ->
     canBuildReverse(result, inputs.reversed(), listOf(::testAdd, ::testMul))
 }

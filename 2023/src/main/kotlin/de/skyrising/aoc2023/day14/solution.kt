@@ -1,6 +1,11 @@
+@file:PuzzleName("Parabolic Reflector Dish")
+
 package de.skyrising.aoc2023.day14
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.CharGrid
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
@@ -67,7 +72,6 @@ val test2 = TestInput("""
     ...
 """)
 
-@PuzzleName("Parabolic Reflector Dish")
 fun PuzzleInput.part1(): Any {
     val grid = charGrid
     grid.slideNorth()

@@ -1,3 +1,5 @@
+@file:PuzzleName("Unstable Diffusion")
+
 package de.skyrising.aoc2022.day23
 
 import de.skyrising.aoc.*
@@ -72,7 +74,6 @@ val test2 = TestInput("""
     ..... 
 """)
 
-@PuzzleName("Unstable Diffusion")
 fun PuzzleInput.part1(): Any {
     val elves = parseInput(this)
     repeat(10) {

@@ -1,9 +1,11 @@
+@file:PuzzleName("Custom Customs")
+
 package de.skyrising.aoc2020.day6
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet
 
-@PuzzleName("Custom Customs")
 fun PuzzleInput.part1v0(): Any {
     var sum = 0
     val group = CharOpenHashSet()
@@ -18,7 +20,6 @@ fun PuzzleInput.part1v0(): Any {
     return sum + group.size
 }
 
-@PuzzleName("Custom Customs")
 fun PuzzleInput.part1v1(): Any {
     var sum = 0
     var group = 0

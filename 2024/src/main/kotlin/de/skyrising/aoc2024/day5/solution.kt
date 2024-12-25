@@ -1,3 +1,5 @@
+@file:PuzzleName("Print Queue")
+
 package de.skyrising.aoc2024.day5
 
 import de.skyrising.aoc.*
@@ -44,7 +46,6 @@ fun orderComparator(order0: List<IntList>): (Int, Int) -> Int {
     }}
 }
 
-@PuzzleName("Print Queue")
 fun PuzzleInput.part1(): Int {
     val (order0, updates) = lines.map { it.ints() }.splitOnEmpty(2)
     return updates.sumOf { update ->

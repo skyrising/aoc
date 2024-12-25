@@ -1,3 +1,5 @@
+@file:PuzzleName("Boiling Boulders")
+
 package de.skyrising.aoc2022.day18
 
 import de.skyrising.aoc.*
@@ -18,7 +20,6 @@ val test = TestInput("""
     2,3,5
 """)
 
-@PuzzleName("Boiling Boulders")
 fun PuzzleInput.part1(): Any {
     return lines.mapTo(mutableSetOf(), Vec3i::parse).let { cubes -> cubes.sumOf { c -> c.sixNeighbors().count { it !in cubes } } }
 }

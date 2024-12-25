@@ -1,6 +1,10 @@
+@file:PuzzleName("Treetop Tree House")
+
 package de.skyrising.aoc2022.day8
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import java.util.*
 
 private fun parseInput(input: PuzzleInput): Array<IntArray> {
@@ -36,7 +40,6 @@ val test = TestInput("""
     35390
 """)
 
-@PuzzleName("Treetop Tree House")
 fun PuzzleInput.part1(): Any {
     val rows = parseInput(this)
     val width = rows[0].size

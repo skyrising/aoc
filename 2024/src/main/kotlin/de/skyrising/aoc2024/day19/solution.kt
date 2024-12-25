@@ -1,3 +1,5 @@
+@file:PuzzleName("Linen Layout")
+
 package de.skyrising.aoc2024.day19
 
 import de.skyrising.aoc.PuzzleInput
@@ -33,7 +35,6 @@ fun make(target: String, patterns: List<String>, memo: Object2LongMap<String> = 
     return count
 }
 
-@PuzzleName("Linen Layout")
 fun PuzzleInput.part1(): Any {
     val (patternsS, designs) = lines.splitOnEmpty(2)
     val patterns = patternsS.single().split(", ")

@@ -1,6 +1,10 @@
+@file:PuzzleName("Syntax Scoring")
+
 package de.skyrising.aoc2021.day10
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.longs.LongArrayList
 
 val test = TestInput("""
@@ -16,7 +20,6 @@ val test = TestInput("""
     <{([{{}}[<[[[<>{}]]]>[]]
 """)
 
-@PuzzleName("Syntax Scoring")
 fun PuzzleInput.part1(): Any {
     var score = 0
     for (line in lines) {

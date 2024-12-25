@@ -1,3 +1,5 @@
+@file:PuzzleName("Snoverload")
+
 package de.skyrising.aoc2023.day25
 
 import de.skyrising.aoc.Graph
@@ -21,7 +23,6 @@ val test = TestInput("""
     frs: qnr lhk lsr
 """)
 
-@PuzzleName("Snoverload")
 fun PuzzleInput.part1(): Any {
     val g = Graph.build<String, Unit> {
         for (line in lines) {

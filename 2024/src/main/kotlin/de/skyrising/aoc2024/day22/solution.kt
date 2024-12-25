@@ -1,3 +1,5 @@
+@file:PuzzleName("Monkey Market")
+
 package de.skyrising.aoc2024.day22
 
 import de.skyrising.aoc.*
@@ -18,7 +20,6 @@ fun next(num: Long): Long {
     return (b xor (b shl 11)) and 0xffffff
 }
 
-@PuzzleName("Monkey Market")
 fun PuzzleInput.part1() = lines.sumOf {
     var num = it.toLong()
     repeat(2000) {
@@ -29,7 +30,6 @@ fun PuzzleInput.part1() = lines.sumOf {
 
 private val SPECIES = IntVector.SPECIES_PREFERRED
 
-@PuzzleName("Monkey Market")
 @Solution(SolutionType.C2)
 fun PuzzleInput.part1vec(): Any {
     val l = lines

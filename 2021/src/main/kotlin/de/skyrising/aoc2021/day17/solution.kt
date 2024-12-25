@@ -1,10 +1,13 @@
+@file:PuzzleName("Trick Shot")
+
 package de.skyrising.aoc2021.day17
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("target area: x=20..30, y=-10..-5")
 
-@PuzzleName("Trick Shot")
 fun PuzzleInput.part1v0(): Any {
     val target = parseInput(this)
     val x2 = target.first.last
@@ -22,7 +25,6 @@ fun PuzzleInput.part1v0(): Any {
     return maxY
 }
 
-@PuzzleName("Trick Shot")
 fun PuzzleInput.part1v1(): Any {
     val target = parseInput(this)
     val vy = -target.second.first - 1

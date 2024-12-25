@@ -1,3 +1,5 @@
+@file:PuzzleName("Guard Gallivant")
+
 package de.skyrising.aoc2024.day6
 
 import de.skyrising.aoc.*
@@ -44,7 +46,6 @@ inline fun guardWalk(grid: CharGrid, startPos: Vec2i, startDir: Direction, block
     return false
 }
 
-@PuzzleName("Guard Gallivant")
 fun PuzzleInput.part1(): Any {
     val grid = charGrid
     val startPos = grid.indexOfFirst("^v<>"::contains)

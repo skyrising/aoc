@@ -1,6 +1,11 @@
+@file:PuzzleName("Wait For It")
+
 package de.skyrising.aoc2023.day6
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.ints
 import kotlin.math.sqrt
 
 val test = TestInput("""
@@ -13,7 +18,6 @@ fun wins(t: Long, d: Long): Long {
     return t - t0 * 2 - 1
 }
 
-@PuzzleName("Wait For It")
 fun PuzzleInput.part1(): Any {
     val (time, distance) = lines.map { it.ints() }
     return time.indices.map {

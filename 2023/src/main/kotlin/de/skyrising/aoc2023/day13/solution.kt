@@ -1,3 +1,5 @@
+@file:PuzzleName("Point of Incidence")
+
 package de.skyrising.aoc2023.day13
 
 import de.skyrising.aoc.*
@@ -28,7 +30,6 @@ fun CharGrid.checkHorizontal(y: Int) = (0..<minOf(y, height - y)).sumOf {
     (0..<width).count { x -> this[x, y - it - 1] != this[x, y + it] }
 }
 
-@PuzzleName("Point of Incidence")
 fun PuzzleInput.part1() = lines.splitOnEmpty().sumOf {
     CharGrid.parse(it).run {
         val xm = (1 until width).firstOrNull { x -> checkVertical(x) == 0 } ?: 0

@@ -1,3 +1,5 @@
+@file:PuzzleName("Plutonian Pebbles")
+
 package de.skyrising.aoc2024.day11
 
 import de.skyrising.aoc.PuzzleInput
@@ -70,7 +72,6 @@ class SumStorage(val maxBlinks: Int) {
     }
 }
 
-@PuzzleName("Plutonian Pebbles")
 fun PuzzleInput.part1(): Any {
     val sums = SumStorage(25)
     return chars.longs().sumOf { sums.memo(it) }

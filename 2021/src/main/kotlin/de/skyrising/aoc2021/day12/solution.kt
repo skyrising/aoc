@@ -1,3 +1,5 @@
+@file:PuzzleName("Passage Pathing")
+
 package de.skyrising.aoc2021.day12
 
 import de.skyrising.aoc.Graph
@@ -49,7 +51,6 @@ val test3 = TestInput("""
     start-RW
 """)
 
-@PuzzleName("Passage Pathing")
 fun PuzzleInput.part1v0(): Any {
     val g = readInput(this) { s -> s }
     return g.getPathsV1("start", "end") { p ->
@@ -64,7 +65,6 @@ fun PuzzleInput.part1v0(): Any {
     }.size
 }
 
-@PuzzleName("Passage Pathing")
 fun PuzzleInput.part1v1(): Any {
     val caves = mutableMapOf<String, Cave>()
     val g = readInput(this) { s -> caves.computeIfAbsent(s, ::Cave) }

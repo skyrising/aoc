@@ -1,3 +1,5 @@
+@file:PuzzleName("The Floor Will Be Lava")
+
 package de.skyrising.aoc2023.day16
 
 import de.skyrising.aoc.*
@@ -73,7 +75,6 @@ val test = TestInput("""
     ..//.|....
 """)
 
-@PuzzleName("The Floor Will Be Lava")
 fun PuzzleInput.part1(): Any {
     val grid = charGrid
     return grid.maxBeam(

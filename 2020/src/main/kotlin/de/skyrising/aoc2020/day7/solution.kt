@@ -1,6 +1,10 @@
+@file:PuzzleName("Handy Haversacks")
+
 package de.skyrising.aoc2020.day7
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.Graph
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 
 private fun readMap(lines: List<String>): Map<String, Set<Pair<String, Int>>> {
     val map = mutableMapOf<String, MutableSet<Pair<String, Int>>>()
@@ -33,7 +37,6 @@ private fun readGraph(lines: List<String>) = Graph.build<String, Nothing?> {
     }
 }
 
-@PuzzleName("Handy Haversacks")
 fun PuzzleInput.part1v0(): Any {
     val set = mutableSetOf<String>()
     var count = 0
@@ -58,7 +61,6 @@ fun PuzzleInput.part1v0(): Any {
     return count
 }
 
-@PuzzleName("Handy Haversacks")
 fun PuzzleInput.part1v1(): Any {
     val graph = readGraph(lines)
     val set = mutableSetOf("shiny gold")

@@ -1,3 +1,5 @@
+@file:PuzzleName("Conway Cubes")
+
 package de.skyrising.aoc2020.day17
 
 import de.skyrising.aoc.*
@@ -201,12 +203,10 @@ val test = TestInput("""
     ###
 """)
 
-@PuzzleName("Conway Cubes")
 fun PuzzleInput.part1v0(): Any {
     return part1(lines, ::DenseState)
 }
 
-@PuzzleName("Conway Cubes")
 fun PuzzleInput.part1v1(): Any {
     return part1(lines) { SparseState() }
 }

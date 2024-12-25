@@ -1,13 +1,15 @@
+@file:PuzzleName("Camp Cleanup")
+
 package de.skyrising.aoc2022.day4
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 
 private fun parseRange(range: String): IntRange {
     val (from, to) = range.split('-')
     return from.toInt()..to.toInt()
 }
 
-@PuzzleName("Camp Cleanup")
 fun PuzzleInput.part1(): Any {
     var count = 0
     for (line in lines) {

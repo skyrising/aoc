@@ -1,10 +1,12 @@
+@file:PuzzleName("Password Philosophy")
+
 package de.skyrising.aoc2020.day2
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 import java.nio.ByteBuffer
 import java.util.regex.Pattern
 
-@PuzzleName("Password Philosophy")
 fun PuzzleInput.part1v0(): Any {
     val pattern = Pattern.compile("^(?<min>\\d+)-(?<max>\\d+) (?<char>.): (?<password>.*)$")
     var valid = 0
@@ -30,7 +32,6 @@ fun PuzzleInput.part1v0(): Any {
     return valid
 }
 
-@PuzzleName("Password Philosophy")
 fun PuzzleInput.part1v1(): Any {
     var valid = 0
     for (line in byteLines) {

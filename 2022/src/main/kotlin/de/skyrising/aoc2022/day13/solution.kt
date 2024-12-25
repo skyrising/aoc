@@ -1,6 +1,9 @@
+@file:PuzzleName("Distress Signal")
+
 package de.skyrising.aoc2022.day13
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 import kotlinx.serialization.json.*
 
 private fun compare(left: JsonElement, right: JsonElement): Int {
@@ -25,7 +28,6 @@ private fun compare(left: JsonElement, right: JsonElement): Int {
     return 0
 }
 
-@PuzzleName("Distress Signal")
 fun PuzzleInput.part1(): Any {
     val values = lines.filter(String::isNotBlank).map(Json::parseToJsonElement).chunked(2)
     var result = 0

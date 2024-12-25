@@ -1,3 +1,5 @@
+@file:PuzzleName("Cosmic Expansion")
+
 package de.skyrising.aoc2023.day11
 
 import de.skyrising.aoc.*
@@ -36,6 +38,5 @@ fun sumDistances(grid: CharGrid, scale: Int): Long {
     return sum
 }
 
-@PuzzleName("Cosmic Expansion")
 fun PuzzleInput.part1() = sumDistances(charGrid, 1)
 fun PuzzleInput.part2() = sumDistances(charGrid, 1000000)

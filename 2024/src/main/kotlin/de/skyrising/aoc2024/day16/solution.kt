@@ -1,3 +1,5 @@
+@file:PuzzleName("Reindeer Maze")
+
 package de.skyrising.aoc2024.day16
 
 import de.skyrising.aoc.*
@@ -58,7 +60,6 @@ fun buildGraph(grid: CharGrid): Triple<Graph<Pair<Vec2i, Direction>, Nothing>, P
     }, start, end)
 }
 
-@PuzzleName("Reindeer Maze")
 fun PuzzleInput.part1(): Any {
     val (g, start, end) = buildGraph(charGrid)
     return g.dijkstra(start) { (pos, _) -> pos == end }!!.sumOf { it.weight }

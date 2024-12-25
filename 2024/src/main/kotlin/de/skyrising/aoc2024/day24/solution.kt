@@ -1,3 +1,5 @@
+@file:PuzzleName("Crossed Wires")
+
 package de.skyrising.aoc2024.day24
 
 import de.skyrising.aoc.*
@@ -123,7 +125,6 @@ private fun parse(lines: List<String>): WireSet {
     return WireSet(expressions)
 }
 
-@PuzzleName("Crossed Wires")
 fun PuzzleInput.part1(): Any {
     val wireSet = parse(lines)
     return wireSet.z.mapIndexed { idx, (_, expr) -> expr.get(wireSet).toInt().toLong() shl idx }.sum()

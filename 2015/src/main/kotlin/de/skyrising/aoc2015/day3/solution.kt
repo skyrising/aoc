@@ -1,8 +1,10 @@
+@file:PuzzleName("Perfectly Spherical Houses in a Vacuum")
+
 package de.skyrising.aoc2015.day3
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 
-@PuzzleName("Perfectly Spherical Houses in a Vacuum")
 fun PuzzleInput.part1(): Any {
     val houses = mutableSetOf<Pair<Int, Int>>()
     var x = 0

@@ -1,6 +1,11 @@
+@file:PuzzleName("")
+
 package de.skyrising.aoc2023.day4
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.ints
 
 val test = TestInput("""
     Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
@@ -16,7 +21,6 @@ fun parse(input: PuzzleInput) = input.lines.map { line ->
     have.ints().intersect(winning.ints()).size
 }
 
-@PuzzleName("")
 fun PuzzleInput.part1() = parse(this).sumOf { if (it == 0) 0 else (1 shl (it - 1)) }
 
 fun PuzzleInput.part2(): Any {

@@ -1,3 +1,5 @@
+@file:PuzzleName("Not Enough Minerals")
+
 package de.skyrising.aoc2022.day19
 
 import de.skyrising.aoc.*
@@ -57,6 +59,5 @@ val test = TestInput("""
     Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.
 """)
 
-@PuzzleName("Not Enough Minerals")
 fun PuzzleInput.part1() = parseInput(this).sumOf(RobotBlueprint::qualityLevel)
 fun PuzzleInput.part2() = parseInput(this).take(3).map { it.getStates(32).maxOf(RobotState::geode) }.reduce(Int::times)

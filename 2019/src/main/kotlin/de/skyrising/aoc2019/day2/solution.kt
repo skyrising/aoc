@@ -1,6 +1,10 @@
+@file:PuzzleName("Program Alarm")
+
 package de.skyrising.aoc2019.day2
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import de.skyrising.aoc2019.runIntcode
 
 val test = TestInput("""
@@ -12,7 +16,6 @@ fun run(input: PuzzleInput, noun: Int, verb: Int) = runIntcode(input) {
     it[2] = verb
 }.getInt(0)
 
-@PuzzleName("Program Alarm")
 fun PuzzleInput.part1() = run(this, 12, 2)
 
 fun PuzzleInput.part2(): Any {

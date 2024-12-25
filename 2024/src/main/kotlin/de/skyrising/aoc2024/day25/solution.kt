@@ -1,3 +1,5 @@
+@file:PuzzleName("Code Chronicle")
+
 package de.skyrising.aoc2024.day25
 
 import de.skyrising.aoc.PuzzleInput
@@ -51,7 +53,6 @@ private fun fits(key: IntArray, lock: IntArray): Boolean {
     return key.indices.all { key[it] + lock[it] <= 5 }
 }
 
-@PuzzleName("Code Chronicle")
 fun PuzzleInput.part1(): Any {
     val locks = mutableListOf<IntArray>()
     val keys = mutableListOf<IntArray>()

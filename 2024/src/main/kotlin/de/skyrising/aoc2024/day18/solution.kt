@@ -1,3 +1,5 @@
+@file:PuzzleName("RAM Run")
+
 package de.skyrising.aoc2024.day18
 
 import de.skyrising.aoc.*
@@ -92,7 +94,6 @@ fun IntGrid.pathLength(start: Vec2i, end: Vec2i, limit: Int): Int {
     return -1
 }
 
-@PuzzleName("RAM Run")
 fun PuzzleInput.part1(): Int {
     val doTest = false
     val start = Vec2i(0, 0)

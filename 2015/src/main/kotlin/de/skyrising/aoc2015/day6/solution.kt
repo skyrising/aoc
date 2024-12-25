@@ -1,9 +1,12 @@
+@file:PuzzleName("Probably a Fire Hazard")
+
 package de.skyrising.aoc2015.day6
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.Vec2i
 import java.util.*
 
-@PuzzleName("Probably a Fire Hazard")
 fun PuzzleInput.part1(): Any {
     val lights = BitSet(1_000_000)
     for (line in lines) {

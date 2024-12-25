@@ -1,3 +1,5 @@
+@file:PuzzleName("Crossed Wires")
+
 package de.skyrising.aoc2019.day3
 
 import de.skyrising.aoc.*
@@ -29,7 +31,6 @@ fun walk(wire: String, at: (Vec2i)->Unit) {
     }
 }
 
-@PuzzleName("Crossed Wires")
 fun PuzzleInput.part1(): Any {
     val points = mutableSetOf<Vec2i>()
     walk(lines[0]) {

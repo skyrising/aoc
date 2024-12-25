@@ -1,6 +1,10 @@
+@file:PuzzleName("Monkey in the Middle")
+
 package de.skyrising.aoc2022.day11
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.ints
 import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongList
 import java.util.function.LongConsumer
@@ -58,6 +62,5 @@ private fun parseInput(input: PuzzleInput): List<Monkey> {
     }
 }
 
-@PuzzleName("Monkey in the Middle")
 fun PuzzleInput.part1() = monkeyBusiness(this, 20, true)
 fun PuzzleInput.part2() = monkeyBusiness(this, 10000, false)

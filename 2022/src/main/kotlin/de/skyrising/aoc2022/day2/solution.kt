@@ -1,6 +1,10 @@
+@file:PuzzleName("Rock Paper Scissors")
+
 package de.skyrising.aoc2022.day2
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     A Y
@@ -8,7 +12,6 @@ val test = TestInput("""
     C Z
 """)
 
-@PuzzleName("Rock Paper Scissors")
 fun PuzzleInput.part1(): Any {
     var total = 0
     for (line in lines) {

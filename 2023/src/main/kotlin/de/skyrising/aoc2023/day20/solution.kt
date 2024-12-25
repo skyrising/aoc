@@ -1,3 +1,5 @@
+@file:PuzzleName("Pulse Propagation")
+
 package de.skyrising.aoc2023.day20
 
 import de.skyrising.aoc.*
@@ -152,7 +154,6 @@ val test2 = TestInput("""
     &con -> output
 """)
 
-@PuzzleName("Pulse Propagation")
 fun PuzzleInput.part1(): Any {
     val state = parse(this)
     var low = 0L

@@ -1,3 +1,5 @@
+@file:PuzzleName("If You Give A Seed A Fertilizer")
+
 package de.skyrising.aoc2023.day5
 
 import de.skyrising.aoc.*
@@ -84,7 +86,6 @@ fun parse(input: PuzzleInput): Almanac {
     )
 }
 
-@PuzzleName("If You Give A Seed A Fertilizer")
 fun PuzzleInput.part1(): Any {
     val almanac = parse(this)
     return almanac.seeds.minOf {

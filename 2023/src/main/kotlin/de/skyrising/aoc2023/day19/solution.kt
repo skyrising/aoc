@@ -1,3 +1,5 @@
+@file:PuzzleName("Aplenty")
+
 package de.skyrising.aoc2023.day19
 
 import de.skyrising.aoc.*
@@ -128,7 +130,6 @@ val test = TestInput("""
     {x=2127,m=1623,a=2188,s=1013}
 """)
 
-@PuzzleName("Aplenty")
 fun PuzzleInput.part1(): Any {
     val (workflows, ratings) = parse(this)
     var result = 0

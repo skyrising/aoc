@@ -1,3 +1,5 @@
+@file:PuzzleName("Extended Polymerization")
+
 package de.skyrising.aoc2021.day14
 
 import de.skyrising.aoc.*
@@ -30,7 +32,6 @@ val test = TestInput("""
     CN -> C
 """)
 
-@PuzzleName("Extended Polymerization")
 fun PuzzleInput.part1v0(): Any {
     val (start, rules) = parseInput(this)
     var current = start
@@ -53,7 +54,6 @@ fun PuzzleInput.part1v0(): Any {
     return max - min
 }
 
-@PuzzleName("Extended Polymerization")
 fun PuzzleInput.part1v1(): Any {
     val (start, rules) = parseInput(this)
     return solveDay14Fast(start, rules, 10)

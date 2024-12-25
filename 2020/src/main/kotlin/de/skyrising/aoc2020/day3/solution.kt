@@ -1,8 +1,10 @@
+@file:PuzzleName("Toboggan Trajectory")
+
 package de.skyrising.aoc2020.day3
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 
-@PuzzleName("Toboggan Trajectory")
 fun PuzzleInput.part1v0(): Any {
     var trees = 0
     var x = 0
@@ -14,7 +16,6 @@ fun PuzzleInput.part1v0(): Any {
     return trees
 }
 
-@PuzzleName("Toboggan Trajectory")
 fun PuzzleInput.part1v1(): Any {
     var trees = 0
     var x = 0

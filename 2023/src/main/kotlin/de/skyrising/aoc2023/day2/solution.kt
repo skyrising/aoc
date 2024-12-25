@@ -1,6 +1,10 @@
+@file:PuzzleName("Cube Conundrum")
+
 package de.skyrising.aoc2023.day2
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
@@ -30,7 +34,6 @@ fun parse(game: String): Game {
     })
 }
 
-@PuzzleName("Cube Conundrum")
 fun PuzzleInput.part1() = lines.map(::parse).sumOf {
     if (it.rounds.all { round -> round.red <= 12 && round.green <= 13 && round.blue <= 14 }) it.num else 0
 }
@@ -39,4 +42,3 @@ fun PuzzleInput.part2() = lines.map(::parse).sumOf {
     it.rounds.maxOf(Round::red) * it.rounds.maxOf(Round::green) * it.rounds.maxOf(Round::blue)
 }
 
-        

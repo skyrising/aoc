@@ -1,8 +1,10 @@
+@file:PuzzleName("Tuning Trouble")
+
 package de.skyrising.aoc2022.day6
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 
-@PuzzleName("Tuning Trouble")
 fun PuzzleInput.part1(): Any? {
     val window = CharArray(4)
     for (i in chars.indices) {

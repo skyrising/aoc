@@ -1,6 +1,10 @@
+@file:PuzzleName("Encoding Error")
+
 package de.skyrising.aoc2020.day9
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.HashCommon
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 
@@ -77,10 +81,8 @@ fun findInvalid2(numbers: LongArray, preambleLen: Int = 25): Long? {
     return null
 }
 
-@PuzzleName("Encoding Error")
 fun PuzzleInput.part1v0() = findInvalid(lines.map(String::toLong))
 
-@PuzzleName("Encoding Error")
 fun PuzzleInput.part1v1() = findInvalid2(longArrayOf(lines))
 
 fun PuzzleInput.part2v0(): Any? {

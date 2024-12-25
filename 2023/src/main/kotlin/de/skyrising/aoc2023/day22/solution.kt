@@ -1,3 +1,5 @@
+@file:PuzzleName("Sand Slabs")
+
 package de.skyrising.aoc2023.day22
 
 import de.skyrising.aoc.*
@@ -41,7 +43,6 @@ private fun letFall(cubes: List<Cube>, shortCircuit: Boolean = false): Pair<List
     return newCubes to count
 }
 
-@PuzzleName("Sand Slabs")
 fun PuzzleInput.part1(): Any {
     val (cubes, _) = letFall(parse(this))
     return cubes.count {

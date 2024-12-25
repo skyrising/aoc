@@ -1,9 +1,11 @@
+@file:PuzzleName("The Ideal Stocking Stuffer")
+
 package de.skyrising.aoc2015.day4
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 import java.security.MessageDigest
 
-@PuzzleName("The Ideal Stocking Stuffer")
 fun PuzzleInput.part1(): Any {
     val input = string.trim()
     var i = 1

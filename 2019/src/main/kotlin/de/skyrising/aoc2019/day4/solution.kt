@@ -1,6 +1,9 @@
+@file:PuzzleName("Secure Container")
+
 package de.skyrising.aoc2019.day4
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 
 inline fun valid(password: String, validRun: (Int)->Boolean): Boolean {
     var last = '0'
@@ -19,7 +22,6 @@ inline fun valid(password: String, validRun: (Int)->Boolean): Boolean {
     return hasValidRun || validRun(run)
 }
 
-@PuzzleName("Secure Container")
 fun PuzzleInput.part1(): Any {
     val (min, max) = lines[0].split('-').map(String::toInt)
     return (min..max).count { valid(it.toString()) { it >= 2 } }

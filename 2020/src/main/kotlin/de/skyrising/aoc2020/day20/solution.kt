@@ -1,11 +1,37 @@
+@file:PuzzleName("Jurassic Jigsaw")
+
 package de.skyrising.aoc2020.day20
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.ints.IntSet
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.MutableSet
+import kotlin.collections.Set
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.contentEquals
+import kotlin.collections.count
+import kotlin.collections.emptyList
+import kotlin.collections.isNotEmpty
+import kotlin.collections.iterator
+import kotlin.collections.last
+import kotlin.collections.lastOrNull
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableSetOf
+import kotlin.collections.plus
+import kotlin.collections.reduceRight
+import kotlin.collections.set
+import kotlin.collections.setOf
+import kotlin.collections.single
 import kotlin.math.sqrt
 
 private class Tile(val id: Int, val width: Int, val height: Int, val flipped: Boolean = false, val rotated: Int = 0) {
@@ -404,7 +430,6 @@ val test = TestInput("""
     ..#.###...
 """)
 
-@PuzzleName("Jurassic Jigsaw")
 fun PuzzleInput.part1(): Any {
     val tiles = Tile.parseTiles(lines)
     val variants = Tile.getVariants(tiles)

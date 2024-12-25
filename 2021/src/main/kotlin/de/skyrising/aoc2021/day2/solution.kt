@@ -1,6 +1,10 @@
+@file:PuzzleName("Dive!")
+
 package de.skyrising.aoc2021.day2
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     forward 5
@@ -11,7 +15,6 @@ val test = TestInput("""
     forward 2
 """)
 
-@PuzzleName("Dive!")
 fun PuzzleInput.part1(): Any {
     var horizontal = 0
     var depth = 0

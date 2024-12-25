@@ -1,9 +1,11 @@
+@file:PuzzleName("Calorie Counting")
+
 package de.skyrising.aoc2022.day1
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 import it.unimi.dsi.fastutil.ints.IntArrayList
 
-@PuzzleName("Calorie Counting")
 fun PuzzleInput.part1(): Any {
     var most = 0
     var current = 0

@@ -1,3 +1,5 @@
+@file:PuzzleName("Camel Cards")
+
 package de.skyrising.aoc2023.day7
 
 import de.skyrising.aoc.*
@@ -75,6 +77,5 @@ val test = TestInput("""
     QQQJA 483
 """)
 
-@PuzzleName("Camel Cards")
 fun PuzzleInput.part1() = run(this, Hand.Companion::part1)
 fun PuzzleInput.part2() = run(this, Hand.Companion::part2)

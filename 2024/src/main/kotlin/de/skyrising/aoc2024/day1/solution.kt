@@ -1,3 +1,5 @@
+@file:PuzzleName("Historian Hysteria")
+
 package de.skyrising.aoc2024.day1
 
 import de.skyrising.aoc.*
@@ -12,7 +14,6 @@ val test = TestInput("""
 3   3
 """)
 
-@PuzzleName("Historian Hysteria")
 fun PuzzleInput.part1() =
     lines.map { it.ints().toPair() }.pivot().map { it.sorted() }.pivot().sumOf { (it.second - it.first).absoluteValue }
 

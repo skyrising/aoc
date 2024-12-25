@@ -1,6 +1,10 @@
+@file:PuzzleName("Operation Order")
+
 package de.skyrising.aoc2020.day18
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import java.util.*
 
 private interface Expr {
@@ -172,7 +176,6 @@ private fun parseBinOp(tokens: List<Token>, lhs: Expr, minPrecedence: Int, prece
 
 val test = TestInput("2 * 3 + (4 * 5)")
 
-@PuzzleName("Operation Order")
 fun PuzzleInput.part1v0(): Any {
     var sum = 0L
     for (line in lines) {
@@ -183,7 +186,6 @@ fun PuzzleInput.part1v0(): Any {
     return sum
 }
 
-@PuzzleName("Operation Order")
 fun PuzzleInput.part1v1(): Any {
     var sum = 0L
     for (line in lines) {

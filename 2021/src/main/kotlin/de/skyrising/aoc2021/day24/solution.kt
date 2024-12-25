@@ -1,11 +1,13 @@
+@file:PuzzleName("Arithmetic Logic Unit")
+
 package de.skyrising.aoc2021.day24
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.util.function.IntFunction
 
-@PuzzleName("Arithmetic Logic Unit")
 fun PuzzleInput.part1() = solve(this, intArrayOf(9, 8, 7, 6, 5, 4, 3, 2, 1))
 
 fun PuzzleInput.part2() = solve(this, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))

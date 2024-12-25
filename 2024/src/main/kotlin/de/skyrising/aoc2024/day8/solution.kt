@@ -1,3 +1,5 @@
+@file:PuzzleName("Resonant Collinearity")
+
 package de.skyrising.aoc2024.day8
 
 import de.skyrising.aoc.*
@@ -25,7 +27,6 @@ fun solve(grid: CharGrid, offsets: Iterable<Int>): Int {
     }.size
 }
 
-@PuzzleName("Resonant Collinearity")
 fun PuzzleInput.part1() = solve(charGrid, listOf(-1, 2))
 
 fun PuzzleInput.part2(): Int {

@@ -24,7 +24,8 @@ data class PuzzleDay(val year: Int, val day: Int) : Comparable<PuzzleDay> {
     operator fun plus(days: Int) = PuzzleDay(year, day + days)
 }
 
-annotation class PuzzleName(val name: String, val part: Int = 0)
+@Target(AnnotationTarget.FILE)
+annotation class PuzzleName(val name: String)
 enum class SolutionType {
     REGULAR,
     C2,
@@ -81,9 +82,6 @@ value class PuzzleCollection(private val puzzles: SortedMap<PuzzleDay, MutableLi
 
 val allPuzzles = PuzzleCollection()
 
-var currentDay = PuzzleDay(0, 0)
-var lastPart = 0
-
 data class DefaultPuzzle<T>(
     override val name: String,
     override val day: PuzzleDay,
@@ -96,12 +94,9 @@ data class DefaultPuzzle<T>(
     override fun runPuzzle(input: PuzzleInput): T = run(input)
 }
 
-inline fun <reified T> puzzle(name: String, part: Int = 0, solutionType: SolutionType, resultType: Class<T> = T::class.java, noinline run: PuzzleInput.() -> T): Puzzle<T> {
-    if (part != lastPart) {
-        lastPart = part
-    }
-    val index = allPuzzles[currentDay]?.count { it.part == part } ?: 0
-    return DefaultPuzzle(name, currentDay, part, index, solutionType, resultType, run).also(allPuzzles::add)
+inline fun <reified T> puzzle(day: PuzzleDay, name: String, part: Int = 0, solutionType: SolutionType, resultType: Class<T> = T::class.java, noinline run: PuzzleInput.() -> T): Puzzle<T> {
+    val index = allPuzzles[day]?.count { it.part == part } ?: 0
+    return DefaultPuzzle(name, day, part, index, solutionType, resultType, run).also(allPuzzles::add)
 }
 
 private inline fun <reified T> convertMethod(lookup: MethodHandles.Lookup, method: Method): T {
@@ -120,25 +115,20 @@ private inline fun <reified T> convertMethod(lookup: MethodHandles.Lookup, metho
 }
 
 fun registerDay(day: PuzzleDay) {
-    lastPart = 0
-    currentDay = day
     try {
         val cls = Class.forName("de.skyrising.aoc${day.year}.day${day.day}.SolutionKt")
+        val dayName = cls.getAnnotation(PuzzleName::class.java)?.name ?: "Day ${day.day}"
         val lookup = MethodHandles.lookup()
         for (method in cls.methods) {
             if (AccessFlag.STATIC !in method.accessFlags() || !method.name.startsWith("part")) continue
             if (method.parameterCount == 1 && method.parameterTypes[0] == PuzzleInput::class.java) {
                 var part = 0
                 if (method.name.startsWith("part")) part = method.name[4].digitToInt()
-                var name = ""
-                method.getAnnotation(PuzzleName::class.java)?.let {
-                    if (it.part != 0) part = it.part
-                    name = it.name
-                }
-                if (name.isEmpty() && part == 2) name = "Part Two"
+                var name = dayName
+                if (part == 2) name = "Part Two"
                 var solutionType = method.getAnnotation(Solution::class.java)?.type ?: SolutionType.REGULAR
                 if (method.returnType == Visualization::class.java) solutionType = SolutionType.VISUALIZATION
-                puzzle(name, part, solutionType, method.returnType as Class<Any?>, convertMethod<Function1<PuzzleInput, Any?>>(lookup, method))
+                puzzle(day, name, part, solutionType, method.returnType as Class<Any?>, convertMethod<Function1<PuzzleInput, Any?>>(lookup, method))
             }
         }
     } catch (ignored: ClassNotFoundException) {}

@@ -1,3 +1,5 @@
+@file:PuzzleName("Lavaduct Lagoon")
+
 package de.skyrising.aoc2023.day18
 
 import de.skyrising.aoc.*
@@ -20,7 +22,6 @@ val test = TestInput("""
     U 2 (#7a21e3)
 """)
 
-@PuzzleName("Lavaduct Lagoon")
 fun PuzzleInput.part1(): Any {
     var pos = Vec2i.ZERO
     var area = 0

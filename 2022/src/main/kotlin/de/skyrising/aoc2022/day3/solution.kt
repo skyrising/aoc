@@ -1,9 +1,11 @@
+@file:PuzzleName("Rucksack Reorganization")
+
 package de.skyrising.aoc2022.day3
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet
 
-@PuzzleName("Rucksack Reorganization")
 fun PuzzleInput.part1(): Any {
     var sum = 0
     for (line in lines) {

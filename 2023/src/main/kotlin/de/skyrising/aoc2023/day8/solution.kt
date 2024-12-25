@@ -1,3 +1,5 @@
+@file:PuzzleName("")
+
 package de.skyrising.aoc2023.day8
 
 import de.skyrising.aoc.*
@@ -44,7 +46,6 @@ fun parse(input: PuzzleInput) = Pair(
         k.toInt(36) to PackedIntPair(l.toInt(36), r.toInt(36)).longValue
     })
 
-@PuzzleName("")
 fun PuzzleInput.part1(): Any {
     val (lr, map) = parse(this)
     return steps(AAA, lr, map) { it == ZZZ }

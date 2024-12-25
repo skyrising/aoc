@@ -1,6 +1,10 @@
+@file:PuzzleName("Reactor Reboot")
+
 package de.skyrising.aoc2021.day22
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import java.util.*
 
 val test = TestInput("""
@@ -96,7 +100,6 @@ val test3 = TestInput("""
     off x=-93533..-4276,y=-16170..68771,z=-104985..-24507
 """)
 
-@PuzzleName("Reactor Reboot")
 fun PuzzleInput.part1(): Any {
     val instructions = parseInput(this)
     val clamp = Region3d(-50..50, -50..50, -50..50)

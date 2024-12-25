@@ -1,10 +1,16 @@
+@file:PuzzleName("Lobby Layout")
+
 package de.skyrising.aoc2020.day24
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongArrayList
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongSet
+import kotlin.collections.set
+import kotlin.collections.sumOf
 
 private enum class HexNeighbor(val xOff: Int, val yOff: Int) {
     E(1, 0),
@@ -94,7 +100,6 @@ val test = TestInput("""
     wseweeenwnesenwwwswnew
 """)
 
-@PuzzleName("Lobby Layout")
 fun PuzzleInput.part1(): Any {
     val grid = Long2BooleanOpenHashMap()
     for (line in lines) {

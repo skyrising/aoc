@@ -1,8 +1,15 @@
+@file:PuzzleName("Sea Cucumber")
+
 package de.skyrising.aoc2021.day25
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.Vec2i
 import it.unimi.dsi.fastutil.objects.Object2CharMap
 import it.unimi.dsi.fastutil.objects.Object2CharOpenHashMap
+import kotlin.collections.set
+import kotlin.collections.withIndex
 
 val test = TestInput("""
     v...>>.vv>
@@ -16,7 +23,6 @@ val test = TestInput("""
     ....v..v.>
 """)
 
-@PuzzleName("Sea Cucumber")
 fun PuzzleInput.part1(): Any {
     val (map, size) = parseInput(this)
     var state = map

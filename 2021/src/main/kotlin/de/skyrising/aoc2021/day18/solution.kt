@@ -1,6 +1,11 @@
+@file:PuzzleName("Snailfish")
+
 package de.skyrising.aoc2021.day18
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.pairs
 
 val test = TestInput("""
     [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
@@ -23,7 +28,6 @@ val test1 = TestInput("""
     [5,5]
 """)
 
-@PuzzleName("Snailfish")
 fun PuzzleInput.part1() = lines.map(SnailfishNumber::parse).reduce(SnailfishNumber::plus).magnitude()
 
 fun PuzzleInput.part2() = lines.map(SnailfishNumber::parse).pairs().map { (a, b) -> a + b }.maxOf(SnailfishNumber::magnitude)

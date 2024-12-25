@@ -1,3 +1,5 @@
+@file:PuzzleName("Monkey Math")
+
 package de.skyrising.aoc2022.day21
 
 import de.skyrising.aoc.*
@@ -72,7 +74,6 @@ val test = TestInput("""
     hmdt: 32
 """)
 
-@PuzzleName("Monkey Math")
 fun PuzzleInput.part1(): Any {
     val monkeys = parseInput(this)
     return monkeys["root"]!!.compute(monkeys)

@@ -1,8 +1,16 @@
+@file:PuzzleName("Monster Messages")
+
 package de.skyrising.aoc2020.day19
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import kotlin.collections.List
+import kotlin.collections.joinToString
+import kotlin.collections.map
+import kotlin.collections.set
 
 private interface PreRule {
     operator fun invoke(rules: (Int) -> String): String
@@ -111,7 +119,6 @@ val test2 = TestInput("""
     aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
 """)
 
-@PuzzleName("Monster Messages")
 fun PuzzleInput.part1(): Any {
     val (rulesCount, _, buildRule) = readPreRules(lines)
     val rule0 = Regex(buildRule(0))

@@ -1,3 +1,5 @@
+@file:PuzzleName("Claw Contraption")
+
 package de.skyrising.aoc2024.day13
 
 import de.skyrising.aoc.*
@@ -48,7 +50,6 @@ fun solveGame(a: Vec2l, b: Vec2l, prize: Vec2l): Long {
     return if (numA * a + numB * b == prize) numA * 3 + numB else 0
 }
 
-@PuzzleName("Claw Contraption")
 fun PuzzleInput.part1() = byteLines.sumGames { a, b, prize ->
     solveGame(a, b, prize)
 }

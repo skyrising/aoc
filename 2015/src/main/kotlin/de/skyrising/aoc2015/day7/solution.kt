@@ -1,6 +1,17 @@
+@file:PuzzleName("Some Assembly Required")
+
 package de.skyrising.aoc2015.day7
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
+import kotlin.collections.HashMap
+import kotlin.collections.List
+import kotlin.collections.MutableMap
+import kotlin.collections.lastIndex
+import kotlin.collections.listOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
 private fun parse(input: PuzzleInput): MutableMap<String, List<String>> {
     val map = mutableMapOf<String, List<String>>()
@@ -46,7 +57,6 @@ val test = TestInput("""
     NOT y -> i
 """)
 
-@PuzzleName("Some Assembly Required")
 fun PuzzleInput.part1() = eval(parse(this), "a")
 
 fun PuzzleInput.part2(): Any {

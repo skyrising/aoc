@@ -1,3 +1,5 @@
+@file:PuzzleName("Chronospatial Computer")
+
 package de.skyrising.aoc2024.day17
 
 import de.skyrising.aoc.*
@@ -96,7 +98,6 @@ fun parseInput(input: PuzzleInput): Pair<State, List<Instruction>> {
         0) to Instruction.parse(input.lines[4].ints())
 }
 
-@PuzzleName("Chronospatial Computer")
 fun PuzzleInput.part1(): Any {
     val (state, instructions) = parseInput(this)
     state.run(instructions)

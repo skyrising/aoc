@@ -1,14 +1,22 @@
+@file:PuzzleName("Dirac Dice")
+
 package de.skyrising.aoc2021.day21
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.ints
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.isNotEmpty
+import kotlin.collections.set
 
 val test = TestInput("""
     Player 1 starting position: 4
     Player 2 starting position: 8
 """)
 
-@PuzzleName("Dirac Dice")
 fun PuzzleInput.part1(): Any {
     var (p1, p2) = parseInput(this)
     val dice = Dice()

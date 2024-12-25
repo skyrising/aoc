@@ -1,9 +1,16 @@
+@file:PuzzleName("Rambunctious Recitation")
+
 package de.skyrising.aoc2020.day15
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.HashCommon
 import it.unimi.dsi.fastutil.ints.Int2IntMap
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
+import kotlin.collections.List
+import kotlin.collections.map
+import kotlin.collections.set
 
 private fun day15next(mem: Int2IntMap, turn: Int, next: Int): Int {
     val n = turn - mem.getOrDefault(next, turn)
@@ -86,10 +93,8 @@ private fun day15v2(starting: List<Int>, limit: Int): Int {
 
 val test = TestInput("0,3,6")
 
-@PuzzleName("Rambunctious Recitation")
 fun PuzzleInput.part1v0() = day15(chars.trim().split(",").map(String::toInt), 2020)
 
-@PuzzleName("Rambunctious Recitation")
 fun PuzzleInput.part1v1() = day15v2(chars.trim().split(",").map(String::toInt), 2020)
 
 fun PuzzleInput.part2v0() = day15(chars.trim().split(",").map(String::toInt), 30000000)

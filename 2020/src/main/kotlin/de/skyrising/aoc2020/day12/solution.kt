@@ -1,6 +1,10 @@
+@file:PuzzleName("Rain Risk")
+
 package de.skyrising.aoc2020.day12
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import kotlin.math.*
 
 val test = TestInput("""
@@ -11,7 +15,6 @@ val test = TestInput("""
     F11
 """)
 
-@PuzzleName("Rain Risk")
 fun PuzzleInput.part1(): Any {
     var x = 0
     var y = 0

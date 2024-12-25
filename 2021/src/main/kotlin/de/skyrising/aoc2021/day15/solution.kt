@@ -1,6 +1,11 @@
+@file:PuzzleName("Chiton")
+
 package de.skyrising.aoc2021.day15
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.Graph
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
     1163751742
@@ -15,7 +20,6 @@ val test = TestInput("""
     2311944581
 """)
 
-@PuzzleName("Chiton")
 fun PuzzleInput.part1(): Any? {
     val input = lines
     val g = Graph.build<Pair<Int, Int>, Int> {

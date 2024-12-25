@@ -1,6 +1,10 @@
+@file:PuzzleName("Smoke Basin")
+
 package de.skyrising.aoc2021.day9
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 import it.unimi.dsi.fastutil.ints.IntArrayList
 
 val test = TestInput("""
@@ -11,7 +15,6 @@ val test = TestInput("""
     9899965678
 """)
 
-@PuzzleName("Smoke Basin")
 fun PuzzleInput.part1(): Any {
     val (points, width, height) = parseInput(this)
     var risk = 0

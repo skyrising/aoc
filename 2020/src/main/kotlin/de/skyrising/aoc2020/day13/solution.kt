@@ -1,3 +1,5 @@
+@file:PuzzleName("Shuttle Search")
+
 package de.skyrising.aoc2020.day13
 
 import de.skyrising.aoc.*
@@ -67,7 +69,6 @@ val test = TestInput("""
     7,13,x,x,59,x,31,19
 """)
 
-@PuzzleName("Shuttle Search")
 fun PuzzleInput.part1v0(): Any {
     val earliest = lines[0].toInt()
     val buses = lines[1].split(",").stream().filter { it != "x" }.mapToInt(String::toInt).toArray()
@@ -80,7 +81,6 @@ fun PuzzleInput.part1v0(): Any {
     }
 }
 
-@PuzzleName("Shuttle Search")
 fun PuzzleInput.part1v1(): Any {
     val earliest = lines[0].toInt()
     val buses = lines[1].split(",").stream().filter { it != "x" }.mapToInt(String::toInt).toArray()
