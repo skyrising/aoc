@@ -11,20 +11,31 @@ const val BENCHMARK = false
 var BENCHMARK_MODE: BenchMode? = if (BENCHMARK) BenchMode.Duration(100.milliseconds) else null
 const val QUICK_PART2 = true
 
-fun buildFilter(args: Array<String>): PuzzleFilter {
-    if (args.isEmpty()) return PuzzleFilter.all().copy(latestOnly = true)
-    if (args[0] == "all") return PuzzleFilter.all()
-    if (args[0] == "best") return PuzzleFilter.all().copy(bestVersionOnly = true)
-    val year = args[0].toInt()
-    val filter = PuzzleFilter.year(year)
-    if (args.size <= 1) return filter.copy(latestOnly = true)
-    if (args[1] == "all") return filter
-    if (args[1] == "best") return filter.copy(bestVersionOnly = true)
-    return PuzzleFilter(sortedSetOf(PuzzleDay(year, args[1].toInt())))
+fun buildFilter(args: MutableList<String>): PuzzleFilter {
+    var filter = PuzzleFilter.all()
+    when(args.firstOrNull()) {
+        null -> return filter.copy(latestOnly = true)
+        "all" -> return filter
+        "best" -> return filter.copy(bestVersionOnly = true)
+    }
+    val year = args.removeFirst().toInt()
+    filter = PuzzleFilter.year(year)
+    when(args.firstOrNull()) {
+        null -> return filter.copy(latestOnly = true)
+        "all" -> return filter
+        "best" -> return filter.copy(bestVersionOnly = true)
+    }
+    val day = args.removeFirst().toInt()
+    return PuzzleFilter(sortedSetOf(PuzzleDay(year, day)), solutionTypes = EnumSet.allOf(SolutionType::class.java))
 }
 
 fun main(args: Array<String>) {
-    val filter = buildFilter(args)
+    var filter = buildFilter(args.toMutableList())
+    filter = if (!BENCHMARK) {
+        filter.copy(solutionTypes = filter.solutionTypes - SolutionType.C2)
+    } else {
+        filter.copy(solutionTypes = filter.solutionTypes - SolutionType.VISUALIZATION)
+    }
     registerFiltered(filter)
     val puzzlesToRun = allPuzzles.filter(filter)
     var totalTime = 0.0

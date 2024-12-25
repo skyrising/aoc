@@ -752,3 +752,11 @@ inline fun binarySearch(fromIndex: Int, toIndex: Int, comparison: (Int) -> Int):
 inline fun <T, S> Iterable<T>.mapParallel(scope: StructuredTaskScope<in S>, crossinline mapper: (T) -> S): List<StructuredTaskScope.Subtask<S>> = map {
     scope.fork { mapper(it) }
 }
+
+operator fun <T: Enum<T>> EnumSet<T>.minus(element: T) = if (element in this) {
+    val copy = clone() as EnumSet<T>
+    copy.remove(element)
+    copy
+} else {
+    this
+}

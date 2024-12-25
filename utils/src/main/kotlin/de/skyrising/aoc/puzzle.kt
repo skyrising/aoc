@@ -1,5 +1,6 @@
 package de.skyrising.aoc
 
+import de.skyrising.aoc.visualization.Visualization
 import java.lang.invoke.LambdaMetafactory
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType.methodType
@@ -24,6 +25,12 @@ data class PuzzleDay(val year: Int, val day: Int) : Comparable<PuzzleDay> {
 }
 
 annotation class PuzzleName(val name: String, val part: Int = 0)
+enum class SolutionType {
+    REGULAR,
+    C2,
+    VISUALIZATION,
+}
+annotation class Solution(val type: SolutionType = SolutionType.REGULAR)
 
 interface Puzzle<T> : Comparable<Puzzle<T>> {
     val name: String
@@ -31,6 +38,7 @@ interface Puzzle<T> : Comparable<Puzzle<T>> {
     val part: Int
     val index: Int
     val resultType: Class<T>
+    val solutionType: SolutionType
     fun getRealInput() = getInput(day.year, day.day)
     fun runPuzzle(input: PuzzleInput): T
 
@@ -62,10 +70,11 @@ value class PuzzleCollection(private val puzzles: SortedMap<PuzzleDay, MutableLi
         } else {
             puzzles.filterKeys { it in filter.days }.values.flatten()
         }
+        val withType = days.filter { it.solutionType in filter.solutionTypes }
         return if (filter.bestVersionOnly) {
-            days.groupBy { it.day to it.part }.values.map { it.maxBy(Puzzle<*>::index) }
+            withType.groupBy { it.day to it.part }.values.map { it.maxBy(Puzzle<*>::index) }
         } else {
-            days
+            withType
         }
     }
 }
@@ -80,18 +89,19 @@ data class DefaultPuzzle<T>(
     override val day: PuzzleDay,
     override val part: Int,
     override val index: Int,
+    override val solutionType: SolutionType,
     override val resultType: Class<T>,
     val run: PuzzleInput.() -> T
 ) : Puzzle<T> {
     override fun runPuzzle(input: PuzzleInput): T = run(input)
 }
 
-inline fun <reified T> puzzle(name: String, part: Int = 0, resultType: Class<T> = T::class.java, noinline run: PuzzleInput.() -> T): Puzzle<T> {
+inline fun <reified T> puzzle(name: String, part: Int = 0, solutionType: SolutionType, resultType: Class<T> = T::class.java, noinline run: PuzzleInput.() -> T): Puzzle<T> {
     if (part != lastPart) {
         lastPart = part
     }
     val index = allPuzzles[currentDay]?.count { it.part == part } ?: 0
-    return DefaultPuzzle(name, currentDay, part, index, resultType, run).also(allPuzzles::add)
+    return DefaultPuzzle(name, currentDay, part, index, solutionType, resultType, run).also(allPuzzles::add)
 }
 
 private inline fun <reified T> convertMethod(lookup: MethodHandles.Lookup, method: Method): T {
@@ -126,13 +136,20 @@ fun registerDay(day: PuzzleDay) {
                     name = it.name
                 }
                 if (name.isEmpty() && part == 2) name = "Part Two"
-                puzzle(name, part, method.returnType as Class<Any?>, convertMethod<Function1<PuzzleInput, Any?>>(lookup, method))
+                var solutionType = method.getAnnotation(Solution::class.java)?.type ?: SolutionType.REGULAR
+                if (method.returnType == Visualization::class.java) solutionType = SolutionType.VISUALIZATION
+                puzzle(name, part, solutionType, method.returnType as Class<Any?>, convertMethod<Function1<PuzzleInput, Any?>>(lookup, method))
             }
         }
     } catch (ignored: ClassNotFoundException) {}
 }
 
-data class PuzzleFilter(val days: SortedSet<PuzzleDay>, val latestOnly: Boolean = false, val bestVersionOnly: Boolean = false) {
+data class PuzzleFilter(
+    val days: SortedSet<PuzzleDay>,
+    val latestOnly: Boolean = false,
+    val bestVersionOnly: Boolean = false,
+    val solutionTypes: EnumSet<SolutionType> = EnumSet.of(SolutionType.REGULAR, SolutionType.C2)
+) {
     companion object {
         fun all() = PuzzleFilter((2015..LocalDate.now().year).flatMap { year -> (1..25).map { day -> PuzzleDay(year, day) } }.toSortedSet(), false)
         fun year(year: Int) = PuzzleFilter((1..25).map { PuzzleDay(year, it) }.toSortedSet(), false)

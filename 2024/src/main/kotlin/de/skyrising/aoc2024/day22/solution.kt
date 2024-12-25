@@ -31,6 +31,7 @@ fun PuzzleInput.part1() = lines.sumOf {
 private val SPECIES = IntVector.SPECIES_PREFERRED
 
 @PuzzleName("Monkey Market")
+@Solution(SolutionType.C2)
 fun PuzzleInput.part1vec(): Any {
     val l = lines
     val count = l.size
