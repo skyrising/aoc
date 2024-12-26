@@ -41,31 +41,25 @@ fun main(args: Array<String>) {
     val puzzlesToRun = allPuzzles.filter(filter)
     var totalTime = 0.0
     var totalVariance = 0.0
-    for (puzzle in puzzlesToRun) {
-        val input = puzzle.getRealInput()
-        if (puzzle.resultType == Visualization::class.java) {
-            input.use(puzzle::runPuzzle)
-            continue
-        }
+    fun runOne(input: PuzzleInput, puzzle: Puzzle<*, *>, prepare: Boolean = false) {
         try {
             val benchmark = BENCHMARK_MODE
-            if (benchmark != null) {
+            val result = if (benchmark != null) {
                 input.benchmark = true
                 var warmup = WARMUP
                 var measure = RUNS
                 val mode = when (benchmark) {
                     is BenchMode.Iterations -> {
-                        if (QUICK_PART2 && puzzle.part == 2) {
+                        if (QUICK_PART2 && !prepare && puzzle.part == 2) {
                             warmup = 1
                             measure = 3
                         }
-                        BenchMode.Iterations(if (QUICK_PART2 && puzzle.part == 2) 3 else benchmark.iterations)
+                        BenchMode.Iterations(if (QUICK_PART2 && !prepare && puzzle.part == 2) 3 else benchmark.iterations)
                     }
                     is BenchMode.Duration -> benchmark
                 }
                 val (result, avg, stddev) = benchmark(warmup, measure, mode) { a, b ->
-                    input.use { puzzle.runPuzzle(input) }.also {
-                        input.benchmark = true
+                    input.use { if (prepare) puzzle.prepareInput(input) else puzzle.runPuzzle(input) }.also {
                         if (b == 0) {
                             print(if (a < 0) '-' else '+')
                         }
@@ -74,18 +68,34 @@ fun main(args: Array<String>) {
                 print("\r\u001b[K")
                 totalTime += avg
                 totalVariance += stddev * stddev
-                println(formatResult(puzzle, result, avg, stddev))
+                println(formatResult(puzzle, result, prepare, avg, stddev))
+                result
             } else {
                 val start = System.nanoTime()
-                val result = input.use { puzzle.runPuzzle(input) }
+                val result = input.use { if (prepare) puzzle.prepareInput(input) else puzzle.runPuzzle(input) }
                 val time = (System.nanoTime() - start) / 1000.0
                 totalTime += time
-                println(formatResult(puzzle, result, time))
+                println(formatResult(puzzle, result, prepare, time))
+                result
+            }
+            if (prepare) {
+                input.prepared = lazyOf(result)
             }
         } catch (e: Exception) {
             println(formatResult(puzzle, e))
             e.printStackTrace()
         }
+    }
+    for (puzzle in puzzlesToRun) {
+        val input = puzzle.getRealInput()
+        if (puzzle.resultType == Visualization::class.java) {
+            input.use(puzzle::runPuzzle)
+            continue
+        }
+        if (puzzle is DefaultPuzzle<*, *> && puzzle.prepare != null && input.prepared == null) {
+            runOne(input, puzzle, true)
+        }
+        runOne(input, puzzle)
     }
     println(buildString {
         append("Done: ")
@@ -105,17 +115,18 @@ private fun formatTime(us: Double): String {
 
 const val NAME_LENGTH = 32
 const val RESULT_LENGTH = 19
-fun formatResult(puzzle: Puzzle<*>, result: Any?, us: Double = 0.0, stddev: Double? = null) = buildString {
+fun formatResult(puzzle: Puzzle<*, *>, result: Any?, prepare: Boolean = false, us: Double = 0.0, stddev: Double? = null) = buildString {
     append(puzzle.day.year)
     append('/')
     append("%02d".format(puzzle.day.day))
     append('/')
-    append(puzzle.part)
+    append(if (prepare) 0 else puzzle.part)
     append('.')
     append(puzzle.index)
     append(' ')
-    append(puzzle.name)
-    repeat(NAME_LENGTH - puzzle.name.length) { append(' ') }
+    val name = if (prepare) "Preparing Input" else puzzle.name
+    append(name)
+    repeat(NAME_LENGTH - name.length) { append(' ') }
     append(": ")
     if (result is Throwable) {
         append(result.javaClass.simpleName)
@@ -129,7 +140,7 @@ fun formatResult(puzzle: Puzzle<*>, result: Any?, us: Double = 0.0, stddev: Doub
         } else {
             append("?")
         }
-        if (PRINT_RESULT) {
+        if (PRINT_RESULT && !prepare) {
             append(' ')
             val resultString = result.toString()
             if (resultString.length <= RESULT_LENGTH) {

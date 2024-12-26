@@ -34,51 +34,66 @@ val test2 = TestInput("""
 ########
 """)
 
-fun buildGraph(grid: CharGrid): Triple<Graph<Pair<Vec2i, Direction>, Nothing>, Pair<Vec2i, Direction>, Vec2i> {
-    val start = grid.where { it == 'S' }.first() to Direction.E
-    val end = grid.find { it.charValue == 'E' }!!.key
-    return Triple(Graph.build {
-        val queue = ArrayDeque<Pair<Vec2i, Direction>>()
-        val visited = mutableSetOf<Pair<Vec2i, Direction>>()
-        queue.add(start)
-        while (queue.isNotEmpty()) {
-            val v = queue.removeFirst()
-            if (!visited.add(v)) continue
-            val (fromPos, dir) = v
-            for (d in listOf(dir.rotateCW(), dir.rotateCCW())) {
-                if (grid[fromPos + d] == '#') continue
-                edge(fromPos to dir, fromPos to d, 1000)
-                queue.add(fromPos to d)
-            }
-            val toPos = fromPos + dir
-            if (grid[toPos] != '#') {
-                edge(fromPos to dir, toPos to dir, 1)
-                queue.add(toPos to dir)
-            }
-        }
-        simplify()
-    }, start, end)
+class VecDirPair(private val longValue: Long) {
+    constructor(pos: Vec2i, dir: Direction): this((pos.longValue shl 2) or dir.ordinal.toLong())
+    val pos get() = Vec2i(longValue shr 2)
+    val dir get() = Direction((longValue and 3).toInt())
+    operator fun component1() = pos
+    operator fun component2() = dir
+
+    override fun hashCode(): Int = longValue.toInt() xor (longValue shr 15).toInt()
+    override fun equals(other: Any?): Boolean {
+        return this === other || other is VecDirPair && other.longValue == longValue
+    }
+
+    override fun toString() = "($pos, $dir)"
 }
 
-fun PuzzleInput.part1(): Any {
-    val (g, start, end) = buildGraph(charGrid)
-    return g.dijkstra(start) { (pos, _) -> pos == end }!!.sumOf { it.weight }
+inline fun forEachOutgoing(grid: CharGrid, fromPos: Vec2i, dir: Direction, cb: (Vec2i, Direction, Int) -> Unit) {
+    val dLeft = dir.rotateCCW()
+    if (grid[fromPos + dLeft] != '#') {
+        cb(fromPos, dLeft, 1000)
+    }
+    val dRight = dir.rotateCW()
+    if (grid[fromPos + dRight] != '#') {
+        cb(fromPos, dRight, 1000)
+    }
+    val toPos = fromPos + dir
+    if (grid[toPos] != '#') {
+        cb(toPos, dir, 1)
+    }
 }
 
-fun PuzzleInput.part2(): Any {
+inline fun forEachIncoming(grid: CharGrid, toPos: Vec2i, dir: Direction, cb: (Vec2i, Direction, Int) -> Unit) {
+    val dLeft = dir.rotateCCW()
+    if (grid[toPos - dLeft] != '#') {
+        cb(toPos, dLeft, 1000)
+    }
+    val dRight = dir.rotateCW()
+    if (grid[toPos - dRight] != '#') {
+        cb(toPos, dRight, 1000)
+    }
+    val fromPos = toPos - dir
+    if (grid[fromPos] != '#') {
+        cb(fromPos, dir, 1)
+    }
+}
+
+fun PuzzleInput.prepare(): Pair<Int, Int> {
     val grid = charGrid
-    val (g, start, end) = buildGraph(grid)
+    val start = VecDirPair(grid.where { it == 'S' }.first(), Direction.E)
+    val end = grid.find { it.charValue == 'E' }!!.key
 
-    val unvisited = PriorityQueue<VertexWithDistance<Pair<Vec2i, Direction>>>()
+    val unvisited = PriorityQueue<VertexWithDistance<VecDirPair>>()
     unvisited.add(VertexWithDistance(start, 0))
-    val dist = Object2IntOpenHashMap<Pair<Vec2i, Direction>>()
+    val dist = Object2IntOpenHashMap<VecDirPair>()
     dist.put(start, 0)
     while (unvisited.isNotEmpty()) {
         val (current, curDist) = unvisited.poll()
         if (curDist != dist.getOrDefault(current as Any, -1)) continue
-        for (e in g.getOutgoing(current)) {
-            val v = e.to
-            val alt = curDist + e.weight
+        forEachOutgoing(grid, current.pos, current.dir) { pos, dir, weight ->
+            val v = VecDirPair(pos, dir)
+            val alt = curDist + weight
             if (alt < dist.getOrDefault(v as Any, Int.MAX_VALUE)) {
                 dist[v] = alt
                 unvisited.add(VertexWithDistance(v, alt))
@@ -86,22 +101,29 @@ fun PuzzleInput.part2(): Any {
         }
     }
 
-    val queue = ArrayDeque<Pair<Vec2i, Direction>>()
-    val visited = mutableSetOf<Pair<Vec2i, Direction>>()
+    val queue = ArrayDeque<VecDirPair>()
+    val visited = mutableSetOf<VecDirPair>()
     for (dir in Direction.values) {
-        queue.add(end to dir)
+        queue.add(VecDirPair(end, dir))
     }
     while (queue.isNotEmpty()) {
         val v = queue.removeLast()
         if (!visited.add(v)) continue
         val costTo = dist.getInt(v)
-        for (e in g.getIncoming(v)) {
-            val costFrom = dist.getInt(e.from)
-            val onBestPath = costFrom + e.weight <= costTo
-            if (!onBestPath) continue
-            grid[e.from.first lineTo e.to.first] = 'O'
-            queue.add(e.from)
+        forEachIncoming(grid, v.pos, v.dir) { fromPos, fromDir, weight ->
+            val vFrom = VecDirPair(fromPos, fromDir)
+            val costFrom = dist.getInt(vFrom)
+            val onBestPath = costFrom + weight <= costTo
+            if (onBestPath) {
+                grid[v.pos] = 'O'
+                queue.add(vFrom)
+            }
         }
     }
-    return grid.count { it == 'O' }
+    grid[start.pos] = 'O'
+    return Direction.values.minOf { dist.getOrDefault(VecDirPair(end, it) as Any, Int.MAX_VALUE) } to  grid.count { it == 'O' }
 }
+
+fun Pair<Int, Int>.part1() = first
+
+fun Pair<Int, Int>.part2() = second

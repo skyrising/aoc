@@ -31,6 +31,7 @@ interface PuzzleInput : AutoCloseable {
     val charGrid get() = CharGrid.parse(lines)
     val viz: Visualization
     val hasViz: Boolean
+    var prepared: Lazy<Any?>?
 
     fun log(value: Any) {
         if (benchmark) return
@@ -69,6 +70,7 @@ class RealInput(override val day: PuzzleDay, override val input: ByteBuffer, ove
             return lazyViz!!
         }
     override val hasViz: Boolean get() = lazyViz != null
+    override var prepared: Lazy<Any?>? = null
 
     override fun close() {
         if (hasViz) viz.close()
@@ -86,6 +88,7 @@ class TestInput(str: String) : PuzzleInput {
     override val day: PuzzleDay get() = throw UnsupportedOperationException()
     override val viz: Visualization get() = throw UnsupportedOperationException()
     override val hasViz: Boolean get() = false
+    override var prepared: Lazy<Any?>? = null
     override fun close() {}
 }
 

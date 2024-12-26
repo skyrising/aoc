@@ -14,10 +14,8 @@ val test = TestInput("""
 3   3
 """)
 
-fun PuzzleInput.part1() =
-    lines.map { it.ints().toPair() }.pivot().map { it.sorted() }.pivot().sumOf { (it.second - it.first).absoluteValue }
+fun PuzzleInput.prepare() = lines.map { it.ints().toPair() }.pivot()
 
-fun PuzzleInput.part2(): Any {
-    val (firstList, secondList) = lines.map { it.ints().toPair() }.pivot()
-    return firstList.sumOf { a -> a * secondList.count { it == a } }
-}
+fun Pair<List<Int>, List<Int>>.part1() = map { it.sorted() }.pivot().sumOf { (it.second - it.first).absoluteValue }
+
+fun Pair<List<Int>, List<Int>>.part2() = first.sumOf { a -> a * second.count { it == a } }

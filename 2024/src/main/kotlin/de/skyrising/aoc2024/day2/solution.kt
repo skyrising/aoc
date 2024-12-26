@@ -6,6 +6,7 @@ import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.PuzzleName
 import de.skyrising.aoc.TestInput
 import de.skyrising.aoc.ints
+import it.unimi.dsi.fastutil.ints.IntList
 import kotlin.math.absoluteValue
 
 val test = TestInput("""
@@ -17,12 +18,26 @@ val test = TestInput("""
 1 3 6 7 9
 """)
 
-fun safe(report: List<Int>) = report.windowed(2).map { (a, b) -> b - a }.let { diffs ->
-    (diffs.all { it < 0 } || diffs.all { it > 0 }) && diffs.all { it.absoluteValue <= 3 }
+fun safe(report: List<Int>, skip: Int = -1): Boolean {
+    var allNegative = true
+    var allPositive = true
+    var i = if (skip == 0) 1 else 0
+    var a = report[i]
+    while (true) {
+        i += if (i + 1 == skip) 2 else 1
+        if (i >= report.size) break
+        val b = report[i]
+        val diff = b - a
+        if (diff <= 0) allPositive = false
+        if (diff >= 0) allNegative = false
+        if (diff.absoluteValue > 3) return false
+        a = b
+    }
+    return allNegative || allPositive
 }
 
-fun List<Int>.missingOne() = indices.asSequence().map { subList(0, it) + subList(it + 1, size) }
+fun PuzzleInput.prepare() = lines.map { it.ints() }
 
-fun PuzzleInput.part1() = lines.map { it.ints() }.count(::safe)
+fun List<IntList>.part1() = count(::safe)
 
-fun PuzzleInput.part2() = lines.map { it.ints() }.count { it.missingOne().any(::safe) }
+fun List<IntList>.part2() = count { it.indices.any { i -> safe(it, i) } }

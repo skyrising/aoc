@@ -6,6 +6,8 @@ import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.PuzzleName
 import de.skyrising.aoc.TestInput
 import de.skyrising.aoc.splitOnEmpty
+import it.unimi.dsi.fastutil.ints.IntArrayList
+import it.unimi.dsi.fastutil.ints.IntList
 
 val test = TestInput("""
 #####
@@ -49,17 +51,31 @@ val test = TestInput("""
 #####
 """)
 
-private fun fits(key: IntArray, lock: IntArray): Boolean {
-    return key.indices.all { key[it] + lock[it] <= 5 }
+fun PuzzleInput.prepare(): Pair<IntList, IntList> {
+    val locks = IntArrayList()
+    val keys = IntArrayList()
+    for (thing in lines.splitOnEmpty()) {
+        var p = 0
+        for (i in 1..5) {
+            for (j in 0..4) {
+                p = p shl 1
+                if (thing[i][j] == '#') p = p or 1
+            }
+        }
+        (if (thing[0] == "#####") locks else keys).add(p)
+    }
+    return locks to keys
 }
 
-fun PuzzleInput.part1(): Any {
-    val locks = mutableListOf<IntArray>()
-    val keys = mutableListOf<IntArray>()
-    for (thing in lines.splitOnEmpty()) {
-        (if (thing[0] == "#####") locks else keys).add(IntArray(5) {
-            (1..5).count { i -> thing[i][it] == '#' }
-        })
+fun Pair<IntList, IntList>.part1(): Int {
+    val (locks, keys) = this
+    var sum = 0
+    for (i in locks.indices) {
+        val lock = locks.getInt(i)
+        for (j in keys.indices) {
+            val key = keys.getInt(j)
+            if (key and lock == 0) sum++
+        }
     }
-    return locks.sumOf { keys.count { key -> fits(key, it) } }
+    return sum
 }

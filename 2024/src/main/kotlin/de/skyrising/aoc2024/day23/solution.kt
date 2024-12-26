@@ -50,7 +50,7 @@ td-yn
 
 private const val SHIFT = 8
 
-private fun makeGraph(lines: List<String>): Int2ObjectMap<IntSet> {
+fun PuzzleInput.prepare(): Int2ObjectMap<IntSet> {
     val g = Int2ObjectOpenHashMap<IntSet>()
     for (line in lines) {
         val (a, b) = line.split2('-')!!
@@ -69,8 +69,7 @@ private fun makeTriple(a: Int, b: Int, c: Int): Long {
     return (n1.toLong() shl (SHIFT * 4)) or (n2.toLong() shl (SHIFT * 2)) or n3.toLong()
 }
 
-fun PuzzleInput.part1(): Any {
-    val g = makeGraph(lines)
+fun part1(g: Int2ObjectMap<IntSet>): Any {
     val triples = LongOpenHashSet()
     for ((v, vInc) in g) {
         if (v ushr SHIFT != 't'.code) continue
@@ -83,8 +82,7 @@ fun PuzzleInput.part1(): Any {
     return triples.size
 }
 
-fun PuzzleInput.part2(): Any {
-    val g = makeGraph(lines)
+fun part2(g: Int2ObjectMap<IntSet>): Any {
     var biggestLan = IntSet.of()
     for ((v, vInc) in g) {
         val lan = IntOpenHashSet()

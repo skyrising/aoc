@@ -41,6 +41,8 @@ ABBAAA
 AAAAAA
 """)
 
+typealias Prepared = Pair<CharGrid, List<Set<Vec2i>>>
+
 fun CharGrid.regions(): List<Set<Vec2i>> {
     val regions = mutableListOf<Set<Vec2i>>()
     val visited = mutableSetOf<Vec2i>()
@@ -54,9 +56,13 @@ fun CharGrid.regions(): List<Set<Vec2i>> {
     return regions
 }
 
-fun PuzzleInput.part1(): Any {
+fun PuzzleInput.prepare(): Prepared {
     val grid = charGrid
-    val regions = grid.regions()
+    return grid to grid.regions()
+}
+
+fun Prepared.part1(): Any {
+    val (grid, regions) = this
     val fencing = IntArray(regions.size) {
         regions[it].sumOf { p ->
             val c = grid[p]
@@ -80,8 +86,7 @@ data class Side(val start: Vec2i, val end: Vec2i, val direction: Direction) {
     }
 }
 
-fun CharGrid.sideBasedPrice(): Int {
-    val regions = regions()
+fun CharGrid.sideBasedPrice(regions: List<Set<Vec2i>>): Int {
     return regions.sumOf { r ->
         // crucial to not split up some sides when the region has holes
         val region = r.sortedWith(compareBy({ it.y }, { it.x }))
@@ -106,4 +111,4 @@ fun CharGrid.sideBasedPrice(): Int {
     }
 }
 
-fun PuzzleInput.part2() = charGrid.sideBasedPrice()
+fun Prepared.part2() = first.sideBasedPrice(second)

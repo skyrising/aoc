@@ -46,18 +46,20 @@ fun orderComparator(order0: List<IntList>): (Int, Int) -> Int {
     }}
 }
 
-fun PuzzleInput.part1(): Int {
-    val (order0, updates) = lines.map { it.ints() }.splitOnEmpty(2)
-    return updates.sumOf { update ->
-        val sorted = update.sortedWith(orderComparator(order0))
-        if (update == sorted) update.middleElement else 0
+typealias Prepared = List<Pair<List<Int>, List<Int>>>
+
+fun PuzzleInput.prepare(): Prepared {
+    val (order, updates) = lines.map { it.ints() }.splitOnEmpty(2)
+    return updates.map { update ->
+        val sorted = update.sortedWith(orderComparator(order))
+        update to sorted
     }
 }
 
-fun PuzzleInput.part2(): Int {
-    val (order0, updates) = lines.map { it.ints() }.splitOnEmpty(2)
-    return updates.sumOf { update ->
-        val sorted = update.sortedWith(orderComparator(order0))
-        if (update != sorted) sorted.middleElement else 0
-    }
+fun Prepared.part1() = sumOf { (update, sorted) ->
+    if (update == sorted) update.middleElement else 0
+}
+
+fun Prepared.part2() = sumOf { (update, sorted) ->
+    if (update != sorted) sorted.middleElement else 0
 }

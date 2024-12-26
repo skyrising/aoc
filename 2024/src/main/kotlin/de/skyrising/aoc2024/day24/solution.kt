@@ -110,7 +110,7 @@ class WireSet(val expressions: MutableMap<String, Expression>) {
     }
 }
 
-private fun parse(lines: List<String>): WireSet {
+fun PuzzleInput.prepare(): WireSet {
     val (start, ops) = lines.splitOnEmpty(2)
     val expressions = mutableMapOf<String, Expression>()
     for (line in start) {
@@ -125,13 +125,12 @@ private fun parse(lines: List<String>): WireSet {
     return WireSet(expressions)
 }
 
-fun PuzzleInput.part1(): Any {
-    val wireSet = parse(lines)
-    return wireSet.z.mapIndexed { idx, (_, expr) -> expr.get(wireSet).toInt().toLong() shl idx }.sum()
+fun WireSet.part1(): Any {
+    return z.mapIndexed { idx, (_, expr) -> expr.get(this).toInt().toLong() shl idx }.sum()
 }
 
-fun PuzzleInput.part2(): Any {
-    val wireSet = parse(lines)
+fun part2(prepared: WireSet): Any {
+    val wireSet = WireSet(LinkedHashMap(prepared.expressions))
     // TODO: detect this automatically
     wireSet.swap("wkr", "nvr")
     var carryOut: String? = null

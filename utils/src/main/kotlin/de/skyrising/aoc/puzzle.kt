@@ -33,7 +33,7 @@ enum class SolutionType {
 }
 annotation class Solution(val type: SolutionType = SolutionType.REGULAR)
 
-interface Puzzle<T> : Comparable<Puzzle<T>> {
+interface Puzzle<T, P> : Comparable<Puzzle<T, P>> {
     val name: String
     val day: PuzzleDay
     val part: Int
@@ -41,10 +41,11 @@ interface Puzzle<T> : Comparable<Puzzle<T>> {
     val resultType: Class<T>
     val solutionType: SolutionType
     fun getRealInput() = getInput(day.year, day.day)
+    fun prepareInput(input: PuzzleInput): P
     fun runPuzzle(input: PuzzleInput): T
 
-    override fun compareTo(other: Puzzle<T>) =
-        compareBy<Puzzle<*>>(
+    override fun compareTo(other: Puzzle<T, P>) =
+        compareBy<Puzzle<*, *>>(
             { it.day },
             { it.part },
             { it.name },
@@ -53,19 +54,19 @@ interface Puzzle<T> : Comparable<Puzzle<T>> {
 }
 
 @JvmInline
-value class PuzzleCollection(private val puzzles: SortedMap<PuzzleDay, MutableList<Puzzle<*>>> = TreeMap()) : SortedMap<PuzzleDay, MutableList<Puzzle<*>>> by puzzles {
-    operator fun get(year: Int, day: Int): List<Puzzle<*>> = this[PuzzleDay(year, day)] ?: throw NoSuchElementException()
+value class PuzzleCollection(private val puzzles: SortedMap<PuzzleDay, MutableList<Puzzle<*, *>>> = TreeMap()) : SortedMap<PuzzleDay, MutableList<Puzzle<*, *>>> by puzzles {
+    operator fun get(year: Int, day: Int): List<Puzzle<*, *>> = this[PuzzleDay(year, day)] ?: throw NoSuchElementException()
     operator fun get(range: ClosedRange<PuzzleDay>) = PuzzleCollection(subMap(range.start, range.endInclusive + 1))
     operator fun get(year: Int) = this[PuzzleDay(year, 1)..PuzzleDay(year, 25)]
 
-    fun add(puzzle: Puzzle<*>) {
+    fun add(puzzle: Puzzle<*, *>) {
         puzzles.computeIfAbsent(puzzle.day) { mutableListOf() }.run {
             add(puzzle)
             sortBy { it.part }
         }
     }
 
-    fun filter(filter: PuzzleFilter): List<Puzzle<*>> {
+    fun filter(filter: PuzzleFilter): List<Puzzle<*, *>> {
         val days = if (filter.latestOnly) {
             puzzles.reversed().entries.find { it.key in filter.days && it.key.released }?.value ?: emptyList()
         } else {
@@ -73,7 +74,7 @@ value class PuzzleCollection(private val puzzles: SortedMap<PuzzleDay, MutableLi
         }
         val withType = days.filter { it.solutionType in filter.solutionTypes }
         return if (filter.bestVersionOnly) {
-            withType.groupBy { it.day to it.part }.values.map { it.maxBy(Puzzle<*>::index) }
+            withType.groupBy { it.day to it.part }.values.map { it.maxBy(Puzzle<*, *>::index) }
         } else {
             withType
         }
@@ -82,21 +83,28 @@ value class PuzzleCollection(private val puzzles: SortedMap<PuzzleDay, MutableLi
 
 val allPuzzles = PuzzleCollection()
 
-data class DefaultPuzzle<T>(
+data class DefaultPuzzle<T, P>(
     override val name: String,
     override val day: PuzzleDay,
     override val part: Int,
     override val index: Int,
     override val solutionType: SolutionType,
     override val resultType: Class<T>,
-    val run: PuzzleInput.() -> T
-) : Puzzle<T> {
-    override fun runPuzzle(input: PuzzleInput): T = run(input)
-}
-
-inline fun <reified T> puzzle(day: PuzzleDay, name: String, part: Int = 0, solutionType: SolutionType, resultType: Class<T> = T::class.java, noinline run: PuzzleInput.() -> T): Puzzle<T> {
-    val index = allPuzzles[day]?.count { it.part == part } ?: 0
-    return DefaultPuzzle(name, day, part, index, solutionType, resultType, run).also(allPuzzles::add)
+    val run: P.() -> T,
+    val prepare: (PuzzleInput.() -> P)? = null,
+) : Puzzle<T, P> {
+    override fun prepareInput(input: PuzzleInput): P {
+        return if (prepare == null) this as P else prepare.invoke(input)
+    }
+    override fun runPuzzle(input: PuzzleInput): T {
+        val prepared = if (prepare != null) {
+            if (input.prepared == null) input.prepared = lazy { prepare.invoke(input) }
+            input.prepared!!.value
+        } else {
+            input
+        }
+        return run(prepared as P)
+    }
 }
 
 private inline fun <reified T> convertMethod(lookup: MethodHandles.Lookup, method: Method): T {
@@ -121,14 +129,30 @@ fun registerDay(day: PuzzleDay) {
         val lookup = MethodHandles.lookup()
         for (method in cls.methods) {
             if (AccessFlag.STATIC !in method.accessFlags() || !method.name.startsWith("part")) continue
-            if (method.parameterCount == 1 && method.parameterTypes[0] == PuzzleInput::class.java) {
+            if (method.parameterCount == 1) {
                 var part = 0
                 if (method.name.startsWith("part")) part = method.name[4].digitToInt()
                 var name = dayName
                 if (part == 2) name = "Part Two"
                 var solutionType = method.getAnnotation(Solution::class.java)?.type ?: SolutionType.REGULAR
                 if (method.returnType == Visualization::class.java) solutionType = SolutionType.VISUALIZATION
-                puzzle(day, name, part, solutionType, method.returnType as Class<Any?>, convertMethod<Function1<PuzzleInput, Any?>>(lookup, method))
+                val index = allPuzzles[day]?.count { it.part == part } ?: 0
+                val runMethod: Any?.() -> Any? = convertMethod(lookup, method)
+                val prepareMethod: (PuzzleInput.() -> Any?)? = if (method.parameterTypes[0] == PuzzleInput::class.java) {
+                    null
+                } else {
+                    convertMethod(lookup, cls.getMethod("prepare", PuzzleInput::class.java))
+                }
+                DefaultPuzzle(
+                    name,
+                    day,
+                    part,
+                    index,
+                    solutionType,
+                    method.returnType as Class<Any?>,
+                    runMethod,
+                    prepareMethod
+                ).also(allPuzzles::add)
             }
         }
     } catch (ignored: ClassNotFoundException) {}

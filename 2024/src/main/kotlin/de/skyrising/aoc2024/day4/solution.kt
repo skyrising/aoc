@@ -2,7 +2,9 @@
 
 package de.skyrising.aoc2024.day4
 
-import de.skyrising.aoc.*
+import de.skyrising.aoc.PuzzleInput
+import de.skyrising.aoc.PuzzleName
+import de.skyrising.aoc.TestInput
 
 val test = TestInput("""
 MMMSXXMASM
@@ -21,9 +23,22 @@ fun PuzzleInput.part1(): Any {
     val grid = charGrid
     val search = "XMAS"
     return grid.where { it == search[0] }.sumOf { start ->
-        listOf(Vec2i.N, Vec2i.NE, Vec2i.E, Vec2i.SE, Vec2i.S, Vec2i.SW, Vec2i.W, Vec2i.NW).count { dir ->
-            start.ray(dir, search.length).allIndexed { index, pos -> pos in grid && grid[pos] == search[index] }
+        val startX = start.x
+        val startY = start.y
+        var count = 0
+        for (yOff in -1..1) {
+            val yS = startY + yOff * 3
+            for (xOff in -1..1) {
+                if (xOff == 0 && yOff == 0) continue
+                val xS = startX + xOff * 3
+                if (!grid.contains(xS, yS)) continue
+                if (grid[xS, yS] != 'S') continue
+                if (grid[startX + xOff * 2, startY + yOff * 2] != 'A') continue
+                if (grid[startX + xOff, startY + yOff] != 'M') continue
+                count++
+            }
         }
+        count
     }
 }
 
