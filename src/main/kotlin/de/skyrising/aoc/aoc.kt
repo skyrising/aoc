@@ -2,6 +2,9 @@ package de.skyrising.aoc
 
 import de.skyrising.aoc.visualization.Visualization
 import java.util.*
+import kotlin.io.path.Path
+import kotlin.io.path.exists
+import kotlin.io.path.forEachLine
 import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -11,6 +14,8 @@ const val BENCHMARK = false
 var BENCHMARK_MODE: BenchMode? = if (BENCHMARK) BenchMode.Duration(100.milliseconds) else null
 const val QUICK_PART2 = true
 const val PRINT_RESULT = true
+
+val RESULTS = mutableMapOf<PuzzleDay, List<String>>()
 
 fun buildFilter(args: MutableList<String>): PuzzleFilter {
     var filter = PuzzleFilter.all()
@@ -31,6 +36,16 @@ fun buildFilter(args: MutableList<String>): PuzzleFilter {
 }
 
 fun main(args: Array<String>) {
+    val resultsFile = Path("results.txt")
+    if (resultsFile.exists()) {
+        resultsFile.forEachLine {
+            val line = it.trim()
+            if (line.isEmpty()) return@forEachLine
+            val values = line.split(' ')
+            val (year, day) = values.take(2)
+            RESULTS[PuzzleDay(year.toInt(), day.toInt())] = values.slice(2..values.lastIndex)
+        }
+    }
     var filter = buildFilter(args.toMutableList())
     filter = if (!BENCHMARK) {
         filter.copy(solutionTypes = filter.solutionTypes - SolutionType.C2)
@@ -113,8 +128,10 @@ private fun formatTime(us: Double): String {
     return "%7.3fs ".format(ms / 1000)
 }
 
-const val NAME_LENGTH = 32
-const val RESULT_LENGTH = 19
+const val NAME_LENGTH = 38
+const val RESULT_LENGTH = 20
+const val CORRECT = "\u001B[32m✓\u001B[0m"
+const val INCORRECT = "\u001B[31m❌\u001B[0m"
 fun formatResult(puzzle: Puzzle<*, *>, result: Any?, prepare: Boolean = false, us: Double = 0.0, stddev: Double? = null) = buildString {
     append(puzzle.day.year)
     append('/')
@@ -132,6 +149,8 @@ fun formatResult(puzzle: Puzzle<*, *>, result: Any?, prepare: Boolean = false, u
         append(result.javaClass.simpleName)
         append(": ")
         append(result.message)
+        append(' ')
+        append(INCORRECT)
     } else {
         append(formatTime(us))
         append(" ± ")
@@ -148,6 +167,11 @@ fun formatResult(puzzle: Puzzle<*, *>, result: Any?, prepare: Boolean = false, u
                 append(resultString)
             } else {
                 append(resultString)
+            }
+            val correctResult = (RESULTS[puzzle.day] ?: listOf()).let { if (it.size >= puzzle.part) it[puzzle.part - 1] else null }
+            if (correctResult != null) {
+                append(' ')
+                append(if (resultString == correctResult) CORRECT else INCORRECT)
             }
         }
     }

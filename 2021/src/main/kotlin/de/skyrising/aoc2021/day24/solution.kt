@@ -43,6 +43,7 @@ fun solve(input: PuzzleInput, order: IntArray): String? {
 }
 
 data class AluSymbol(val value: String) {
+    val varIndex = value[0].code - 'w'.code
     val intValue = value.toIntOrNull()
 }
 class AluInstr(op: String, private vararg val args: AluSymbol) {
@@ -53,7 +54,7 @@ class AluInstr(op: String, private vararg val args: AluSymbol) {
 fun solveRecursive(instr: List<AluInstr>, cache: IntIntCache<String?>, order: IntArray, step: Int, z: Int): String? {
     for (input in order) {
         val state = State(0, 0, z, 0)
-        state[instr[step][0].value] = input
+        state[instr[step][0].varIndex] = input
         var i = step + 1
         while (true) {
             if (i == instr.size) {
@@ -69,15 +70,15 @@ fun solveRecursive(instr: List<AluInstr>, cache: IntIntCache<String?>, order: In
                     break
                 }
                 // aDd
-                'd' -> state[ins[0].value] = state[ins[0]] + state[ins[1]]
+                'd' -> state[ins[0].varIndex] = state[ins[0]] + state[ins[1]]
                 // mUl
-                'u' -> state[ins[0].value] = state[ins[0]] * state[ins[1]]
+                'u' -> state[ins[0].varIndex] = state[ins[0]] * state[ins[1]]
                 // dIv
-                'i' -> state[ins[0].value] = state[ins[0]] / state[ins[1]]
+                'i' -> state[ins[0].varIndex] = state[ins[0]] / state[ins[1]]
                 // mOd
-                'o' -> state[ins[0].value] = state[ins[0]] % state[ins[1]]
+                'o' -> state[ins[0].varIndex] = state[ins[0]] % state[ins[1]]
                 // eQl
-                'q' -> state[ins[0].value] = if (state[ins[0]] == state[ins[1]]) 1 else 0
+                'q' -> state[ins[0].varIndex] = if (state[ins[0]] == state[ins[1]]) 1 else 0
             }
             i++
         }
@@ -85,24 +86,21 @@ fun solveRecursive(instr: List<AluInstr>, cache: IntIntCache<String?>, order: In
     return null
 }
 
-data class State(var x: Int = 0, var y: Int = 0, var z: Int = 0, var w: Int = 0) {
+@JvmInline
+value class State(private val values: IntArray) {
+    val w get() = values[0]
+    val x get() = values[1]
+    val y get() = values[2]
+    val z get() = values[3]
+
+    constructor(x: Int, y: Int, z: Int, w: Int) : this(intArrayOf(w, x, y, z))
+
     operator fun get(index: AluSymbol): Int {
         val intValue = index.intValue
         if (intValue != null) return intValue
-        return when (index.value[0]) {
-            'x' -> x
-            'y' -> y
-            'z' -> z
-            'w' -> w
-            else -> throw IllegalArgumentException(index.value)
-        }
+        return values[index.varIndex]
     }
-    operator fun set(index: String, value: Int) {
-        when (index[0]) {
-            'x' -> x = value
-            'y' -> y = value
-            'z' -> z = value
-            'w' -> w = value
-        }
+    operator fun set(index: Int, value: Int) {
+        values[index] = value
     }
 }

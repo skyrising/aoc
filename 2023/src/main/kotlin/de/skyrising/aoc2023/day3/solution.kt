@@ -23,7 +23,7 @@ fun findNumbers(grid: CharGrid, pos: Vec2i, numbers: MutableMap<Vec2i, Int>) =
         val start = grid[0 until n.x, n.y].indexOfLast { !it.isDigit() } + 1
         numbers.getOrPut(Vec2i(start, n.y)) {
             val end = grid[n.x until grid.width, n.y].indexOfFirst { !it.isDigit() } + n.x - 1
-            grid[start..maxOf(n.x, end), n.y].toInt()
+            grid[start..maxOf(n.x, end), n.y].toInt().also { println("${n.y},$start-$end $it")}
         }
     }
 

@@ -20,7 +20,7 @@ fun PuzzleInput.part1(): Any? {
         g.edge(from, to, dist.toInt())
         g.edge(to, from, dist.toInt())
     }
-    val cities = g.getVertexes()
+    val cities = g.getVertexes().toList()
     for (c in cities) {
         g.edge(c, "__DUMMY__", 0)
         g.edge("__DUMMY__", c, 0)
@@ -35,7 +35,7 @@ fun PuzzleInput.part2(): Any? {
         g.edge(from, to, -dist.toInt())
         g.edge(to, from, -dist.toInt())
     }
-    val cities = g.getVertexes()
+    val cities = g.getVertexes().toList()
     for (c in cities) {
         g.edge(c, "__DUMMY__", 0)
         g.edge("__DUMMY__", c, 0)

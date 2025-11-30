@@ -6,9 +6,12 @@ plugins {
     kotlin("jvm")
 }
 
+val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
+val javaVersion = libs.findVersion("java").get().requiredVersion
+
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }
 
@@ -17,12 +20,12 @@ repositories {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.release.set(21)
+    options.release.set(javaVersion.toInt())
 }
 
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_21
-        freeCompilerArgs.add("-Xcontext-receivers")
+        jvmTarget = JvmTarget.fromTarget(javaVersion)
+        freeCompilerArgs.add("-Xcontext-parameters")
     }
 }

@@ -1,4 +1,4 @@
-@file:PuzzleName("")
+@file:PuzzleName("Scratchcards")
 
 package de.skyrising.aoc2023.day4
 

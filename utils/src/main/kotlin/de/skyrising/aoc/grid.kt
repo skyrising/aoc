@@ -64,7 +64,7 @@ abstract class Grid(val offsetX: Int, val offsetY: Int, val width: Int, val heig
         return y * width + x
     }
 
-    fun contains(x: Int, y: Int) = (x - offsetX) in 0 ..< width && (y - offsetX) in 0 ..< height
+    fun contains(x: Int, y: Int) = (x - offsetX) in 0 ..< width && (y - offsetY) in 0 ..< height
     operator fun contains(point: Vec2i) = contains(point.x, point.y)
 }
 
