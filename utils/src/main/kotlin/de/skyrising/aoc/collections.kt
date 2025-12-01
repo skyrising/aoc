@@ -1,5 +1,7 @@
 package de.skyrising.aoc
 
+import it.unimi.dsi.fastutil.ints.IntArrayList
+import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue
 
 class IntArrayDeque(capacity: Int) : IntPriorityQueue {
@@ -74,4 +76,28 @@ class IntArrayDeque(capacity: Int) : IntPriorityQueue {
         if (index < 0 || index >= size()) throw IndexOutOfBoundsException()
         return data[(start + index) % length]
     }
+}
+
+inline fun <T> List<T>.mapToInts(mapper: (T) -> Int): IntList {
+    val data = IntArray(size) { mapper(this[it]) }
+    return object : IntArrayList(data, true) {
+        init { size = a.size }
+    }
+}
+
+inline fun IntList.forEachInt(crossinline action: (Int) -> Unit) {
+    val it = intIterator()
+    while (it.hasNext()) action(it.nextInt())
+}
+
+inline fun IntList.sumOf(crossinline selector: (Int) -> Int): Int {
+    var sum = 0
+    forEachInt { sum += selector(it) }
+    return sum
+}
+
+inline fun IntList.count(crossinline predicate: (Int) -> Boolean): Int {
+    var count = 0
+    forEachInt { if (predicate(it)) count++ }
+    return count
 }

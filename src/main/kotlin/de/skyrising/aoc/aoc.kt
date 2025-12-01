@@ -9,7 +9,7 @@ import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 
 const val RUNS = 8
-const val WARMUP = 2
+const val WARMUP = 4
 const val BENCHMARK = false
 var BENCHMARK_MODE: BenchMode? = if (BENCHMARK) BenchMode.Duration(100.milliseconds) else null
 const val QUICK_PART2 = true

@@ -176,37 +176,30 @@ inline fun CharSequence.splitRanges(predicate: (Char) -> Boolean): List<IntRange
 
 fun ByteBuffer.toInt(from: Int = position(), to: Int = limit()) = toLong(from, to).toInt()
 
-fun ByteBuffer.toLong(from: Int = position(), to: Int = limit()): Long {
-    if (hasArray()) {
-        val offset = arrayOffset()
-        return array().toLong(from + offset, to + offset)
-    }
+inline val Int.isDigit get() = this >= 0 && this <= 9
+
+inline fun toLong(from: Int, to: Int, get: (Int) -> Byte): Long {
     var result = 0L
     var pow = 1L
     for (i in to - 1 downTo from) {
-        val c = this[i].toInt()
-        if (c == '-'.code) return -result
+        val c = get(i).toInt()
         val digit = c - '0'.code
-        if (digit < 0 || digit > 9) return result
+        if (!digit.isDigit) return digit.toSignum(-3) * result
         result += digit * pow
         pow *= 10
     }
     return result
 }
 
-fun ByteArray.toLong(from: Int, to: Int): Long {
-    var result = 0L
-    var pow = 1L
-    for (i in to - 1 downTo from) {
-        val c = this[i].toInt()
-        if (c == '-'.code) return -result
-        val digit = c - '0'.code
-        if (digit < 0 || digit > 9) return result
-        result += digit * pow
-        pow *= 10
+fun ByteBuffer.toLong(from: Int = position(), to: Int = limit()): Long {
+    if (hasArray()) {
+        val offset = arrayOffset()
+        return array().toLong(from + offset, to + offset)
     }
-    return result
+    return toLong(from, to) { this[it] }
 }
+
+fun ByteArray.toLong(from: Int, to: Int) = toLong(from, to) { this[it] }
 
 inline fun CharSequence.numberFormatException(beginIndex: Int, endIndex: Int, errorIndex: Int) =
     NumberFormatException("Error at index ${errorIndex - beginIndex} in: \"${subSequence(beginIndex, endIndex)}\"")
@@ -658,6 +651,13 @@ infix fun Int.minUntilMax(other: Int) = minOf(this, other) until maxOf(this, oth
 
 inline fun Boolean.toInt() = if (this) 1 else 0
 inline fun Boolean.toLong() = if (this) 1L else 0L
+
+inline val Int.isZeroInt get() = -((this or -this) shr 31)
+inline infix fun Byte.equalsToInt(other: Byte) = (this.toInt() xor other.toInt()).isZeroInt
+inline infix fun Int.equalsToInt(other: Int) = (this xor other).isZeroInt
+inline fun Int.toSignum(negative: Int) = (this equalsToInt negative) * -2 + 1
+inline fun Byte.toSignum(negative: Byte) = (this equalsToInt negative) * -2 + 1
+inline fun Int.ifBit(bit: Int) = this and -bit
 
 fun <T> List<T>.pairs(): Set<Pair<T, T>> {
     val pairs = HashSet<Pair<T, T>>(size * (size - 1))

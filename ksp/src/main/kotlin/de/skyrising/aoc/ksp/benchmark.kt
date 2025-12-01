@@ -27,17 +27,23 @@ class BenchmarkProcessorProvider : SymbolProcessorProvider {
                     if (!pkg.startsWith("$packageName.day")) continue
                     val day = pkg.substring(packageName.length + 4).toInt()
                     val parts = mutableMapOf<String, KSType>()
+                    var prepared: KSType? = null
                     for (decl in file.declarations) {
                         if (decl !is KSFunctionDeclaration) continue
-                        if (!decl.simpleName.asString().startsWith("part")) continue
                         val rec = decl.extensionReceiver?.element as? KSClassifierReference ?: continue
-                        if (rec.referencedName() != "PuzzleInput") continue
+                        if (decl.simpleName.asString() == "prepare" && rec.referencedName() == "PuzzleInput") {
+                            prepared = decl.returnType!!.resolve()
+                            continue
+                        }
+                        if (!decl.simpleName.asString().startsWith("part")) continue
+                        if (decl.extensionReceiver?.resolve() != prepared && rec.referencedName() != "PuzzleInput") continue
                         parts[decl.simpleName.asString()] = decl.returnType!!.resolve()
                     }
                     val benchClassName = ClassName(packageName, "BenchmarkDay$day")
                     val fileSpec = FileSpec.builder(benchClassName)
                         .apply {
                             for ((part, retType) in parts) if (!retType.isVisualization) addImport(file.packageName.asString(), part)
+                            if (prepared != null) addImport(file.packageName.asString(), "prepare")
                         }
                         .addType(TypeSpec.classBuilder(benchClassName)
                             .superclass(ClassName("de.skyrising.aoc", "BenchmarkBase"))
@@ -57,7 +63,11 @@ class BenchmarkProcessorProvider : SymbolProcessorProvider {
                                         //    .build())
                                         //returns(ClassName("kotlin", "Any").copy(nullable = true))
                                         returns(returnType.asClassName())
-                                        addStatement("return input.%N()", part)
+                                        if (prepared != null) {
+                                            addStatement("return input.prepare().%N()", part)
+                                        } else {
+                                            addStatement("return input.%N()", part)
+                                        }
                                     }.build())
                                 }
                             }
