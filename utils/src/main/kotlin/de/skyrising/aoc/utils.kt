@@ -828,21 +828,30 @@ val DIGIT_ONES = byteArrayOf(
     0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
 )
 
+private fun Int.prependIntChars(buf: ByteArray, index: Int): Int {
+    var i = this
+    var index = index
+    val o = DIGIT_ONES
+    val t = DIGIT_TENS
+    while (i <= -100) {
+        val q2 = i / 100
+        val r = (q2 * 100) - i
+        i = q2
+        buf[--index] = o[r]
+        buf[--index] = t[r]
+    }
+
+    buf[--index] = o[-i]
+    if (i < -9) buf[--index] = t[-i]
+    return index
+}
+
 fun Int.getChars(buf: ByteArray, index: Int): Int {
     var i = this
     var index = index
     val negative = (i < 0)
     if (!negative) i = -i
-    while (i <= -100) {
-        val q2 = i / 100
-        val r = (q2 * 100) - i
-        i = q2
-        buf[--index] = DIGIT_ONES[r]
-        buf[--index] = DIGIT_TENS[r]
-    }
-
-    buf[--index] = DIGIT_ONES[-i]
-    if (i < -9) buf[--index] = DIGIT_TENS[-i]
+    index = i.prependIntChars(buf, index)
     if (negative) buf[--index] = '-'.code.toByte()
     return index
 }
@@ -852,26 +861,16 @@ fun Long.getChars(buf: ByteArray, index: Int): Int {
     var index = index
     val negative = (i < 0)
     if (!negative) i = -i
-
+    val o = DIGIT_ONES
+    val t = DIGIT_TENS
     while (i <= Int.MIN_VALUE) {
         val q = i / 100
         val r = ((q * 100) - i).toInt()
         i = q
-        buf[--index] = DIGIT_ONES[r]
-        buf[--index] = DIGIT_TENS[r]
+        buf[--index] = o[r]
+        buf[--index] = t[r]
     }
-
-    var i2 = i.toInt()
-    while (i2 <= -100) {
-        val q2 = i2 / 100
-        val r = (q2 * 100) - i2
-        i2 = q2
-        buf[--index] = DIGIT_ONES[r]
-        buf[--index] = DIGIT_TENS[r]
-    }
-
-    buf[--index] = DIGIT_ONES[-i2]
-    if (i2 < -9) buf[--index] = DIGIT_TENS[-i2]
+    index = i.toInt().prependIntChars(buf, index)
     if (negative) buf[--index] = '-'.code.toByte()
     return index
 }

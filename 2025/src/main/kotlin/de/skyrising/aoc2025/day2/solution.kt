@@ -26,17 +26,19 @@ inline fun List<LongRange>.sumInvalid(crossinline predicate: (CharSequence) -> B
 }
 
 fun List<LongRange>.part1() = sumInvalid { s ->
-    if (s.length % 2 != 0) return@sumInvalid false
-    val l = s.length / 2
+    val len = s.length
+    if (len % 2 != 0) return@sumInvalid false
+    val l = len / 2
     for (i in 0 ..< l) if (s[i] != s[l + i]) return@sumInvalid false
     true
 }
 
 fun List<LongRange>.part2() = sumInvalid { s ->
-    outer@for (start in 1 ..< s.length) {
-        for (i in s.indices) {
+    val len = s.length
+    outer@for (start in 1 ..< len) {
+        for (i in 0 ..< len) {
             var j = start + i
-            if (j >= s.length) j -= s.length
+            if (j >= len) j -= len
             if (s[i] != s[j]) continue@outer
         }
         return@sumInvalid true

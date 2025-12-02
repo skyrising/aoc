@@ -18,7 +18,7 @@ abstract class BenchmarkBase(year: Int, day: Int) {
 
 data class BenchmarkResult(val result: Any?, val meanUs: Double, val stddevUs: Double)
 
-private inline fun benchmarkCommon(warmup: Int, measure: Int, run: (Int) -> Double): BenchmarkResult {
+inline fun benchmarkCommon(warmup: Int, measure: Int, run: (Int) -> Double): BenchmarkResult {
     val allTimes = DoubleArray(warmup + measure) { run(it - warmup) }
     val times = allTimes.copyOfRange(warmup, allTimes.size)
     val avg = times.average()
@@ -26,7 +26,7 @@ private inline fun benchmarkCommon(warmup: Int, measure: Int, run: (Int) -> Doub
     return BenchmarkResult(null, avg, stddev)
 }
 
-fun benchmark(warmup: Int, measure: Int, iterations: Int, block: (Int, Int) -> Any?): BenchmarkResult {
+inline fun benchmark(warmup: Int, measure: Int, iterations: Int, block: (Int, Int) -> Any?): BenchmarkResult {
     var result: Any? = null
     return benchmarkCommon(warmup, measure) { a ->
         measure(iterations) { b ->
@@ -35,7 +35,7 @@ fun benchmark(warmup: Int, measure: Int, iterations: Int, block: (Int, Int) -> A
     }.copy(result = result)
 }
 
-fun benchmark(warmup: Int, measure: Int, duration: Duration, block: (Int, Int) -> Any?): BenchmarkResult {
+inline fun benchmark(warmup: Int, measure: Int, duration: Duration, block: (Int, Int) -> Any?): BenchmarkResult {
     var result: Any? = null
     return benchmarkCommon(warmup, measure) { a ->
         var b = 0
@@ -50,7 +50,7 @@ sealed interface BenchMode {
     data class Duration(val duration: kotlin.time.Duration) : BenchMode
 }
 
-fun benchmark(warmup: Int, measure: Int, mode: BenchMode, block: (Int, Int) -> Any?) = when (mode) {
+inline fun benchmark(warmup: Int, measure: Int, mode: BenchMode, block: (Int, Int) -> Any?) = when (mode) {
     is BenchMode.Iterations -> benchmark(warmup, measure, mode.iterations, block)
     is BenchMode.Duration -> benchmark(warmup, measure, mode.duration, block)
 }
@@ -77,7 +77,9 @@ inline fun <T> measure(runs: Int, fn: (Int) -> T?): Double {
     return (System.nanoTime() - start) / (1000.0 * runs)
 }
 
-inline fun <T> runForDuration(duration: Duration, block: () -> T?): Pair<Long, Duration> {
+data class RunResult(val iterations: Long, val duration: Duration)
+
+inline fun <T> runForDuration(duration: Duration, block: () -> T?): RunResult {
     val timeout = Timeout(duration)
     timeout.start()
     val start = System.nanoTime()
@@ -86,7 +88,7 @@ inline fun <T> runForDuration(duration: Duration, block: () -> T?): Pair<Long, D
         iterations++
         blackhole(block())
     } while (!timeout.isDone)
-    return iterations to (System.nanoTime() - start).nanoseconds
+    return RunResult(iterations, (System.nanoTime() - start).nanoseconds)
 }
 
 inline fun <T> measureForDuration(duration: Duration, block: () -> T?): Double {
