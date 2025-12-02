@@ -10,25 +10,36 @@ val test = TestInput("""
     824824821-824824827,2121212118-2121212124
 """.replace(Regex("\\s"), ""))
 
-fun PuzzleInput.prepare() = string.replace('-', ';').longs().chunked(2) { it.toPair().toRange() }
+fun PuzzleInput.prepare() = string.trim().split(',').map { it.toLongRange() }
 
-fun List<LongRange>.part1(): Long {
-    return sumOf {
-        it.sumOf { v ->
-            val s = v.toString()
-            val l = s.length / 2
-            if (s.take(l) == s.substring(l)) v else 0
+inline fun List<LongRange>.sumInvalid(crossinline predicate: (CharSequence) -> Boolean): Long {
+    return mapParallel {
+        var sum = 0L
+        val bytes = ByteArray(19)
+        val cs = ByteView(bytes, bytes.size, bytes.size)
+        for (element in it) {
+            cs.start = element.getChars(bytes, 19)
+            if (predicate(cs)) sum += element
         }
-    }
+        sum
+    }.sum()
 }
 
-fun List<LongRange>.part2(): Long {
-    return sumOf {
-        it.sumOf { v ->
-            val s = v.toString()
-            (if ((1..s.length / 2).any { i ->
-                s.length % i == 0 && s.take(i).repeat(s.length / i) == s
-            }) v else 0)
+fun List<LongRange>.part1() = sumInvalid { s ->
+    if (s.length % 2 != 0) return@sumInvalid false
+    val l = s.length / 2
+    for (i in 0 ..< l) if (s[i] != s[l + i]) return@sumInvalid false
+    true
+}
+
+fun List<LongRange>.part2() = sumInvalid { s ->
+    outer@for (start in 1 ..< s.length) {
+        for (i in s.indices) {
+            var j = start + i
+            if (j >= s.length) j -= s.length
+            if (s[i] != s[j]) continue@outer
         }
+        return@sumInvalid true
     }
+    return@sumInvalid false
 }
