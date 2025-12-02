@@ -772,3 +772,6 @@ operator fun <T: Enum<T>> EnumSet<T>.minus(element: T) = if (element in this) {
 } else {
     this
 }
+
+fun Pair<Int, Int>.toRange() = first..second
+fun Pair<Long, Long>.toRange() = first..second
