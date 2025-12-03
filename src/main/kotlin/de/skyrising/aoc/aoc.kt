@@ -30,6 +30,7 @@ fun buildFilter(args: MutableList<String>): PuzzleFilter {
         null -> return filter.copy(latestOnly = true)
         "all" -> return filter
         "best" -> return filter.copy(bestVersionOnly = true)
+        "best-today" -> return filter.copy(latestOnly = true, bestVersionOnly = true)
     }
     val day = args.removeFirst().toInt()
     return PuzzleFilter(sortedSetOf(PuzzleDay(year, day)), solutionTypes = EnumSet.allOf(SolutionType::class.java))

@@ -874,3 +874,37 @@ fun Long.getChars(buf: ByteArray, index: Int): Int {
     if (negative) buf[--index] = '-'.code.toByte()
     return index
 }
+
+fun Long.stringSize(): Int {
+    var x = this
+    var d = 1
+    if (x >= 0) {
+        d = 0
+        x = -x
+    }
+    var p = -10L
+    for (i in 1..18) {
+        if (x > p) return i + d
+        p *= 10
+    }
+    return 19 + d
+
+}
+
+infix fun Long.pow(exp: Int) = when {
+    this == 1L -> 1
+    this == -1L -> if (exp and 1 == 0) 1 else -1
+    exp < 0 -> throw IllegalArgumentException("invalid exponent")
+    exp == 0 -> 1
+    else -> {
+        var ans = 1L
+        var base = this
+        var e = exp
+        while (e > 1) {
+            if (e and 1 == 1) ans *= base
+            e = e shr 1
+            base *= base
+        }
+        ans * base
+    }
+}
