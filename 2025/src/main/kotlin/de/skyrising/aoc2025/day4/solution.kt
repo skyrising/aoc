@@ -19,26 +19,25 @@ val test = TestInput("""
 @.@.@@@.@.
 """)
 
-fun PuzzleInput.part1(): Any {
+fun PuzzleInput.part1(): Int {
     val g = charGrid
     return g.positions.count {
         g[it] == '@' && it.eightNeighbors().count { n -> n in g && g[n] == '@' } < 4
     }
 }
 
-fun PuzzleInput.part2(): Any {
-    val g = charGrid.copy()
+fun PuzzleInput.part2(): Int {
+    val g = charGrid
     var removed = 0
-    while (true) {
-        var newRemoved = removed
-        g.positions.forEach {
-            if (g[it] == '@' && it.eightNeighbors().count { n -> n in g && g[n] == '@' } < 4) {
-                g[it] = '.'
-                newRemoved++
-            }
+    val todo = ArrayDeque(g.where { it == '@' })
+    while (todo.isNotEmpty()) {
+        val p = todo.removeLast()
+        if (p !in g) continue
+        if (g[p] == '@' && p.eightNeighbors().count { n -> n in g && g[n] == '@' } < 4) {
+            g[p] = '.'
+            removed++
+            todo.addAll(p.eightNeighbors())
         }
-        if (newRemoved == removed) break
-        removed = newRemoved
     }
     return removed
 }
