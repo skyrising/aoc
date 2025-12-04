@@ -53,6 +53,7 @@ fun main(args: Array<String>) {
     } else {
         filter.copy(solutionTypes = filter.solutionTypes - SolutionType.VISUALIZATION)
     }
+    //filter = filter.copy(solutionTypes = EnumSet.of(SolutionType.VISUALIZATION))
     registerFiltered(filter)
     val puzzlesToRun = allPuzzles.filter(filter)
     var totalTime = 0.0
