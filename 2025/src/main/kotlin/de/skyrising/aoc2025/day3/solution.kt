@@ -19,10 +19,10 @@ fun ByteBuffer.findBestJoltage(len: Int): Long {
     val data = array()
     var start = arrayOffset()
     val limit = start + limit()
-    for (i in 0 ..< len) {
-        var d = '0'.code.toByte()
-        val end = limit - len + i
-        for (j in start..end) {
+    for (i in len downTo 1) {
+        var d = data[start]
+        val end = limit - i
+        for (j in start+1..end) {
             val c = data[j]
             if (c > d) {
                 d = c
