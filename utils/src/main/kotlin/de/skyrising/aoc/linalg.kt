@@ -31,6 +31,29 @@ value class Direction(val ordinal: Int) {
     }
 }
 
+inline fun fourNeighbors(x: Int, y: Int, action: (Int,Int) -> Unit) {
+    action(x, y - 1)
+    action(x + 1, y)
+    action(x, y + 1)
+    action(x - 1, y)
+}
+
+inline fun fiveNeighbors(x: Int, y: Int, action: (Int,Int) -> Unit) {
+    fourNeighbors(x, y, action)
+    action(x, y)
+}
+
+inline fun eightNeighbors(x: Int, y: Int, action: (Int,Int) -> Unit) {
+    action(x, y - 1)
+    action(x + 1, y - 1)
+    action(x + 1, y)
+    action(x + 1, y + 1)
+    action(x, y + 1)
+    action(x - 1, y + 1)
+    action(x - 1, y)
+    action(x - 1, y - 1)
+}
+
 @JvmInline
 value class Vec2i(val longValue: Long): HasBoundingBox2i {
     constructor(x: Int, y: Int): this(packToLong(x, y))
@@ -78,8 +101,11 @@ value class Vec2i(val longValue: Long): HasBoundingBox2i {
     val dir inline get() = if (x == 0) if (y < 0) Direction.N else Direction.S else if (x < 0) Direction.W else Direction.E
 
     fun fourNeighbors() = arrayOf(north, east, south, west)
+    inline fun fourNeighbors(action: (Int,Int) -> Unit) = fourNeighbors(x, y, action)
     fun fiveNeighbors() = arrayOf(north, east, south, west, this)
+    inline fun fiveNeighbors(action: (Int,Int) -> Unit) = fiveNeighbors(x, y, action)
     fun eightNeighbors() = arrayOf(north, northEast, east, southEast, south, southWest, west, northWest)
+    fun eightNeighbors(action: (Int,Int) -> Unit) = eightNeighbors(x, y, action)
 
     fun withZ(z: Int) = Vec3i(x, y, z)
 

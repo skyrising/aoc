@@ -2,9 +2,8 @@
 
 package de.skyrising.aoc2025.day4
 
-import de.skyrising.aoc.PuzzleInput
-import de.skyrising.aoc.PuzzleName
-import de.skyrising.aoc.TestInput
+import de.skyrising.aoc.*
+import it.unimi.dsi.fastutil.longs.LongArrayList
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
 
@@ -21,24 +20,35 @@ val test = TestInput("""
 @.@.@@@.@.
 """)
 
+fun CharGrid.countPaperNeighbours(x: Int, y: Int): Int {
+    var count = 0
+    eightNeighbors(x, y) { x, y ->
+        if (contains(x, y) && this[x, y] == '@') count++
+    }
+    return count
+}
+
 fun PuzzleInput.part1(): Int {
     val g = charGrid
-    return g.positions.count {
-        g[it] == '@' && it.eightNeighbors().count { n -> n in g && g[n] == '@' } < 4
+    var count = 0
+    g.forEachPosition { x, y ->
+        if (g[x, y] == '@' && g.countPaperNeighbours(x, y) < 4) count++
     }
+    return count
 }
 
 fun PuzzleInput.part2(): Int {
     val g = charGrid
     var removed = 0
-    val todo = ArrayDeque(g.where { it == '@' })
+    val todo = LongArrayList(g.data.size)
+    g.forEachPosition { x, y -> if (g[x, y] == '@') todo.add(packToLong(x, y)) }
     while (todo.isNotEmpty()) {
-        val p = todo.removeLast()
-        if (p !in g) continue
-        if (g[p] == '@' && p.eightNeighbors().count { n -> n in g && g[n] == '@' } < 4) {
-            g[p] = '.'
+        val p = Vec2i(todo.removeLong(todo.lastIndex))
+        val (x, y) = p
+        if (g[x, y] == '@' && g.countPaperNeighbours(x, y) < 4) {
+            g[x, y] = '.'
             removed++
-            todo.addAll(p.eightNeighbors())
+            p.eightNeighbors { x, y -> if (g.contains(x, y) && g[x, y] == '@') todo.add(packToLong(x, y)) }
         }
     }
     return removed
