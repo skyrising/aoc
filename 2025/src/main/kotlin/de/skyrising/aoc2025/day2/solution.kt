@@ -57,7 +57,7 @@ fun Long.stringRepeat(n: Int): Long {
     return this * p
 }
 
-fun List<LongRange>.part1() = sumOf { r ->
+fun List<LongRange>.part1v2() = sumOf { r ->
     var subTotal = 0L
     val start = r.first.toString()
     val lstart = start.length
@@ -113,7 +113,7 @@ fun List<LongRange>.part2vec(): Long {
     }
 }
 
-fun List<LongRange>.part2(): Long {
+fun List<LongRange>.part2v3(): Long {
     var total = 0L
     val dups = LongOpenHashSet(144)
     for (r in this) {

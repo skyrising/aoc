@@ -5,7 +5,7 @@ package de.skyrising.aoc2025.day6
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.PuzzleName
 import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.longs
+import java.nio.ByteBuffer
 
 val test = TestInput("""
 123 328  51 64 
@@ -14,50 +14,57 @@ val test = TestInput("""
 *   +   *   +  
 """)
 
-fun PuzzleInput.part1(): Any {
-    val lines = lines
-    val numCount = lines.lastIndex
-    val numbers = lines.subList(0, numCount).map(String::longs)
-    var i = 0
-    var sum = 0L
-    for (c in lines.last()) {
-        if (c == ' ') continue
-        var n = numbers[0].getLong(i)
-        for (j in 1 ..< numCount) {
-            val m = numbers[j].getLong(i)
-            when (c) {
-                '*' -> n *= m
-                '+' -> n += m
-                else -> throw IllegalArgumentException()
+data class Prepared(val lines: List<ByteBuffer>, val opLine: ByteBuffer, val maxLength: Int) {
+    inline fun cephalopodMath(problem: Prepared.(Char,Int, Int) -> Long): Long {
+        val opArr = opLine.array()
+        val opOffset = opLine.arrayOffset()
+        var end = maxLength - 1
+        var start = minOf(end, opLine.limit() - 1)
+        var sum = 0L
+        while (end >= 0 && start >= 0) {
+            when(val op = opArr[opOffset + start].toInt().toChar()) {
+                ' ' -> start--
+                else -> {
+                    sum += problem(op, start, end)
+                    end = start - 2
+                    start = end
+                }
             }
         }
-        i++
-        sum += n
+        return sum
     }
-    return sum
 }
 
-fun PuzzleInput.part2(): Any {
-    val lines = lines
-    val numCount = lines.lastIndex
-    val opLine = lines.last()
-    val operatorIndexes = opLine.withIndex().filter { it.value != ' ' }.map { it.index }
-    val maxLength = lines.maxOf { it.length }
-    var sum = 0L
-    for (i in operatorIndexes.indices) {
-        val end = if (i == operatorIndexes.lastIndex) maxLength - 1 else operatorIndexes[i + 1] - 2
-        val op = opLine[operatorIndexes[i]]
-        var result = if (op == '*') 1L else 0L
-        for (j in end downTo operatorIndexes[i]) {
-            var n = 0L
-            for (k in 0 ..< numCount) {
-                val c = lines[k][j]
-                if (c == ' ') continue
-                n = n * 10 + c.digitToInt()
-            }
-            result = if (op == '*') result * n else result + n
+fun PuzzleInput.prepare(): Prepared {
+    val lines = byteLines
+    return Prepared(lines.subList(0, lines.lastIndex), lines.last(), lines.maxOf { it.remaining() })
+}
+
+fun Prepared.part1() = cephalopodMath { op, start, end ->
+    var result = if (op == '*') 1L else 0L
+    for (k in lines.indices) {
+        val line = lines[k]
+        var n = 0L
+        for (j in start..end) {
+            val c = line[j].toInt()
+            if (c == ' '.code) continue
+            n = n * 10 + c - '0'.code
         }
-        sum += result
+        result = if (op == '*') result * n else result + n
     }
-    return sum
+    result
+}
+
+fun Prepared.part2() = cephalopodMath { op, start, end ->
+    var result = if (op == '*') 1L else 0L
+    for (j in end downTo start) {
+        var n = 0L
+        for (k in lines.indices) {
+            val c = lines[k][j].toInt()
+            if (c == ' '.code) continue
+            n = n * 10 + c - '0'.code
+        }
+        result = if (op == '*') result * n else result + n
+    }
+    result
 }
