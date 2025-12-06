@@ -3,6 +3,7 @@
 package de.skyrising.aoc2025.day5
 
 import de.skyrising.aoc.*
+import it.unimi.dsi.fastutil.longs.LongArrays
 
 val test = TestInput("""
 3-5
@@ -18,15 +19,35 @@ val test = TestInput("""
 32
 """)
 
-fun PuzzleInput.part1(): Any {
-    val (a, b) = lines.splitOnEmpty(2)
-    val freshRanges = joinRanges(a.map(String::toLongRange))
-    val items = b.map(String::toLong)
-    return items.count { l -> freshRanges.any { l in it } }
+typealias Prepared = Pair<List<LongRange>, LongArray>
+
+fun PuzzleInput.prepare(): Prepared {
+    val rangesFrom = LongArray(byteLines.size)
+    val rangesTo = LongArray(byteLines.size)
+    var i = 0
+    while (true) {
+        val line = byteLines[i]
+        if (!line.hasRemaining()) break
+        val split = line.indexOf('-'.code.toByte())
+        rangesFrom[i] = line.toLong(0, split)
+        rangesTo[i] = line.toLong(split + 1)
+        i++
+    }
+    LongArrays.radixSort(rangesFrom, rangesTo, 0, i)
+    val allRanges = ArrayList<LongRange>(i)
+    for (j in 0 ..< i) allRanges.add(rangesFrom[j]..rangesTo[j])
+    val freshRanges = allRanges.mergeTo(mutableListOf()) { a, b ->
+        if (b.first <= a.last + 1) a.first..maxOf(a.last, b.last) else null
+    }
+    i++
+    val items = LongArray(byteLines.size - i)
+    var j = 0
+    while (i < byteLines.size) {
+        items[j++] = byteLines[i++].toLong()
+    }
+    return freshRanges to items
 }
 
-fun PuzzleInput.part2(): Any {
-    val (a, _) = lines.splitOnEmpty(2)
-    val freshRanges = a.map(String::toLongRange)
-    return joinRanges(freshRanges).sumOf { it.count() }
-}
+fun Prepared.part1() = second.count(first::binarySearchContains)
+
+fun Prepared.part2() = first.sumOf { it.count() }

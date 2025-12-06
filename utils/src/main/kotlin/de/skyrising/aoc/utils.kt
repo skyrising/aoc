@@ -12,8 +12,11 @@ import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.longs.*
 import org.apache.commons.math3.util.ArithmeticUtils
 import org.apache.commons.math3.util.CombinatoricsUtils
+import java.lang.invoke.MethodHandles
+import java.lang.invoke.VarHandle
 import java.nio.Buffer
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.nio.CharBuffer
 import java.nio.charset.Charset
 import java.util.*
@@ -199,7 +202,48 @@ fun ByteBuffer.toLong(from: Int = position(), to: Int = limit()): Long {
     return toLong(from, to) { this[it] }
 }
 
-fun ByteArray.toLong(from: Int, to: Int) = toLong(from, to) { this[it] }
+val SHORT_VIEW_LE: VarHandle = MethodHandles.byteArrayViewVarHandle(ShortArray::class.java, ByteOrder.LITTLE_ENDIAN)
+val SHORT_VIEW_BE: VarHandle = MethodHandles.byteArrayViewVarHandle(ShortArray::class.java, ByteOrder.BIG_ENDIAN)
+val INT_VIEW_LE: VarHandle = MethodHandles.byteArrayViewVarHandle(IntArray::class.java, ByteOrder.LITTLE_ENDIAN)
+val INT_VIEW_BE: VarHandle = MethodHandles.byteArrayViewVarHandle(IntArray::class.java, ByteOrder.BIG_ENDIAN)
+val LONG_VIEW_LE: VarHandle = MethodHandles.byteArrayViewVarHandle(LongArray::class.java, ByteOrder.LITTLE_ENDIAN)
+val LONG_VIEW_BE: VarHandle = MethodHandles.byteArrayViewVarHandle(LongArray::class.java, ByteOrder.BIG_ENDIAN)
+
+inline fun ByteArray.getShortLE(offset: Int) = SHORT_VIEW_LE.get(this, offset) as Short
+inline fun ByteArray.getShortBE(offset: Int) = SHORT_VIEW_BE.get(this, offset) as Short
+inline fun ByteArray.getIntLE(offset: Int) = INT_VIEW_LE.get(this, offset) as Int
+inline fun ByteArray.getIntBE(offset: Int) = INT_VIEW_BE.get(this, offset) as Int
+inline fun ByteArray.getLongLE(offset: Int) = LONG_VIEW_LE.get(this, offset) as Long
+inline fun ByteArray.getLongBE(offset: Int) = LONG_VIEW_BE.get(this, offset) as Long
+
+inline fun Int.hasByteMoreThan(n: Int) = or(this + 0x1010101 * (0x80 - n)) and 0x80808080.toInt()
+
+inline operator fun Int.component1() = this and 0xff
+inline operator fun Int.component2() = ushr(8) and 0xff
+inline operator fun Int.component3() = ushr(16) and 0xff
+inline operator fun Int.component4() = ushr(24)
+
+fun ByteArray.toLong(from: Int, to: Int): Long {
+    var result = 0L
+    var pow = 1L
+    var i = to - 1
+    while (i >= from + 3) {
+        val digits = getIntLE(i - 3) - 0x30303030
+        if (digits.hasByteMoreThan(9) != 0) break
+        val (d0, d1, d2, d3) = digits
+        result += (d0 * 1000 + d1 * 100 + d2 * 10 + d3) * pow
+        pow *= 10000
+        i -= 4
+    }
+    while (i >= from) {
+        val c = this[i--].toInt()
+        val digit = c - '0'.code
+        if (!digit.isDigit) return digit.toSignum(-3) * result
+        result += digit * pow
+        pow *= 10
+    }
+    return result
+}
 
 inline fun CharSequence.numberFormatException(beginIndex: Int, endIndex: Int, errorIndex: Int) =
     NumberFormatException("Error at index ${errorIndex - beginIndex} in: \"${subSequence(beginIndex, endIndex)}\"")
@@ -416,6 +460,25 @@ fun LongRange.splitAt(points: LongCollection): List<LongRange> {
     }
     if (last <= end) result.add(last..end)
     return result
+}
+
+fun List<LongRange>.binarySearchContains(value: Long): Boolean {
+    var low = 0
+    var high = size - 1
+
+    while (low <= high) {
+        val mid = (low + high) ushr 1
+        val midVal = this[mid]
+        val cmp = midVal.last - value
+
+        if (cmp < 0)
+            low = mid + 1
+        else if (cmp > 0)
+            high = mid - 1
+        else
+            return true
+    }
+    return low < size && value in this[low]
 }
 
 fun <T> Collection<T>.subsets(): Iterable<Set<T>> {
@@ -781,11 +844,20 @@ fun CharSequence.toIntRange(): IntRange {
     return toInt(0, split)..toInt(split + 1, length)
 }
 
+fun ByteBuffer.toIntRange(from: Int = position()): IntRange {
+    val split = indexOf('-'.code.toByte(), from)
+    return toInt(from, split)..toInt(split + 1, limit())
+}
+
 fun CharSequence.toLongRange(): LongRange {
     val split = indexOf('-')
     return toLong(0, split)..toLong(split + 1, length)
 }
 
+fun ByteBuffer.toLongRange(from: Int = position()): LongRange {
+    val split = indexOf('-'.code.toByte(), from)
+    return toLong(from, split)..toLong(split + 1, limit())
+}
 
 class ByteView(val bytes: ByteArray, var start: Int, var end: Int) : CharSequence {
     override val length: Int get() = end - start
