@@ -20,11 +20,18 @@ val test = TestInput("""
 @.@.@@@.@.
 """)
 
+inline fun Char.atTo1() = code shr 6
+
 fun CharGrid.countPaperNeighbours(x: Int, y: Int): Int {
     var count = 0
-    eightNeighbors(x, y) { x, y ->
-        if (contains(x, y) && this[x, y] == '@') count++
-    }
+    count += getOrDefault(x - 1, y - 1, '.').atTo1()
+    count += getOrDefault(x, y - 1, '.').atTo1()
+    count += getOrDefault(x + 1, y - 1, '.').atTo1()
+    count += getOrDefault(x - 1, y, '.').atTo1()
+    count += getOrDefault(x + 1, y, '.').atTo1()
+    count += getOrDefault(x + 1, y + 1, '.').atTo1()
+    count += getOrDefault(x, y + 1, '.').atTo1()
+    count += getOrDefault(x - 1, y + 1, '.').atTo1()
     return count
 }
 

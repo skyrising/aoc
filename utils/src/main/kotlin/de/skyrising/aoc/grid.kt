@@ -3,10 +3,24 @@ package de.skyrising.aoc
 import it.unimi.dsi.fastutil.chars.CharImmutableList
 import it.unimi.dsi.fastutil.chars.CharList
 import it.unimi.dsi.fastutil.ints.Int2CharOpenHashMap
-import it.unimi.dsi.fastutil.objects.AbstractObject2CharMap
-import it.unimi.dsi.fastutil.objects.AbstractObject2IntMap
-import it.unimi.dsi.fastutil.objects.Object2CharMap
-import it.unimi.dsi.fastutil.objects.Object2IntMap
+import it.unimi.dsi.fastutil.objects.*
+import java.util.BitSet
+import kotlin.collections.ArrayDeque
+import kotlin.collections.Collection
+import kotlin.collections.Iterable
+import kotlin.collections.List
+import kotlin.collections.associateByTo
+import kotlin.collections.contentEquals
+import kotlin.collections.contentHashCode
+import kotlin.collections.copyOf
+import kotlin.collections.count
+import kotlin.collections.filter
+import kotlin.collections.indexOfFirst
+import kotlin.collections.indices
+import kotlin.collections.isNotEmpty
+import kotlin.collections.mapIndexed
+import kotlin.collections.maxOf
+import kotlin.collections.mutableListOf
 
 val characters = mapDisplayToInts("""
  ██  ███   ██  ███  ████ ████  ██  █  █ ███    ██ █  █ █    █   ██   █ ██  ███   ██  ███   ███ ██████  █ █   ██   ██  █ █   █████
@@ -66,6 +80,50 @@ abstract class Grid(val offsetX: Int, val offsetY: Int, val width: Int, val heig
 
     fun contains(x: Int, y: Int) = (x - offsetX) in 0 ..< width && (y - offsetY) in 0 ..< height
     operator fun contains(point: Vec2i) = contains(point.x, point.y)
+
+    inline fun forEachPosition(action: (Int, Int) -> Unit) {
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                action(x + offsetX, y + offsetY)
+            }
+        }
+    }
+}
+
+class BitGrid(width: Int, height: Int, val data: BitSet, offsetX: Int = 0, offsetY: Int = 0) : Grid(offsetX, offsetY, width, height), Sequence<Object2BooleanMap.Entry<Vec2i>> {
+    constructor(width: Int, height: Int) : this(width, height, BitSet(width * height))
+    constructor(width: Int, height: Int, init: (x: Int, y: Int) -> Boolean) : this(width, height, BitSet(width * height).apply {
+        for (y in 0 ..< height) {
+            for (x in 0 ..< width) {
+                set(y * width + x, init(x, y))
+            }
+        }
+    })
+    operator fun get(point: Vec2i) = get(point.x, point.y)
+    operator fun get(x: Int, y: Int) = data[index(x, y)]
+    operator fun set(point: Vec2i, value: Boolean) = set(point.x, point.y, value)
+    operator fun set(x: Int, y: Int, value: Boolean) {
+        data[index(x, y)] = value
+    }
+    operator fun set(points: Iterable<Vec2i>, value: Boolean) {
+        for (point in points) {
+            this[point] = value
+        }
+    }
+
+    override fun iterator() = iterator {
+        forEach { x, y, c -> yield(AbstractObject2BooleanMap.BasicEntry(Vec2i(x, y), c)) }
+    }
+
+    inline fun forEach(action: (Int, Int, Boolean) -> Unit) {
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                action(x + offsetX, y + offsetY, data[y * width + x])
+            }
+        }
+    }
+
+    fun copy() = BitGrid(width, height, data.clone() as BitSet, offsetX, offsetY)
 }
 
 class IntGrid(width: Int, height: Int, val data: IntArray, offsetX: Int = 0, offsetY: Int = 0) : Grid(offsetX, offsetY, width, height), Sequence<Object2IntMap.Entry<Vec2i>> {
@@ -100,6 +158,7 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offsetX: Int = 0, o
     constructor(width: Int, height: Int) : this(width, height, CharArray(width * height))
     operator fun get(point: Vec2i) = get(point.x, point.y)
     operator fun get(x: Int, y: Int) = data[index(x, y)]
+    fun getOrDefault(x: Int, y: Int, defaultValue: Char) = if (contains(x, y)) data[index(x, y)] else defaultValue
     operator fun get(x: IntRange, y: Int) = String(data, index(x.first, y), x.last - x.first + 1)
     operator fun set(point: Vec2i, value: Char) = set(point.x, point.y, value)
     operator fun set(x: Int, y: Int, value: Char) {
@@ -116,14 +175,6 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offsetX: Int = 0, o
     }
 
     val positions get() = sequence { forEachPosition { x, y -> yield(Vec2i(x, y)) } }
-
-    inline fun forEachPosition(action: (Int, Int) -> Unit) {
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                action(x + offsetX, y + offsetY)
-            }
-        }
-    }
 
     inline fun forEach(action: (Int, Int, Char) -> Unit) {
         val data = data
