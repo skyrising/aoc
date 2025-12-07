@@ -5,7 +5,7 @@ package de.skyrising.aoc2025.day7
 import de.skyrising.aoc.PuzzleInput
 import de.skyrising.aoc.PuzzleName
 import de.skyrising.aoc.TestInput
-import de.skyrising.aoc.Vec2i
+import de.skyrising.aoc.getLongLE
 
 val test = TestInput("""
 .......S.......
@@ -26,44 +26,41 @@ val test = TestInput("""
 ...............
 """)
 
-fun PuzzleInput.part1(): Any {
-    val g = charGrid
-    val splits = mutableSetOf<Vec2i>()
-    val beams = ArrayDeque(g.where { it == 'S' })
-    while (beams.isNotEmpty()) {
-        val beam = beams.removeLast()
-        val x = beam.x
-        var y = beam.y
-        while (y < g.height) {
-            if (g[x, y] == '^') {
-                if (splits.add(Vec2i(x, y))) {
-                    beams.add(Vec2i(x - 1, y))
-                    beams.add(Vec2i(x + 1, y))
-                }
-                break
-            } else {
-                g[x, y] = '|'
+class Prepared(val part1: Int, val part2: Long)
+
+fun PuzzleInput.prepare(): Prepared {
+    val byteLines = byteLines
+    val width = byteLines.last().limit()
+    val counts = LongArray(width)
+    var splitCount = 0
+    for (y in byteLines.indices) {
+        val line = byteLines[y]
+        val arr = line.array()
+        val arrOff = line.arrayOffset()
+        var x = 1
+        while (x < width - 1) {
+            // Skip ........ if possible
+            val next = minOf(x + 8, width - 1)
+            if (x < width - 7 && arr.getLongLE(arrOff + x) == 0x2e2e2e2e2e2e2e2eL) {
+                x = next
+                continue
             }
-            y++
+            // Non '.' in the next 8 characters
+            while (x < next) {
+                val c = arr[arrOff + x].toInt()
+                if (c != '.'.code) {
+                    val cx = counts[x]
+                    counts[x - 1] += cx
+                    counts[x + 1] += cx
+                    counts[x] = (c and 1).toLong()
+                    if (cx > 0) splitCount++
+                }
+                x++
+            }
         }
     }
-    return splits.size
+    return Prepared(splitCount, counts.sum())
 }
 
-fun PuzzleInput.part2(): Any {
-    val g = charGrid
-    val counts = mutableMapOf<Vec2i, Long>()
-    fun getCount(beam: Vec2i): Long {
-        if (beam in counts) return counts[beam]!!
-        val x = beam.x
-        var y = beam.y
-        while (y < g.height) {
-            if (g[x, y] == '^') {
-                return (getCount(Vec2i(x - 1, y)) + getCount(Vec2i(x + 1, y))).also { counts[beam] = it }
-            }
-            y++
-        }
-        return 1L.also { counts[beam] = it }
-    }
-    return getCount(g.where { it == 'S' }.single())
-}
+fun Prepared.part1() = part1
+fun Prepared.part2() = part2

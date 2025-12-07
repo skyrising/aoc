@@ -1,0 +1,7 @@
+--add-modules jdk.incubator.vector
+-Xmx16G
+-Dsun.java2d.uiScale.enabled=false
+-XX:+UnlockDiagnosticVMOptions
+-XX:+UnlockExperimentalVMOptions
+-XX:CompileCommandFile=compile-commands.txt
+-Dblackhole=compiler

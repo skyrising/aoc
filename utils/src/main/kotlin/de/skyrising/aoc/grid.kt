@@ -6,21 +6,6 @@ import it.unimi.dsi.fastutil.ints.Int2CharOpenHashMap
 import it.unimi.dsi.fastutil.objects.*
 import java.util.BitSet
 import kotlin.collections.ArrayDeque
-import kotlin.collections.Collection
-import kotlin.collections.Iterable
-import kotlin.collections.List
-import kotlin.collections.associateByTo
-import kotlin.collections.contentEquals
-import kotlin.collections.contentHashCode
-import kotlin.collections.copyOf
-import kotlin.collections.count
-import kotlin.collections.filter
-import kotlin.collections.indexOfFirst
-import kotlin.collections.indices
-import kotlin.collections.isNotEmpty
-import kotlin.collections.mapIndexed
-import kotlin.collections.maxOf
-import kotlin.collections.mutableListOf
 
 val characters = mapDisplayToInts("""
  ██  ███   ██  ███  ████ ████  ██  █  █ ███    ██ █  █ █    █   ██   █ ██  ███   ██  ███   ███ ██████  █ █   ██   ██  █ █   █████
@@ -180,7 +165,7 @@ class CharGrid(width: Int, height: Int, val data: CharArray, offsetX: Int = 0, o
         val data = data
         for (y in 0 until height) {
             for (x in 0 until width) {
-                action(x + offsetX, y + offsetY, data[localIndex(x, y)])
+                action(x + offsetX, y + offsetY, data[y * width + x])
             }
         }
     }

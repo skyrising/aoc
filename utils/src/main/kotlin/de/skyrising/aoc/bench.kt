@@ -96,7 +96,11 @@ inline fun <T> measureForDuration(duration: Duration, block: () -> T?): Double {
     return time.inWholeNanoseconds / (1000.0 * iterations)
 }
 
+private val COMPILER_BLACKHOLE = System.getProperty("blackhole") == "compiler"
+
 private var blackhole: Unit? = Unit
-fun blackhole(o: Any?) {
+fun blackhole(o: Any?) = if (COMPILER_BLACKHOLE) blackholeCompiler(o) else blackholeThin(o)
+fun blackholeThin(o: Any?) {
     blackhole = if (o == null || o != blackhole) Unit else blackhole
 }
+fun blackholeCompiler(o: Any?) {}

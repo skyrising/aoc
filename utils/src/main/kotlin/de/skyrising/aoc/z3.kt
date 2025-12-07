@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package de.skyrising.aoc
 
 import com.microsoft.z3.*

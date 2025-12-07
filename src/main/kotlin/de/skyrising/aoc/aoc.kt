@@ -9,7 +9,7 @@ import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 
 const val RUNS = 8
-const val WARMUP = 4
+const val WARMUP = 12
 const val BENCHMARK = false
 var BENCHMARK_MODE: BenchMode? = if (BENCHMARK) BenchMode.Duration(100.milliseconds) else null
 const val QUICK_PART2 = true
@@ -62,7 +62,6 @@ fun main(args: Array<String>) {
         try {
             val benchmark = BENCHMARK_MODE
             val result = if (benchmark != null) {
-                input.benchmark = true
                 var warmup = WARMUP
                 var measure = RUNS
                 val mode = when (benchmark) {
@@ -78,6 +77,7 @@ fun main(args: Array<String>) {
                 val (result, avg, stddev) = benchmark(warmup, measure, mode) { a, b ->
                     input.use { if (prepare) puzzle.prepareInput(input) else puzzle.runPuzzle(input) }.also {
                         if (b == 0) {
+                            input.benchmark = true
                             print(if (a < 0) '-' else '+')
                         }
                     }
@@ -124,6 +124,7 @@ fun main(args: Array<String>) {
 }
 
 private fun formatTime(us: Double): String {
+    if (us < 1) return "%7.3fns".format(us * 1000)
     if (us < 1000) return "%7.3fµs".format(us)
     val ms = us / 1000
     if (ms < 1000) return "%7.3fms".format(ms)

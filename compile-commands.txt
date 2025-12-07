@@ -1,0 +1,4 @@
+dontinline,de/skyrising/aoc/DefaultPuzzle.runPuzzle
+dontinline,de/skyrising/aoc/DefaultPuzzle.prepareInput
+inline,de/skyrising/aoc/BenchKt.blackhole
+blackhole,de/skyrising/aoc/BenchKt.blackholeCompiler

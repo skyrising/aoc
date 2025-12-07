@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package de.skyrising.aoc
 
 import it.unimi.dsi.fastutil.bytes.Byte2IntMap
@@ -24,23 +26,56 @@ import java.util.concurrent.StructuredTaskScope
 import kotlin.collections.ArrayDeque
 
 fun lineList(buf: ByteBuffer): List<ByteBuffer> {
+    if (buf.hasArray()) return lineList(buf.array(), buf.position(), buf.remaining())
     var lineStart = 0
-    var r = false
+    var r = 0
     val lines = mutableListOf<ByteBuffer>()
-    for (i in 0 until buf.limit()) {
-        val b = buf[i]
-        if (b == '\n'.toByte()) {
-            buf.position(lineStart)
-            buf.limit(i - if (r) 1 else 0)
-            lines.add(buf.slice())
-            buf.clear()
+    val limit = buf.limit()
+    var i = 0
+    while (i < limit) {
+        if (i < limit - 7 && buf.getLong(i).hasByteLessThan(0x20) == 0L) {
+            i += 8
+            continue
+        }
+        val b = buf[i].toInt()
+        if (b == '\n'.code) {
+            lines.add(buf.slice(lineStart, i - (r == '\r'.code).toInt() - lineStart))
             lineStart = i + 1
         }
-        r = b == '\r'.toByte()
+        r = b
+        i++
     }
     if (lineStart < buf.limit()) {
         buf.position(lineStart)
         lines.add(buf.slice())
+    }
+    return lines
+}
+
+fun lineList(buf: ByteArray, offset: Int, length: Int): List<ByteBuffer> {
+    var lineStart = 0
+    var r = 0
+    val lines = mutableListOf<ByteBuffer>()
+    var i = offset
+    val limit = offset + length
+    while (i < limit) {
+        if (i < limit - 7 && buf.getLongLE(i).hasByteLessThan(0x20) == 0L) {
+            i += 8
+            continue
+        }
+        val j = minOf(i + 8, limit)
+        while (i < j) {
+            val b = buf[i].toInt()
+            if (b == '\n'.code) {
+                lines.add(ByteBuffer.wrap(buf, lineStart, i - (r == '\r'.code).toInt() - lineStart).slice())
+                lineStart = i + 1
+            }
+            r = b
+            i++
+        }
+    }
+    if (lineStart < limit) {
+        lines.add(ByteBuffer.wrap(buf, lineStart, limit - lineStart).slice())
     }
     return lines
 }
@@ -217,6 +252,9 @@ inline fun ByteArray.getLongLE(offset: Int) = LONG_VIEW_LE.get(this, offset) as 
 inline fun ByteArray.getLongBE(offset: Int) = LONG_VIEW_BE.get(this, offset) as Long
 
 inline fun Int.hasByteMoreThan(n: Int) = or(this + 0x1010101 * (0x80 - n)) and 0x80808080.toInt()
+inline fun Long.hasByteMoreThan(n: Int) = or(this + 0x101010101010101 * (0x80 - n)) and 0x8080808080808080u.toLong()
+inline fun Int.hasByteLessThan(n: Int) = inv().and(this - 0x1010101 * n) and 0x80808080.toInt()
+inline fun Long.hasByteLessThan(n: Int) = inv().and(this - 0x101010101010101 * n) and 0x8080808080808080u.toLong()
 
 inline operator fun Int.component1() = this and 0xff
 inline operator fun Int.component2() = ushr(8) and 0xff
@@ -716,8 +754,8 @@ inline fun Boolean.toInt() = if (this) 1 else 0
 inline fun Boolean.toLong() = if (this) 1L else 0L
 
 inline val Int.isZeroInt get() = -((this or -this) shr 31)
-inline infix fun Byte.equalsToInt(other: Byte) = (this.toInt() xor other.toInt()).isZeroInt
-inline infix fun Int.equalsToInt(other: Int) = (this xor other).isZeroInt
+inline infix fun Byte.equalsToInt(other: Byte) = (this.toInt() - other.toInt()).isZeroInt
+inline infix fun Int.equalsToInt(other: Int) = (this - other).isZeroInt
 inline fun Int.toSignum(negative: Int) = (this equalsToInt negative) * -2 + 1
 inline fun Byte.toSignum(negative: Byte) = (this equalsToInt negative) * -2 + 1
 inline fun Int.ifBit(bit: Int) = this and -bit
