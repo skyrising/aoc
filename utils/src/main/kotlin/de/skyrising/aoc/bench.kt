@@ -35,11 +35,11 @@ inline fun benchmark(warmup: Int, measure: Int, iterations: Int, block: (Int, In
     }.copy(result = result)
 }
 
-inline fun benchmark(warmup: Int, measure: Int, duration: Duration, block: (Int, Int) -> Any?): BenchmarkResult {
+inline fun benchmark(warmup: Int, measure: Int, duration: Duration, maxIter: Int, block: (Int, Int) -> Any?): BenchmarkResult {
     var result: Any? = null
     return benchmarkCommon(warmup, measure) { a ->
         var b = 0
-        measureForDuration(duration) {
+        measureForDuration(duration, maxIter) {
             block(a, b++).also { result = it }
         }
     }.copy(result = result)
@@ -52,7 +52,7 @@ sealed interface BenchMode {
 
 inline fun benchmark(warmup: Int, measure: Int, mode: BenchMode, block: (Int, Int) -> Any?) = when (mode) {
     is BenchMode.Iterations -> benchmark(warmup, measure, mode.iterations, block)
-    is BenchMode.Duration -> benchmark(warmup, measure, mode.duration, block)
+    is BenchMode.Duration -> benchmark(warmup, measure, mode.duration, 100000, block)
 }
 
 class Timeout(val duration: Duration) {
@@ -79,7 +79,7 @@ inline fun <T> measure(runs: Int, fn: (Int) -> T?): Double {
 
 data class RunResult(val iterations: Long, val duration: Duration)
 
-inline fun <T> runForDuration(duration: Duration, block: () -> T?): RunResult {
+inline fun <T> runForDuration(duration: Duration, maxIter: Int, block: () -> T?): RunResult {
     val timeout = Timeout(duration)
     timeout.start()
     val start = System.nanoTime()
@@ -87,12 +87,12 @@ inline fun <T> runForDuration(duration: Duration, block: () -> T?): RunResult {
     do {
         iterations++
         blackhole(block())
-    } while (!timeout.isDone)
+    } while (!timeout.isDone && iterations < maxIter)
     return RunResult(iterations, (System.nanoTime() - start).nanoseconds)
 }
 
-inline fun <T> measureForDuration(duration: Duration, block: () -> T?): Double {
-    val (iterations, time) = runForDuration(duration) { block() }
+inline fun <T> measureForDuration(duration: Duration, maxIter: Int, block: () -> T?): Double {
+    val (iterations, time) = runForDuration(duration, maxIter) { block() }
     return time.inWholeNanoseconds / (1000.0 * iterations)
 }
 

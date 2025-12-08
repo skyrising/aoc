@@ -7,10 +7,7 @@ import it.unimi.dsi.fastutil.bytes.Byte2IntOpenHashMap
 import it.unimi.dsi.fastutil.bytes.ByteIterable
 import it.unimi.dsi.fastutil.chars.Char2IntMap
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap
-import it.unimi.dsi.fastutil.ints.IntArrayList
-import it.unimi.dsi.fastutil.ints.IntCollection
-import it.unimi.dsi.fastutil.ints.IntIterable
-import it.unimi.dsi.fastutil.ints.IntList
+import it.unimi.dsi.fastutil.ints.*
 import it.unimi.dsi.fastutil.longs.*
 import org.apache.commons.math3.util.ArithmeticUtils
 import org.apache.commons.math3.util.CombinatoricsUtils
@@ -773,7 +770,7 @@ fun <T> List<T>.pairs(): Set<Pair<T, T>> {
 }
 
 fun <T> List<T>.unorderedPairs(): Set<Pair<T, T>> {
-    val pairs = HashSet<Pair<T, T>>(size * (size - 1))
+    val pairs = HashSet<Pair<T, T>>(size * (size - 1) / 2)
     for (i in indices) {
         for (j in i + 1 until size) {
             pairs.add(this[i] to this[j])
@@ -1017,4 +1014,21 @@ infix fun Long.pow(exp: Int) = when {
         }
         ans * base
     }
+}
+
+inline fun <T> Collection<T>.topK(k: Int, map: (T) -> Int): IntArray {
+    if (size < k) throw IllegalArgumentException()
+    val heap = IntHeapPriorityQueue(k)
+    val it = iterator()
+    var i = 0
+    while (it.hasNext()) {
+        val v = map(it.next())
+        if (i++ < k) {
+            heap.enqueue(v)
+        } else if (v > heap.firstInt()) {
+            heap.dequeueInt()
+            heap.enqueue(v)
+        }
+    }
+    return IntArray(k).also { for (i in k-1 downTo 0) it[i] = heap.dequeueInt() }
 }

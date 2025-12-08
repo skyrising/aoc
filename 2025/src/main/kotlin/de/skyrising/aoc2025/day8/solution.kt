@@ -3,6 +3,7 @@
 package de.skyrising.aoc2025.day8
 
 import de.skyrising.aoc.*
+import it.unimi.dsi.fastutil.longs.LongArrays
 
 val test = TestInput("""
 162,817,812
@@ -27,47 +28,82 @@ val test = TestInput("""
 425,690,689
 """)
 
-class Node(val pos: Vec3l, var circuit: Int) {
-    override fun toString() = "$pos@$circuit"
-    override fun hashCode() = pos.hashCode()
-    override fun equals(other: Any?) = other is Node && pos == other.pos
+class Node(var circuit: Int)
 
-    infix fun distTo(other: Node): Long {
-        val x = pos.x - other.pos.x
-        val y = pos.y - other.pos.y
-        val z = pos.z - other.pos.z
-        return x*x + y*y + z*z
-    }
-}
-
-fun Array<MutableSet<Node>>.connect(a: Node, b: Node): Boolean {
-    if (a.circuit == b.circuit) return false
+fun Array<MutableList<Node>>.connect(a: Node, b: Node): Int {
+    if (a.circuit == b.circuit) return 0
     val aId = a.circuit
     val bId = b.circuit
     val min = minOf(aId, bId)
     val max = maxOf(aId, bId)
     val source = this[max]
     for (c in source) c.circuit = min
-    this[min].addAll(source)
+    val dest = this[min]
+    dest.addAll(source)
     source.clear()
-    return true
+    return dest.size
 }
 
 data class Prepared(val part1: Int, val part2: Long)
 
 fun PuzzleInput.prepare(): Prepared {
-    val nodes = lines.map { Node(Vec3l.parse(it), -1) }
-    val nodesByCircuit = Array(nodes.size) { i -> mutableSetOf(nodes[i].also { it.circuit = i }) }
-    val pairs = nodes.unorderedPairs().sortedBy { (a, b) -> a distTo b }
-    var todo = if (nodes.size == 20) 10 else 1000
+    val longs = chars.longs()
+    val nodes = Array(longs.size / 3) { Node(-1) }
+    val pairCount = nodes.size * (nodes.size - 1) / 2
+    val dists = LongArray(pairCount)
+    val pairIdx = LongArray(pairCount)
     var part1 = 0
     var part2 = 0L
-    for ((a, b) in pairs) {
-        if (--todo == 0) {
-            val (s0, s1, s2) = nodesByCircuit.map { it.size }.sortedDescending()
-            part1 = s0 * s1 * s2
+    var factor = 5
+    while ((1 shl factor) > 1 + nodes.size / 20) factor--
+    while (part2 == 0L && factor >= 0) {
+        val nodesByCircuit = Array<MutableList<Node>>(nodes.size) { i -> ArrayList<Node>(1).apply { add(nodes[i].also { it.circuit = i }) } }
+        var k = 0
+        var maxMinDist = 0L
+        for (i in nodes.indices) {
+            val x1 = longs.getLong(i * 3)
+            val y1 = longs.getLong(i * 3 + 1)
+            val z1 = longs.getLong(i * 3 + 2)
+            val kStart = k
+            for (j in i + 1 until nodes.size) {
+                val dx = x1 - longs.getLong(j * 3)
+                val dy = y1 - longs.getLong(j * 3 + 1)
+                val dz = z1 - longs.getLong(j * 3 + 2)
+                val dist = dx * dx + dy * dy + dz * dz
+                dists[k] = dist
+                pairIdx[k] = packToLong(i, j)
+                k++
+            }
+            var aMinDist = Long.MAX_VALUE
+            for (i in k-1 downTo kStart) aMinDist = minOf(aMinDist, dists[i])
+            if (aMinDist < Long.MAX_VALUE) maxMinDist = maxOf(maxMinDist, aMinDist)
         }
-        if (nodesByCircuit.connect(a, b)) part2 = a.pos.x * b.pos.x
+        if (factor > 0) {
+            k = 0
+            for (i in dists.indices) {
+                val dist = dists[i]
+                if (dist <= maxMinDist shr factor) {
+                    dists[k] = dist
+                    pairIdx[k] = pairIdx[i]
+                    k++
+                }
+            }
+        }
+        LongArrays.radixSort(dists, pairIdx, 0, k)
+        var todo = if (nodes.size == 20) 10 else 1000
+        for (i in 0..< k) {
+            val idx = pairIdx[i]
+            val a = nodes[unpackFirstInt(idx)]
+            val b = nodes[unpackSecondInt(idx)]
+            if (todo-- == 0) {
+                part1 = nodesByCircuit.asList().topK(3) { it.size }.fold(1, Int::times)
+            }
+            if (nodesByCircuit.connect(a, b) == nodes.size) {
+                part2 = longs.getLong(unpackFirstInt(idx) * 3) * longs.getLong(unpackSecondInt(idx) * 3)
+                break
+            }
+        }
+        factor--
     }
     return Prepared(part1, part2)
 }

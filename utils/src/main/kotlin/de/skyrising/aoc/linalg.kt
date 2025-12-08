@@ -419,8 +419,8 @@ data class Vec3l(val x: Long, val y: Long, val z: Long) {
         val ZERO = Vec3l(0, 0, 0)
 
         fun parse(input: String): Vec3l {
-            val (x, y, z) = input.longs()
-            return Vec3l(x, y, z)
+            val longs = input.longs()
+            return Vec3l(longs.getLong(0), longs.getLong(1), longs.getLong(2))
         }
     }
 }
