@@ -2,12 +2,14 @@ package de.skyrising.aoc
 
 import de.skyrising.aoc.visualization.Visualization
 import java.lang.invoke.LambdaMetafactory
+import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType.methodType
 import java.lang.reflect.AccessFlag
 import java.lang.reflect.Method
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.*
 
@@ -40,6 +42,7 @@ interface Puzzle<T, P> : Comparable<Puzzle<T, P>> {
     val index: Int
     val resultType: Class<T>
     val solutionType: SolutionType
+    val hasPrepare: Boolean
     fun getRealInput() = getInput(day.year, day.day)
     fun prepareInput(input: PuzzleInput): P
     fun runPuzzle(input: PuzzleInput): T
@@ -93,6 +96,7 @@ data class DefaultPuzzle<T, P>(
     val run: P.() -> T,
     val prepare: (PuzzleInput.() -> P)? = null,
 ) : Puzzle<T, P> {
+    override val hasPrepare get() = prepare != null
     override fun prepareInput(input: PuzzleInput): P {
         return if (prepare == null) this as P else prepare.invoke(input)
     }
@@ -104,6 +108,24 @@ data class DefaultPuzzle<T, P>(
             input
         }
         return run(prepared as P)
+    }
+}
+
+data class MHPuzzle<T, P>(
+    override val name: String,
+    override val day: PuzzleDay,
+    override val part: Int,
+    override val index: Int,
+    override val solutionType: SolutionType,
+    override val resultType: Class<T>,
+    val run: MethodHandle,
+    val prepare: MethodHandle?,
+) : Puzzle<T, P> {
+    override val hasPrepare get() = prepare != null
+    override fun prepareInput(input: PuzzleInput) = (prepare ?: MethodHandles.identity(PuzzleInput::class.java)).invoke(input) as P
+    override fun runPuzzle(input: PuzzleInput): T {
+        if (input.prepared == null) input.prepared = lazy { prepareInput(input) }
+        return run.invoke(input.prepared!!.value) as T
     }
 }
 
@@ -122,9 +144,51 @@ private inline fun <reified T> convertMethod(lookup: MethodHandles.Lookup, metho
     ).target.invoke() as T
 }
 
+const val COMPILE_MH = false
+
+fun compilePuzzle(lookup: MethodHandles.Lookup, day: PuzzleDay, dayName: String, part: Int, index: Int, method: Method, prepare: Method?): Puzzle<*, *> {
+    var name = dayName
+    if (part == 2) name = "Part Two"
+    var solutionType = method.getAnnotation(Solution::class.java)?.type ?: SolutionType.REGULAR
+    if (method.returnType == Visualization::class.java) solutionType = SolutionType.VISUALIZATION
+    if (COMPILE_MH) {
+        val runMH = lookup.unreflect(method)
+        val prepareMH = prepare?.let(lookup::unreflect)
+        return MHPuzzle<Any?, Any?>(
+            name,
+            day,
+            part,
+            index,
+            solutionType,
+            method.returnType as Class<Any?>,
+            runMH,
+            prepareMH
+        )
+    } else {
+        val runMethod: Any?.() -> Any? = convertMethod(lookup, method)
+        val prepareMethod: (PuzzleInput.() -> Any?)? = prepare?.let { convertMethod(lookup, it) }
+        return DefaultPuzzle(
+            name,
+            day,
+            part,
+            index,
+            solutionType,
+            method.returnType as Class<Any?>,
+            runMethod,
+            prepareMethod
+        )
+    }
+}
+
 fun registerDay(day: PuzzleDay) {
     try {
-        val cls = Class.forName("de.skyrising.aoc${day.year}.day${day.day}.SolutionKt")
+        val cls = Class.forName(buildString(37) {
+            append("de.skyrising.aoc")
+            append(day.year)
+            append(".day")
+            append(day.day)
+            append(".SolutionKt")
+        })
         val dayName = cls.getAnnotation(PuzzleName::class.java)?.name ?: "Day ${day.day}"
         val lookup = MethodHandles.lookup()
         for (method in cls.methods) {
@@ -132,27 +196,13 @@ fun registerDay(day: PuzzleDay) {
             if (method.parameterCount == 1) {
                 var part = 0
                 if (method.name.startsWith("part")) part = method.name[4].digitToInt()
-                var name = dayName
-                if (part == 2) name = "Part Two"
-                var solutionType = method.getAnnotation(Solution::class.java)?.type ?: SolutionType.REGULAR
-                if (method.returnType == Visualization::class.java) solutionType = SolutionType.VISUALIZATION
                 val index = allPuzzles[day]?.count { it.part == part } ?: 0
-                val runMethod: Any?.() -> Any? = convertMethod(lookup, method)
-                val prepareMethod: (PuzzleInput.() -> Any?)? = if (method.parameterTypes[0] == PuzzleInput::class.java) {
+                val prepare = if (method.parameterTypes[0] == PuzzleInput::class.java) {
                     null
                 } else {
-                    convertMethod(lookup, cls.getMethod("prepare", PuzzleInput::class.java))
+                    cls.getMethod("prepare", PuzzleInput::class.java)
                 }
-                DefaultPuzzle(
-                    name,
-                    day,
-                    part,
-                    index,
-                    solutionType,
-                    method.returnType as Class<Any?>,
-                    runMethod,
-                    prepareMethod
-                ).also(allPuzzles::add)
+                compilePuzzle(lookup, day, dayName, part, index, method, prepare).also(allPuzzles::add)
             }
         }
     } catch (ignored: ClassNotFoundException) {}
@@ -165,7 +215,7 @@ data class PuzzleFilter(
     val solutionTypes: EnumSet<SolutionType> = EnumSet.of(SolutionType.REGULAR, SolutionType.C2)
 ) {
     companion object {
-        fun all() = PuzzleFilter((2015..LocalDate.now().year).flatMap { year -> (1..25).map { day -> PuzzleDay(year, day) } }.toSortedSet(), false)
+        fun all() = PuzzleFilter((2015..LocalDate.now(ZoneId.of("UTC")).year).flatMap { year -> (1..25).map { day -> PuzzleDay(year, day) } }.toSortedSet(), false)
         fun year(year: Int) = PuzzleFilter((1..25).map { PuzzleDay(year, it) }.toSortedSet(), false)
     }
 }

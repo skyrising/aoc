@@ -9,6 +9,8 @@ import java.nio.CharBuffer
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.time.LocalDate
+import java.time.ZoneId
+import kotlin.io.path.Path
 import kotlin.io.path.exists
 
 fun ByteBuffer.toLatin1String(): String {
@@ -92,9 +94,9 @@ class TestInput(str: String) : PuzzleInput {
     override fun close() {}
 }
 
-private val years = LocalDate.now().year - 2015 + 1
+private val years = LocalDate.now(ZoneId.of("UTC")).year - 2015 + 1
 private val inputs = arrayOfNulls<PuzzleInput>(years * 25)
-private val cookie: String by lazy { Files.readString(java.nio.file.Path.of("COOKIE.txt")).trim() }
+private val cookie: String by lazy { Files.readString(Path("COOKIE.txt")).trim() }
 
 fun getInput(year: Int, day: Int): PuzzleInput {
     val idx = (year - 2015) * 25 + day - 1

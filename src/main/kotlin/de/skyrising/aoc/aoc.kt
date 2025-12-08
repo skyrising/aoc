@@ -1,10 +1,11 @@
 package de.skyrising.aoc
 
 import de.skyrising.aoc.visualization.Visualization
+import java.nio.ByteBuffer
 import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.exists
-import kotlin.io.path.forEachLine
+import kotlin.io.path.readBytes
 import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -36,15 +37,17 @@ fun buildFilter(args: MutableList<String>): PuzzleFilter {
     return PuzzleFilter(sortedSetOf(PuzzleDay(year, day)), solutionTypes = EnumSet.allOf(SolutionType::class.java))
 }
 
+data class Timing(var totalTime: Double = 0.0, var totalVariance: Double = 0.0)
+
 fun main(args: Array<String>) {
     val resultsFile = Path("results.txt")
     if (resultsFile.exists()) {
-        resultsFile.forEachLine {
+        calcInputLS(ByteBuffer.wrap(resultsFile.readBytes())).forEach {
             val line = it.trim()
-            if (line.isEmpty()) return@forEachLine
+            if (line.isEmpty()) return@forEach
             val values = line.split(' ')
-            val (year, day) = values.take(2)
-            RESULTS[PuzzleDay(year.toInt(), day.toInt())] = values.slice(2..values.lastIndex)
+            val (year, day) = values
+            RESULTS[PuzzleDay(year.toInt(), day.toInt())] = values.subList(2, values.size)
         }
     }
     var filter = buildFilter(args.toMutableList())
@@ -56,71 +59,71 @@ fun main(args: Array<String>) {
     //filter = filter.copy(solutionTypes = EnumSet.of(SolutionType.VISUALIZATION))
     registerFiltered(filter)
     val puzzlesToRun = allPuzzles.filter(filter)
-    var totalTime = 0.0
-    var totalVariance = 0.0
-    fun runOne(input: PuzzleInput, puzzle: Puzzle<*, *>, prepare: Boolean = false) {
-        try {
-            val benchmark = BENCHMARK_MODE
-            val result = if (benchmark != null) {
-                var warmup = WARMUP
-                var measure = RUNS
-                val mode = when (benchmark) {
-                    is BenchMode.Iterations -> {
-                        if (QUICK_PART2 && !prepare && puzzle.part == 2) {
-                            warmup = 1
-                            measure = 3
-                        }
-                        BenchMode.Iterations(if (QUICK_PART2 && !prepare && puzzle.part == 2) 3 else benchmark.iterations)
-                    }
-                    is BenchMode.Duration -> benchmark
-                }
-                val (result, avg, stddev) = benchmark(warmup, measure, mode) { a, b ->
-                    input.use { if (prepare) puzzle.prepareInput(input) else puzzle.runPuzzle(input) }.also {
-                        if (b == 0) {
-                            input.benchmark = true
-                            print(if (a < 0) '-' else '+')
-                        }
-                    }
-                }
-                print("\r\u001b[K")
-                totalTime += avg
-                totalVariance += stddev * stddev
-                println(formatResult(puzzle, result, prepare, avg, stddev))
-                result
-            } else {
-                val start = System.nanoTime()
-                val result = input.use { if (prepare) puzzle.prepareInput(input) else puzzle.runPuzzle(input) }
-                val time = (System.nanoTime() - start) / 1000.0
-                totalTime += time
-                println(formatResult(puzzle, result, prepare, time))
-                result
-            }
-            if (prepare) {
-                input.prepared = lazyOf(result)
-            }
-        } catch (e: Exception) {
-            println(formatResult(puzzle, e))
-            e.printStackTrace()
-        }
-    }
+    val timing = Timing()
     for (puzzle in puzzlesToRun) {
         val input = puzzle.getRealInput()
         if (puzzle.resultType == Visualization::class.java) {
             input.use(puzzle::runPuzzle)
             continue
         }
-        if (puzzle is DefaultPuzzle<*, *> && puzzle.prepare != null && input.prepared == null) {
-            runOne(input, puzzle, true)
+        if (puzzle.hasPrepare && input.prepared == null) {
+            runOne(input, puzzle, true, timing)
         }
-        runOne(input, puzzle)
+        runOne(input, puzzle, false, timing)
     }
     println(buildString {
         append("Done: ")
-        append(formatTime(totalTime).trim())
+        append(formatTime(timing.totalTime).trim())
         if (BENCHMARK) {
-            append(String.format(Locale.ROOT, " ± %.1f%%", sqrt(totalVariance) * 100 / totalTime))
+            append(String.format(Locale.ROOT, " ± %.1f%%", sqrt(timing.totalVariance) * 100 / timing.totalTime))
         }
     })
+}
+
+fun runOne(input: PuzzleInput, puzzle: Puzzle<*, *>, prepare: Boolean, timing: Timing) {
+    try {
+        val benchmark = BENCHMARK_MODE
+        val result = if (benchmark != null) {
+            var warmup = WARMUP
+            var measure = RUNS
+            val mode = when (benchmark) {
+                is BenchMode.Iterations -> {
+                    if (QUICK_PART2 && !prepare && puzzle.part == 2) {
+                        warmup = 1
+                        measure = 3
+                    }
+                    BenchMode.Iterations(if (QUICK_PART2 && !prepare && puzzle.part == 2) 3 else benchmark.iterations)
+                }
+                is BenchMode.Duration -> benchmark
+            }
+            val (result, avg, stddev) = benchmark(warmup, measure, mode) { a, b ->
+                input.use { if (prepare) puzzle.prepareInput(input) else puzzle.runPuzzle(input) }.also {
+                    if (b == 0) {
+                        input.benchmark = true
+                        print(if (a < 0) '-' else '+')
+                    }
+                }
+            }
+            print("\r\u001b[K")
+            timing.totalTime += avg
+            timing.totalVariance += stddev * stddev
+            println(formatResult(puzzle, result, prepare, avg, stddev))
+            result
+        } else {
+            val start = System.nanoTime()
+            val result = input.use { if (prepare) puzzle.prepareInput(input) else puzzle.runPuzzle(input) }
+            val time = (System.nanoTime() - start) / 1000.0
+            timing.totalTime += time
+            println(formatResult(puzzle, result, prepare, time))
+            result
+        }
+        if (prepare) {
+            input.prepared = lazyOf(result)
+        }
+    } catch (e: Exception) {
+        println(formatResult(puzzle, e))
+        e.printStackTrace()
+    }
 }
 
 private fun formatTime(us: Double): String {
