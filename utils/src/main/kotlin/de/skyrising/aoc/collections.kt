@@ -1,6 +1,7 @@
 package de.skyrising.aoc
 
 import it.unimi.dsi.fastutil.ints.IntArrayList
+import it.unimi.dsi.fastutil.ints.IntIterable
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue
 
@@ -85,18 +86,18 @@ inline fun <T> List<T>.mapToInts(mapper: (T) -> Int): IntList {
     }
 }
 
-inline fun IntList.forEachInt(crossinline action: (Int) -> Unit) {
+inline fun IntIterable.forEachInt(action: (Int) -> Unit) {
     val it = intIterator()
     while (it.hasNext()) action(it.nextInt())
 }
 
-inline fun IntList.sumOf(crossinline selector: (Int) -> Int): Int {
+inline fun IntIterable.sumOf(selector: (Int) -> Int): Int {
     var sum = 0
     forEachInt { sum += selector(it) }
     return sum
 }
 
-inline fun IntList.count(crossinline predicate: (Int) -> Boolean): Int {
+inline fun IntIterable.count(predicate: (Int) -> Boolean): Int {
     var count = 0
     forEachInt { if (predicate(it)) count++ }
     return count

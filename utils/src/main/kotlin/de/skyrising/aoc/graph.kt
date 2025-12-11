@@ -217,8 +217,8 @@ class Graph<V, E> : BaseGraph<V, E>() {
     fun edge(e: Edge<V, E?>): Edge<V, E?> {
         vertex(e.from)
         vertex(e.to)
-        outgoing.computeIfAbsent(e.from) { mutableSetOf() }.add(e)
-        incoming.computeIfAbsent(e.to) { mutableSetOf() }.add(e)
+        outgoing.getOrPut(e.from) { mutableSetOf() }.add(e)
+        incoming.getOrPut(e.to) { mutableSetOf() }.add(e)
         return e
     }
 
