@@ -4,6 +4,8 @@ package de.skyrising.aoc
 
 import com.microsoft.z3.*
 
+inline fun <T> z3(block: Context.() -> T) = Context().use { block(it) }
+
 context(ctx: Context) operator fun <T: ArithSort> ArithExpr<T>.plus(other: ArithExpr<T>) = ctx.mkAdd(this, other)
 context(ctx: Context) operator fun <T: ArithSort> ArithExpr<T>.minus(other: ArithExpr<T>) = ctx.mkSub(this, other)
 context(ctx: Context) operator fun <T: ArithSort> ArithExpr<T>.times(other: ArithExpr<T>) = ctx.mkMul(this, other)
